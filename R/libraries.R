@@ -1,0 +1,8 @@
+library(rJava)
+library(rjson)
+library(RCurl)
+library(roxygen2)
+library(settings)
+library(testthat)
+library(devtools)
+library(renv)

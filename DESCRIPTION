@@ -14,5 +14,8 @@ Depends:
 Imports:
     settings,
     rJava,
-    RCurl
+    RCurl,
+    rjson
 RoxygenNote: 7.1.0
+Suggests: 
+    foreach

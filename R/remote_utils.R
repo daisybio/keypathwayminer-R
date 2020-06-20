@@ -1,11 +1,4 @@
-### R functions to consume the KeyPathwayMinerWeb RESTful API ###
-### Authors: Markus List and Martin Dissing-Hansen ###
-
-# Package dependencies. Make sure those are installed
-library(RCurl)
-library(rjson)
-library(foreach)
-
+#### Main - Methods ####
 #' Method used to create a job submission
 #'
 #' @param indicator_matrices List. Indicator matrices that will be used.
@@ -13,24 +6,31 @@ library(foreach)
 #' @param async Boolean. Submit a new job asynchronously?
 #' @param ... Options. Run parameters.
 #' @return Results object with runId, resultGraphs, comment, succes,resultUrl
-#'  and questId
+#'  and questId.
 #' @examples
-#'call_kpm(list(huntington_disease_up), attached_to_id,
+#'call_kpm_remote
+# (list(huntington_disease_up), attached_to_id,
 #'         async=FALSE, Lmin=8, Kmin=1, strategy="INES",
 #'         removeBENs=TRUE, graphID=I2D.id, graph.file=NULL,
 #'         range=FALSE, linkType="OR")
-call_kpm <- function(indicator_matrices, attached_to_id=NULL, async=TRUE, ...){
-  # KeyPathWayMiner URL:
-  #url <- "http://tomcat.compbio.sdu.dk/keypathwayminer/"
-  #url <- "http://localhost:8080/kpm-web/"
-  url <- "https://exbio.wzw.tum.de/keypathwayminer/"
+call_kpm_remote <- function(matrices, graph_file = NULL){
+
+  #Url of KeyPathwayMiner website
+  url <- kpm_options()$url
 
   #Generate random UUID for the session if none was provided
-  if(is.null(attached_to_id))
-    attached_to_id = paste(sample(c(LETTERS[1:6],0:9),32,replace=TRUE),collapse="")
+  if(is.null(kpm_options()$quest_id)){
+    kpm_options(quest_id = paste(sample(c(LETTERS[1:6],0:9),32,replace=TRUE),collapse=""))
+  }
 
-  #Create settings object
-  kpmSetup <- setup_kpm(indicator_matrices, attached_to_id=attached_to_id, ...)
+  #Create settings object and pass kpm_options parameters
+  kpmSetup <- setup_kpm(indicator_matrices = matrices,
+                        graph.file = graph_file,
+                        algorithm = kpm_options()$algorithm,
+                        strategy =  kpm_options()$strategy,
+                        graphID = kpm_options()$graph_id,
+                        removeBENs = kpm_options()$remove_bens,
+                        range = kpm_options())
 
   #prepare result object
   result <- NULL
@@ -40,75 +40,128 @@ call_kpm <- function(indicator_matrices, attached_to_id=NULL, async=TRUE, ...){
   print(sprintf("settings: %s", kpmSetup[[1]]))
 
   #submit
-  result <- submit.KPM(url, kpmSetup, async)
+  result <- submit_kpm(url, kpmSetup, async)
 
   return(result)
 }
 
+
 #' Function to set up a JSON object in preparation of the job submission
-#' @param indicator_matrices List of indicator matrices.
-#' @param algorithm A logical scalar. Should missing values (including NaN)
+#'
+#' @param indicator_matrices
+#' @param algorithm
 #' @param strategy
-#' @param graphID
+#' @param graph_id
+#' @param graph_file
+#' @param remove_bens
+#' @param range
+#' @param k_min
+#' @param k_max
+#' @param k_step
+#' @param l_min
+#' @param l_max
+#' @param l_step
+#' @param l_same_percentage
+#' @param same_percentage
+#' @param attached_to_id
+#' @param computed_pathways
+#' @param with_perturbation
+#' @param unmapped_nodes
+#' @param link_type
 setup_kpm <- function(indicator_matrices,
-                      algorithm="Greedy",
-                      strategy="GLONE",
-                      graphID=1,
-                      graph.file,
-                      removeBENs=FALSE, range,
-                      Kmin=0, Lmin=0, Kmax=0, Lmax=0, Kstep=1, Lstep=1,
-                      l_same_percentage = FALSE,
-                      same_percentage = 0,
+                      algorithm = "Greedy",
+                      strategy = "GLONE",
+                      graph_id = 1,
+                      graph_file,
+                      remove_bens = FALSE,
+                      range,
+                      k_min = 0, k_max = 0,  k_step = 1,
+                      l_min = 0, l_max = 0, l_step = 1,
+                      l_same_percentage = FALSE, same_percentage = 0,
                       attached_to_id,
-                      computed.pathways=20,
-                      with.perturbation=FALSE,
-                      unmapped_nodes="Add to negative list",
-                      linkType="OR"){
+                      computed_pathways = 20,
+                      with_perturbation = FALSE,
+                      unmapped_nodes = "Add to negative list",
+                      link_type = "OR"){
 
-  #base64 encode datasetfiles files
-  datasetList <- dataset_list(indicator_matrices, attached_to_id)
+  # Base64 encode datasetfiles files
+  dataset_list <- dataset_list(indicator_matrices, attached_to_id)
 
-  #create a run id
-  RUN_ID <- paste(sample(c(LETTERS[1:6],0:9),6,replace=TRUE),collapse="")
+  # Create a run id
+  run_id <- paste(sample(c(LETTERS[1:6],0:9),6,replace=TRUE),collapse="")
 
-  # setup the json settings:
+  # Setup the json settings:
   settings <- toJSON(
     list(
-      parameters=c(
-        name=paste("R demo client run", RUN_ID),
-        algorithm=algorithm,
-        strategy=strategy,
-        removeBENs=tolower(as.character(removeBENs)),
-        unmapped_nodes=unmapped_nodes,
-        computed_pathways=computed.pathways,
-        graphID=graphID,
-        l_samePercentage=tolower(as.character(l_same_percentage)),
-        samePercentage_val=same_percentage,
-        k_values=list(c(val=Kmin, val_step=Kstep, val_max=Kmax, use_range=tolower(as.character(range)), isPercentage="false")),
-        l_values=list(
-          c(val=Lmin, val_step=Lstep, val_max=Lmax, use_range=tolower(as.character(range)), isPercentage="false", datasetName=paste("dataset", 1, sep=""))
+      parameters = c(
+        name = paste("R demo client run", run_id),
+        algorithm = algorithm,
+        strategy = strategy,
+        removeBENs = tolower(as.character(remove_bens)),
+        unmapped_nodes = unmapped_nodes,
+        computed_pathways = computed_pathways,
+        graphID = graph_id,
+        l_samePercentage = tolower(as.character(l_same_percentage)),
+        samePercentage_val = same_percentage,
+        k_values = list(c(val = k_min, val_step = k_step, val_max = k_max,
+                          use_range = tolower(as.character(range)), isPercentage="false")),
+        l_values = list(c(val = l_min, val_step = l_step, val_max = l_max,
+                          use_range = tolower(as.character(range)), isPercentage = "false",
+                          datasetName = paste("dataset", 1, sep = ""))
         )
       ),
-      withPerturbation=tolower(as.character(with.perturbation)),
-      perturbation=list(c( # perturbation can be left out, if withPeturbation parameter is set to false.
-        technique="Node-swap",
-        startPercent=5,
-        stepPercent=1,
-        maxPercent=15,
-        graphsPerStep=1
+      withPerturbation = tolower(as.character(with_perturbation)),
+      perturbation = list(c( # perturbation can be left out, if withPeturbation parameter is set to false.
+        technique = "Node-swap",
+        startPercent = 5,
+        stepPercent = 1,
+        maxPercent = 15,
+        graphsPerStep = 1
       )),
-      linkType=linkType,
-      attachedToID=attached_to_id,
-      positiveNodes="",
-      negativeNodes=""
+      linkType = link_type,
+      attachedToID = attached_to_id,
+      positiveNodes = "",
+      negativeNodes = ""
     ))
 
   # Add custom network if provided
-  graph <- graph_kpm(graph.file, attached_to_id)
+  graph <- graph_kpm(graph_file, attached_to_id)
 
-  return(list(settings, datasetList, graph))
+  return(list(settings, dataset_list, graph))
 }
 
+
+# method for submitting a job to KeyPathwayMinerWeb asynchronously (returns immediately) or blocking (returns when job is complete)
+submit_kpm <- function(kpmSetup){
+  withTryCatch(function(){
+    #Choose whether it is an asynchronous job or not
+    if(kpm_options()$async) {
+      url <- paste(kpm_options()$url, "requests/submitAsync", sep="")
+    } else {
+      url <- paste(kpm_options()$url, "requests/submit", sep="")
+    }
+
+    #If a default graph is used we should not send the graph attribute
+    if(is.null(kpmSetup[[3]])){
+      result <- RCurl::postForm(kpm_options()$url, kpmSettings = kpmSetup[[1]],
+                                datasets = kpmSetup[[2]])
+    }else{
+      result <- RCurl::postForm(kpm_options()$url, kpmSettings = kpmSetup[[1]],
+                                datasets = kpmSetup[[2]], graph = kpmSetup[[3]])
+    }
+
+    #Get results
+    jsonResult <- rjson::fromJSON(result)
+
+    #Print status comment to console
+    print(jsonResult["comment"])
+
+    #Return results
+    return(jsonResult)
+  })
+}
+
+#### Helper - Methods ####
 # Helper method to encode a list of datasets (indicator matrices) for the job submission
 dataset_list <- function(indicator_matrices, attached_to_id){
   counter <- 0
@@ -121,7 +174,6 @@ dataset_list <- function(indicator_matrices, attached_to_id){
     counter <- counter + 1
     c(name=paste("dataset", counter, sep=""), attachedToID=attached_to_id, contentBase64=enc.file)
   }
-
   return(toJSON(datasetList))
 }
 
@@ -133,7 +185,6 @@ graph_kpm <- function(graph.file, attached_to_id){
   }else{
     graph <- NULL
   }
-
   return(graph)
 }
 
@@ -152,31 +203,6 @@ withTryCatch <- function(surroundedFunc){
   })
 }
 
-
-# method for submitting a job to KeyPathwayMinerWeb asynchronously (returns immediately) or blocking (returns when job is complete)
-submit.KPM <- function(url, kpmSetup, async=TRUE){
-  withTryCatch(function(){
-    if(async)
-      url <- paste(url, "requests/submitAsync", sep="")
-    else
-      url <- paste(url, "requests/submit", sep="")
-
-    #if a default graph is used we should not send the graph attribute
-    if(is.null(kpmSetup[[3]]))
-      result <- postForm(url, kpmSettings=kpmSetup[[1]], datasets=kpmSetup[[2]])
-    else
-      result <- postForm(url, kpmSettings=kpmSetup[[1]], datasets=kpmSetup[[2]], graph=kpmSetup[[3]])
-
-    #get results
-    jsonResult <- fromJSON(result)
-
-    #print status to console
-    print(jsonResult["comment"])
-
-    #return results
-    return(jsonResult)
-  })
-}
 
 
 # Method to check up on a submitted job. Useful to monitor its progress and current status.
@@ -217,13 +243,21 @@ getResults <- function(url, questId){
   })
 }
 
+#' Get a data frame of available networks
+#'
+#' @param url Url to keypathwayminer.
+#'
+#' @return Data frame with different graphs and their Id's.
+#'
+#' @examples
+#' getNetworks("https://exbio.wzw.tum.de/keypathwayminer/")
 # Get a data frame of available networks
-getNetworks <- function(url){
+getNetworks <- function(url = "https://exbio.wzw.tum.de/keypathwayminer/"){
   kpm.url <- paste(url, "rest/availableNetworks/", sep="")
-  result <- RCurl::getURL(kpm.url)
-  jsonResult <- rjson::fromJSON(result)
-  networks <- foreach::foreach(network = jsonResult, .combine=append) %do% {network[[1]]}
-  names(networks) <- foreach::foreach(network = jsonResult, .combine=append) %do% {network[[2]]}
+  result <- getURL(kpm.url)
+  jsonResult <- fromJSON(result)
+  networks <- foreach(network = jsonResult, .combine=append) %do% {network[[1]]}
+  names(networks) <- foreach(network = jsonResult, .combine=append) %do% {network[[2]]}
   return(networks)
 }
 

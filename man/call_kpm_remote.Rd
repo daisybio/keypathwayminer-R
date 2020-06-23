@@ -4,7 +4,7 @@
 \alias{call_kpm_remote}
 \title{Method used to create a job submission}
 \usage{
-call_kpm_remote(indicator_matrices)
+call_kpm_remote(matrices, graph_file = NULL)
 }
 \arguments{
 \item{indicator_matrices}{List. Indicator matrices that will be used.}
@@ -23,6 +23,7 @@ Results object with runId, resultGraphs, comment, succes,resultUrl
 Method used to create a job submission
 }
 \examples{
+#TODO
 call_kpm_remote
         async=FALSE, Lmin=8, Kmin=1, strategy="INES",
         removeBENs=TRUE, graphID=I2D.id, graph.file=NULL,

@@ -4,7 +4,7 @@
 \alias{getNetworks}
 \title{Get a data frame of available networks}
 \usage{
-getNetworks(url)
+getNetworks(url = "https://exbio.wzw.tum.de/keypathwayminer/")
 }
 \arguments{
 \item{url}{Url to keypathwayminer.}

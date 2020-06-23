@@ -7,7 +7,7 @@
 #' @param ... Options. Run parameters.
 #' @return Results object with runId, resultGraphs, comment, succes,resultUrl
 #'  and questId.
-#' @examples
+#' @examples #TODO
 #'call_kpm_remote
 # (list(huntington_disease_up), attached_to_id,
 #'         async=FALSE, Lmin=8, Kmin=1, strategy="INES",
@@ -20,54 +20,41 @@ call_kpm_remote <- function(matrices, graph_file = NULL){
 
   #Generate random UUID for the session if none was provided
   if(is.null(kpm_options()$quest_id)){
-    kpm_options(quest_id = paste(sample(c(LETTERS[1:6],0:9),32,replace=TRUE),collapse=""))
+    kpm_options(quest_id = paste(sample(c(LETTERS[1:6],0:9), 32, replace = TRUE), collapse = ""))
   }
 
   #Create settings object and pass kpm_options parameters
   kpmSetup <- setup_kpm(indicator_matrices = matrices,
-                        graph.file = graph_file,
+                        graph_file = graph_file,
                         algorithm = kpm_options()$algorithm,
                         strategy =  kpm_options()$strategy,
-                        graphID = kpm_options()$graph_id,
-                        removeBENs = kpm_options()$remove_bens,
-                        range = kpm_options())
+                        graph_id = kpm_options()$graph_id,
+                        remove_bens = kpm_options()$remove_bens,
+                        range = kpm_options()$use_range,
+                        k_min = kpm_options()$k_min, k_max = kpm_options()$k_max, k_step = kpm_options()$k_step,
+                        l_min = kpm_options()$l_min, l_max = kpm_options()$l_max, l_step = kpm_options()$l_step,
+                        l_same_percentage = kpm_options()$l_same_percentage, same_percentage = kpm_options()$same_percentage,
+                        attached_to_id = kpm_options()$quest_id,
+                        computed_pathways = kpm_options()$computed_pathways,
+                        with_perturbation = kpm_options()$with_perturbation,
+                        unmapped_nodes = kpm_options()$unmapped_nodes,
+                        link_type = kpm_options()$link_type)
 
-  #prepare result object
+  # Prepare result object
   result <- NULL
 
-  #print out settings for debugging purposes
+  # Print out settings for debugging purposes
   print(sprintf("url: %s", url))
   print(sprintf("settings: %s", kpmSetup[[1]]))
 
-  #submit
-  result <- submit_kpm(url, kpmSetup, async)
+  # Submit
+  result <- submit_kpm(kpmSetup)
 
   return(result)
 }
 
 
-#' Function to set up a JSON object in preparation of the job submission
-#'
-#' @param indicator_matrices
-#' @param algorithm
-#' @param strategy
-#' @param graph_id
-#' @param graph_file
-#' @param remove_bens
-#' @param range
-#' @param k_min
-#' @param k_max
-#' @param k_step
-#' @param l_min
-#' @param l_max
-#' @param l_step
-#' @param l_same_percentage
-#' @param same_percentage
-#' @param attached_to_id
-#' @param computed_pathways
-#' @param with_perturbation
-#' @param unmapped_nodes
-#' @param link_type
+# Function to set up a JSON object in preparation of the job submission
 setup_kpm <- function(indicator_matrices,
                       algorithm = "Greedy",
                       strategy = "GLONE",
@@ -131,7 +118,12 @@ setup_kpm <- function(indicator_matrices,
 }
 
 
-# method for submitting a job to KeyPathwayMinerWeb asynchronously (returns immediately) or blocking (returns when job is complete)
+
+#' Method for submitting a job to KeyPathwayMinerWeb
+#' Submits can be submitted asynchronously (returns immediately)
+#' or blocked until completed(returns when job is complete).
+#'
+#' @param kpmSetup kpmSetup
 submit_kpm <- function(kpmSetup){
   withTryCatch(function(){
     #Choose whether it is an asynchronous job or not
@@ -143,10 +135,10 @@ submit_kpm <- function(kpmSetup){
 
     #If a default graph is used we should not send the graph attribute
     if(is.null(kpmSetup[[3]])){
-      result <- RCurl::postForm(kpm_options()$url, kpmSettings = kpmSetup[[1]],
+      result <- RCurl::postForm(url, kpmSettings = kpmSetup[[1]],
                                 datasets = kpmSetup[[2]])
-    }else{
-      result <- RCurl::postForm(kpm_options()$url, kpmSettings = kpmSetup[[1]],
+    } else {
+      result <- RCurl::postForm(url, kpmSettings = kpmSetup[[1]],
                                 datasets = kpmSetup[[2]], graph = kpmSetup[[3]])
     }
 
@@ -205,13 +197,19 @@ withTryCatch <- function(surroundedFunc){
 
 
 
-# Method to check up on a submitted job. Useful to monitor its progress and current status.
-getStatus <- function(url, questId){
+#' Method to check up on a submitted job.
+#'
+#' Useful to monitor the job progress and current status.
+#'
+#' @param quest_id String. The quest id this job has been attached to.
+#'
+#' @return Status of the job for given quest_id.
+getStatus <- function(quest_id){
   withTryCatch(function(){
-    url <- paste(url, "requests/runStatus", sep="")
+    url <- paste(kpm_options()$url, "requests/runStatus", sep="")
     print(sprintf("url: %s", url))
-    result <- postForm(url, questID=questId)
-    jsonResult <- fromJSON(result)
+    result <- RCurl::postForm(url, questID = quest_id)
+    jsonResult <- rjson::fromJSON(result)
 
     if(tolower(jsonResult["success"]) == "cancelled"){
       print("Run has been cancelled.")
@@ -251,7 +249,6 @@ getResults <- function(url, questId){
 #'
 #' @examples
 #' getNetworks("https://exbio.wzw.tum.de/keypathwayminer/")
-# Get a data frame of available networks
 getNetworks <- function(url = "https://exbio.wzw.tum.de/keypathwayminer/"){
   kpm.url <- paste(url, "rest/availableNetworks/", sep="")
   result <- getURL(kpm.url)

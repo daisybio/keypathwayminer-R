@@ -7,12 +7,6 @@
 #' @param ... Options. Run parameters.
 #' @return Results object with runId, resultGraphs, comment, succes,resultUrl
 #'  and questId.
-#' @examples #TODO
-#'call_kpm_remote
-# (list(huntington_disease_up), attached_to_id,
-#'         async=FALSE, Lmin=8, Kmin=1, strategy="INES",
-#'         removeBENs=TRUE, graphID=I2D.id, graph.file=NULL,
-#'         range=FALSE, linkType="OR")
 call_kpm_remote <- function(matrices, graph_file = NULL){
 
   #Url of KeyPathwayMiner website
@@ -53,8 +47,9 @@ call_kpm_remote <- function(matrices, graph_file = NULL){
   return(result)
 }
 
-
-# Function to set up a JSON object in preparation of the job submission
+#' Set up a JSON object in preparation of the job submission
+#'
+#' @return A list with settings, datasets and graph in JSON format.
 setup_kpm <- function(indicator_matrices,
                       algorithm = "Greedy",
                       strategy = "GLONE",
@@ -75,10 +70,10 @@ setup_kpm <- function(indicator_matrices,
   dataset_list <- dataset_list(indicator_matrices, attached_to_id)
 
   # Create a run id
-  run_id <- paste(sample(c(LETTERS[1:6],0:9),6,replace=TRUE),collapse="")
+  run_id <- paste(sample(c(LETTERS[1:6], 0:9), 6, replace = TRUE), collapse="")
 
   # Setup the json settings:
-  settings <- toJSON(
+  settings <- rjson::toJSON(
     list(
       parameters = c(
         name = paste("R demo client run", run_id),
@@ -117,13 +112,13 @@ setup_kpm <- function(indicator_matrices,
   return(list(settings, dataset_list, graph))
 }
 
-
-
 #' Method for submitting a job to KeyPathwayMinerWeb
 #' Submits can be submitted asynchronously (returns immediately)
 #' or blocked until completed(returns when job is complete).
 #'
 #' @param kpmSetup kpmSetup
+#'
+#' @return Results in json format.
 submit_kpm <- function(kpmSetup){
   withTryCatch(function(){
     #Choose whether it is an asynchronous job or not
@@ -154,26 +149,41 @@ submit_kpm <- function(kpmSetup){
 }
 
 #### Helper - Methods ####
-# Helper method to encode a list of datasets (indicator matrices) for the job submission
+
+#'  Encodes a list of datasets
+#'
+#'  Helper method to encode a list of datasets (indicator matrices)
+#'  for the job submission.
+#'
+#' @param indicator_matrices List of indicator matrices to be encoded
+#' @param attached_to_id Quest id for the current run.
+#'
+#' @return Encoded list of datasets with their respective questId.
+#' @importFrom foreach %do%
 dataset_list <- function(indicator_matrices, attached_to_id){
   counter <- 0
-  datasetList <- foreach(indicator.matrix = indicator_matrices) %do% {
+  datasetList <- foreach::foreach(indicator.matrix = indicator_matrices) %do% {
     txt.con <- textConnection("tmp.file", "w")
-
-    write.table(indicator.matrix, txt.con, sep="\t",quote=F, col.names = F, row.names = F)
-    enc.file <- base64(paste(tmp.file, collapse="\n"))
+    write.table(indicator.matrix, txt.con, sep = "\t", quote = F, col.names = F, row.names = F)
+    enc.file <- RCurl::base64(paste(tmp.file, collapse = "\n"))
     close(txt.con)
+
     counter <- counter + 1
-    c(name=paste("dataset", counter, sep=""), attachedToID=attached_to_id, contentBase64=enc.file)
+    c(name = paste("dataset", counter, sep=""), attachedToID = attached_to_id, contentBase64 = enc.file)
   }
-  return(toJSON(datasetList))
+  return(rjson::toJSON(datasetList))
 }
 
-# Helper method to encode custom network file
-graph_kpm <- function(graph.file, attached_to_id){
-  if(!is.null(graph.file)){
-    graph <- base64EncFile(graph.file)
-    graph <- toJSON(c(name=basename(graph.file), attachedToID=attached_to_id, contentBase64=graph))
+#' Helper method to encode custom network file
+#'
+#' @param graph_file Path to graph file which should be encoded.
+#' @param attached_to_id Respective questId.
+#'
+#' @return Encoded network file or NULL if no graph file submitted.
+graph_kpm <- function(graph_file, attached_to_id){
+  if(!is.null(graph_file)){
+    graph <- base64EncFile(graph_file)
+    graph <- rjson::toJSON(c(name = basename(graph_file), attachedToID = attached_to_id, contentBase64 = graph))
   }else{
     graph <- NULL
   }
@@ -181,7 +191,10 @@ graph_kpm <- function(graph.file, attached_to_id){
 }
 
 
-# helper method for error handling
+
+#' Helper method for error handling
+#'
+#' @param surroundedFunc Function in which the TryCatch error handling should be applied.
 withTryCatch <- function(surroundedFunc){
   tryCatch({
     surroundedFunc()
@@ -195,8 +208,6 @@ withTryCatch <- function(surroundedFunc){
   })
 }
 
-
-
 #' Method to check up on a submitted job.
 #'
 #' Useful to monitor the job progress and current status.
@@ -204,7 +215,7 @@ withTryCatch <- function(surroundedFunc){
 #' @param quest_id String. The quest id this job has been attached to.
 #'
 #' @return Status of the job for given quest_id.
-getStatus <- function(quest_id){
+get_status <- function(quest_id){
   withTryCatch(function(){
     url <- paste(kpm_options()$url, "requests/runStatus", sep="")
     print(sprintf("url: %s", url))
@@ -223,19 +234,23 @@ getStatus <- function(quest_id){
   })
 }
 
-# Once the run is complete, we can obtain the results
-getResults <- function(url, questId){
+#' Once the run is complete, we can obtain the results
+#'
+#' @param quest_id Jobs respective quest_id.
+#'
+#' @return If run was successful return result in json
+#' format otherwise null.
+get_results <- function(quest_id){
   withTryCatch(function(){
-    url <- paste(url, "requests/results", sep="")
+   url <- paste(kpm_options()$url, "requests/results", sep = "")
     print(sprintf("url: %s", url))
 
-    result <- postForm(url, questID=questId)
-    jsonResult <- fromJSON(result)
+    result <- RCurl::postForm(url, questID = quest_id)
+    jsonResult <- rjson::fromJSON(result)
 
     if(tolower(jsonResult["success"]) == "true"){
       return(jsonResult)
-    }
-    else{
+    }else{
       return(NULL)
     }
   })
@@ -248,22 +263,42 @@ getResults <- function(url, questId){
 #' @return Data frame with different graphs and their Id's.
 #'
 #' @examples
-#' getNetworks("https://exbio.wzw.tum.de/keypathwayminer/")
-getNetworks <- function(url = "https://exbio.wzw.tum.de/keypathwayminer/"){
-  kpm.url <- paste(url, "rest/availableNetworks/", sep="")
-  result <- getURL(kpm.url)
-  jsonResult <- fromJSON(result)
-  networks <- foreach(network = jsonResult, .combine=append) %do% {network[[1]]}
-  names(networks) <- foreach(network = jsonResult, .combine=append) %do% {network[[2]]}
+#' get_networks("https://exbio.wzw.tum.de/keypathwayminer/")
+#' @export
+#' @importFrom foreach %do%
+get_networks <- function(url = "https://exbio.wzw.tum.de/keypathwayminer/"){
+  kpm_url <- paste(url, "rest/availableNetworks/", sep="")
+  result <- RCurl::getURL(kpm_url)
+  jsonResult <- rjson::fromJSON(result)
+  networks <- foreach::foreach(network = jsonResult, .combine = append)%do%{network[[1]]}
+  names(networks) <- foreach::foreach(network = jsonResult, .combine = append) %do% {network[[2]]}
   return(networks)
 }
 
-# Get url to see progress in the browser and see the results
-quest.progress.url <- function(url, attached_to_id){
-  kpm.url <- paste(url, "requests/quests?attachedToId=", sep="")
-  paste(kpm.url, attached_to_id, "&hideTitle=false", sep="")
+#' Get progress url
+#'
+#' Get url to see progress in the browser and see the results
+#'
+#' @param quest_id
+#'
+#' @return Returns progress url for the respective run.
+#' @export
+quest_progress_url <- function(quest_id){
+  kpm_progress_url <- paste(kpm_options()$url, "requests/quests?attachedToId=",
+                            quest_id, "&hideTitle=false", sep="")
+
+  return(kpm_progress_url)
 }
-# Helper method for base64 encoding. Needed to transfer network and dataset files #
-base64EncFile <- function(fileName){
-  return(base64(readChar(fileName, file.info(fileName)$size)))
+
+#' Method for base64 encoding
+#'
+#'  Helper method for base64 encoding.
+#'  Needed to transfer network and dataset files-
+#'
+#' @param fileName String. Name of the file to be encoded.
+#'
+#' @return Base 64 eencoded file.
+base64EncFile <- function(file_name){
+  return(RCurl::base64(readChar(file_name, file.info(file_name)$size)))
 }
+

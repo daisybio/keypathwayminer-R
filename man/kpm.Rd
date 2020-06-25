@@ -18,6 +18,6 @@ to see all networks.}
 Runs KeyPathwayMiner localy via the standalone
 or remotely via the RESTful API of the KeyPathwayMiner
 website. Input parameters are indicator matrices and a graph_file.
-You can see or change the run parameters through the
+You can view or change the run parameters through the
 kpm_options() function.
 }

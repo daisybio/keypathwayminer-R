@@ -6,6 +6,7 @@ on his computer (via standalone) or with the Web api.
 
 With the kpm_options object the arguments for the execution
 of the program can be set and viewed.
+
 Given a biological network and a set of case-control studies, KeyPathwayMiner
 efficiently extracts all maximal connected sub-networks.
 These sub-networks contain the genes that are mainly

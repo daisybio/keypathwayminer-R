@@ -1,21 +1,18 @@
 Package: Rkpm
 Type: Package
-Title: What the Package Does (Title Case)
+Title: KeyPathwayMiner R - package
 Version: 0.0.0.9000
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Markus List and Konstantinos Mechteridis
+Maintainer: The package maintainer <konstantinos.mechteridis@tum.de>
+License: GNU GENERAL PUBLIC LICENSE
 Encoding: UTF-8
 LazyData: true
 Depends: 
-    R (>= 2.10)
+    R (>= 2.10),
+    rJava
 Imports:
     settings,
-    rJava,
     RCurl,
-    rjson
-RoxygenNote: 7.1.0
-Suggests: 
+    rjson,
     foreach
+RoxygenNote: 7.1.0

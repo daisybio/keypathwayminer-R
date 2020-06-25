@@ -11,25 +11,20 @@
 #' a graph from the website (only for remote runs).
 #' Use getNetworks('https://exbio.wzw.tum.de/keypathwayminer/')
 #' to see all networks.
+kpm <- function(indicator_matrices, graph_file = NULL) {
+    message(paste("Run type: ",kpm_options()$execution))
+    #### Prepare files ####
+    files <- check_files(indicator_matrices, graph_file)
+    matrices_list <- files[[1]]
+    graph <- files[[2]]
 
-files <- check_files(indicator_matrices, graph_file)
-kpm <- function(indicator_matrices, graph_file) {
+    #### Run KPM & Get results ####
     if (kpm_options()$execution == "Remote") {
-        #### Remote run ####
-        message("Run type: Remote")
-        #Check and process files for remote run
-        check_files()
-        #results <- call_kpm_remote(indicator_matrices = indicator_matrices, graph_file = graph_file)
+        results <- call_kpm_remote(indicator_matrices, graph_file)
     } else if (kpm_options()$execution == "Local") {
-        #### Local run ####
-        message("Run type: Local")
-        # Check and process files for local run
-        files <- check_files(indicator_matrices, graph_file)
-        matrices_list <- files[[1]]
-        graph <- files[[2]]
-        #TODO: results <- call_kpm_local()
+        results <- call_kpm_local(indicator_matrices, graph_file)
     }
-    #### TODO: Display results with some visualization package####
+    #### TODO: Visualize results ####
 }
 
 #' Function which checks and processes files
@@ -48,6 +43,7 @@ kpm <- function(indicator_matrices, graph_file) {
 #' Graph file: Null if no graph_file provided else path to graph_file.
 check_files <- function(indicator_matrices, graph_file){
     #### Check indicator_matrices ####
+    message("Checking files")
     if(!is.null(indicator_matrices)){
         matrices <- list()
         # Before we start we check whether indicator_matrices consists only of one element
@@ -86,7 +82,7 @@ check_files <- function(indicator_matrices, graph_file){
                     # Add filepath to list
                     matrices <- append(matrices, matrix_file)
                 }else if(kpm_options()$execution == "Remote"){
-                    matrices <- append(matrices, matrix)
+                    matrices <- append(matrices, list(matrix))
                 }
             }else{
                 # If function is neither a data.frame nor a file path
@@ -106,6 +102,7 @@ check_files <- function(indicator_matrices, graph_file){
                    "Valid input: a filepath, a data.frame or a list which can contain both.",
                    "For more information visit: https://exbio.wzw.tum.de/keypathwayminer/",sep = "\n"))
     }
+    message("Indicator matrices: √")
     #### Check graph_file ####
     if(!is.null(graph_file)){
         if(is.character(graph_file)&(!file.exists(graph_file) | tools::file_ext(graph_file) != "sif")){
@@ -113,12 +110,15 @@ check_files <- function(indicator_matrices, graph_file){
                        "\nMake sure the graph_file is in sif format and has a .sif extension.",
                        "\nGiven filepath: ", graph_file))
         }
+    message("Graph file: √")
     } else if(is.null(graph_file) & kpm_options()$execution == "Local"){
         # In case a graph_file was not provide on a local run
         stop(paste("For local runs you must provide a graph_file.",
                    "Make sure the graph_file is in sif format and has a .sif extension.",
                    "For more information visit: https://exbio.wzw.tum.de/keypathwayminer/",sep = "\n"))
+    } else if (is.null(graph_file) & kpm_options()$execution == "Remote"){
+        message("No graph file provided. Network will be selected from the web page using the graph_id.")
     }
-
+    message("Checks completed.")
     return(list(matrices, graph_file))
 }

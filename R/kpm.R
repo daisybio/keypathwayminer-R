@@ -11,19 +11,25 @@
 #' a graph from the website (only for remote runs).
 #' Use getNetworks('https://exbio.wzw.tum.de/keypathwayminer/')
 #' to see all networks.
-kpm <- function(indicator_matrices, graph_file = NULL) {
-    #### TODO: Check and process input files####
-    indicator_matrices <- NULL
-    graph_file <- NULL
 
-    #### TODO: Run####
-    if (kpm_options$execution == "Remote") {
+files <- check_files(indicator_matrices, graph_file)
+kpm <- function(indicator_matrices, graph_file) {
+    if (kpm_options()$execution == "Remote") {
+        #### Remote run ####
         message("Run type: Remote")
-        results <- call_kpm_remote(indicator_matrices = indicator_matrices, graph_file = graph_file)
-    } else if (kpm_options$execution == "Local") {
+        #Check and process files for remote run
+        check_files()
+        #results <- call_kpm_remote(indicator_matrices = indicator_matrices, graph_file = graph_file)
+    } else if (kpm_options()$execution == "Local") {
+        #### Local run ####
         message("Run type: Local")
+        # Check and process files for local run
+        files <- check_files(indicator_matrices, graph_file)
+        matrices_list <- files[[1]]
+        graph <- files[[2]]
+        #TODO: results <- call_kpm_local()
     }
-    #### TODO: Display results####
+    #### TODO: Display results with some visualization package####
 }
 
 #' Function which checks and processes files
@@ -42,56 +48,64 @@ kpm <- function(indicator_matrices, graph_file = NULL) {
 #' Graph file: Null if no graph_file provided else path to graph_file.
 check_files <- function(indicator_matrices, graph_file){
     #### Check indicator_matrices ####
-    matrices <- list()
-    # Before we start we check whether indicator_matrices consists only of one element
-    if(is.data.frame(indicator_matrices) | is.character(indicator_matrices)){
-        # If this is the case add the element to a list
-        indicator_matrices <- list(indicator_matrices)
-    }
-    if(class(indicator_matrices) == "list"){
-    # If multiple indicator matrices are provided
-    for(matrix in indicator_matrices){
-        if(is.character(matrix)){
-            # If matrix is given as path
-            if(!file.exists(matrix)){
-                stop(paste("File for matrix filepath does not exist. Given filepath: ", matrix))
-            }else{
-                if(kpm_options()$execution == "Local"){
-                    matrices <- append(matrices,matrix)
-                }else if(kpm_options()$execution == "Remote"){
-                    # Create dataframe of filepath
-                    matrices <- append(matrices,as.data.frame.matrix(read.delim(matrix, header = FALSE)))
+    if(!is.null(indicator_matrices)){
+        matrices <- list()
+        # Before we start we check whether indicator_matrices consists only of one element
+        if(is.data.frame(indicator_matrices) | is.character(indicator_matrices)){
+            # If this is the case add the element to a list
+            indicator_matrices <- list(indicator_matrices)
+        }
+        if(class(indicator_matrices) == "list"){
+        # If multiple indicator matrices are provided
+        for(matrix in indicator_matrices){
+            if(is.character(matrix)){
+                # If matrix is given as path
+                if(!file.exists(matrix)){
+                    stop(paste("File for matrix filepath does not exist. Given filepath: ", matrix))
+                }else{
+                    if(kpm_options()$execution == "Local"){
+                        matrices <- append(matrices, matrix)
+                    }else if(kpm_options()$execution == "Remote"){
+                        # Create dataframe of filepath
+                        matrices <- append(matrices,
+                                           list(as.data.frame.matrix(read.delim(matrix, header = FALSE))))
+                    }
                 }
-            }
-        }else if(is.data.frame(matrix)){
-            # If matrix is given as data.frame
-            if(kpm_options()$execution == "Local"){
-                # Create temporary file
-                message("Writing indicator matrix to temporary file")
-                matrix_file <- tempfile(fileext = ".txt")
-                write.table(matrix,
-                            file = matrix_file,
-                            quote = FALSE,
-                            sep = "\t",
-                            row.names = FALSE,
-                            col.names = FALSE)
-                # Add filepath to list
-                matrices <- append(matrices, matrix_file)
-            }else if(kpm_options()$execution == "Remote"){
-                matrices <- append(matrices, matrix)
-            }
-        }else{
-            # If function is neither a data.frame nor a file path
+            }else if(is.data.frame(matrix)){
+                # If matrix is given as data.frame
+                if(kpm_options()$execution == "Local"){
+                    # Create temporary file
+                    message("Writing indicator matrix to temporary file")
+                    matrix_file <- tempfile(fileext = ".txt")
+                    write.table(matrix,
+                                file = matrix_file,
+                                quote = FALSE,
+                                sep = "\t",
+                                row.names = FALSE,
+                                col.names = FALSE)
+                    # Add filepath to list
+                    matrices <- append(matrices, matrix_file)
+                }else if(kpm_options()$execution == "Remote"){
+                    matrices <- append(matrices, matrix)
+                }
+            }else{
+                # If function is neither a data.frame nor a file path
+                stop(paste("Please enter a valid input for the parameter indicator_matrices",
+                           "Valid input: a filepath, a data.frame or a list which can contain both.",
+                           "For more information visit: https://exbio.wzw.tum.de/keypathwayminer/",sep = "\n"))
+                }
+        }
+        } else {
             stop(paste("Please enter a valid input for the parameter indicator_matrices",
                        "Valid input: a filepath, a data.frame or a list which can contain both.",
                        "For more information visit: https://exbio.wzw.tum.de/keypathwayminer/",sep = "\n"))
-            }
-    }
-    } else {
-        stop(paste("Please enter a valid input for the parameter indicator_matrices",
+        }
+    }else {
+        # No indicator matrices provided
+        stop(paste("No indicator_matrices provided.",
                    "Valid input: a filepath, a data.frame or a list which can contain both.",
                    "For more information visit: https://exbio.wzw.tum.de/keypathwayminer/",sep = "\n"))
-}
+    }
     #### Check graph_file ####
     if(!is.null(graph_file)){
         if(is.character(graph_file)&(!file.exists(graph_file) | tools::file_ext(graph_file) != "sif")){
@@ -99,7 +113,12 @@ check_files <- function(indicator_matrices, graph_file){
                        "\nMake sure the graph_file is in sif format and has a .sif extension.",
                        "\nGiven filepath: ", graph_file))
         }
+    } else if(is.null(graph_file) & kpm_options()$execution == "Local"){
+        # In case a graph_file was not provide on a local run
+        stop(paste("For local runs you must provide a graph_file.",
+                   "Make sure the graph_file is in sif format and has a .sif extension.",
+                   "For more information visit: https://exbio.wzw.tum.de/keypathwayminer/",sep = "\n"))
     }
 
-    return(matrices, graph_file)
+    return(list(matrices, graph_file))
 }

@@ -12,7 +12,7 @@ dataset_list(indicator_matrices, attached_to_id)
 \item{attached_to_id}{Quest id for the current run.}
 }
 \value{
-
+Encoded list of datasets with their respective questId.
 }
 \description{
 Helper method to encode a list of datasets (indicator matrices)

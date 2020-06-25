@@ -215,6 +215,7 @@ withTryCatch <- function(surroundedFunc){
 #' @param quest_id String. The quest id this job has been attached to.
 #'
 #' @return Status of the job for given quest_id.
+#' @export
 get_status <- function(quest_id){
   withTryCatch(function(){
     url <- paste(kpm_options()$url, "requests/runStatus", sep="")

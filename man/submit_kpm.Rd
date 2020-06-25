@@ -11,6 +11,9 @@ submit_kpm(kpmSetup)
 \arguments{
 \item{kpmSetup}{kpmSetup}
 }
+\value{
+Results in json format.
+}
 \description{
 Method for submitting a job to KeyPathwayMinerWeb
 Submits can be submitted asynchronously (returns immediately)

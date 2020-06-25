@@ -22,10 +22,3 @@ Results object with runId, resultGraphs, comment, succes,resultUrl
 \description{
 Method used to create a job submission
 }
-\examples{
-#TODO
-call_kpm_remote
-        async=FALSE, Lmin=8, Kmin=1, strategy="INES",
-        removeBENs=TRUE, graphID=I2D.id, graph.file=NULL,
-        range=FALSE, linkType="OR")
-}

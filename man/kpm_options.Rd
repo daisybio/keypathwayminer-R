@@ -2,7 +2,7 @@
 % Please edit documentation in R/options.R
 \name{kpm_options}
 \alias{kpm_options}
-\title{Set or get options for my package}
+\title{Set or get options for Rkpm package}
 \usage{
 kpm_options(...)
 }
@@ -10,7 +10,9 @@ kpm_options(...)
 \item{...}{Option names to retrieve option values or \code{[key]=[value]} pairs to set options.}
 }
 \description{
-Set or get options for my package
+Set argument for the run. To overview all options
+use kpm_options(). To get a specific_value from the
+arguments use kpm_options()$specific_value.
 }
 \section{Supported options}{
 

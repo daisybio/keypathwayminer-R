@@ -7,15 +7,19 @@
 check_files(indicator_matrices, graph_file)
 }
 \arguments{
-\item{indicator_matrices}{Filepath, data.frame or as a list of both. Indicator matrices.}
+\item{indicator_matrices}{Filepath, data.frame or as a list of both.}
 
 \item{graph_file}{Filepath to the graph file in sif format.}
 }
 \value{
-Returns the data prepared for the respective run (local or remote)
+Returns the data prepared for the respective run (local or remote).
+Indicator matrices: List of paths for local run and list of data.frames for remote run.
+Graph file: Null if no graph_file provided else path to graph_file.
 }
 \description{
 Goes through all matrices and the graph file and checks
 if the input data is correct and exists. It then prepares
-the data for local or remote use.
+the data for local or remote use. For local execution return
+filepaths for remote reutrn data.frames. For the graph_files
+always return filepaths.
 }

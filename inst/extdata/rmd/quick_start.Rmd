@@ -1,0 +1,48 @@
+---
+title: "QuickStart"
+author: "Markus List and Konstantinos Mechteridis"
+output: html_document
+---
+
+
+
+## QuickStart KeyPathwayMiner R-package {.tabset}
+This is an R Markdwon document on how to get started with the KeyPathwayMiner R-package.
+We will go through how to execute local and remote calls of KeyPathwayMiner and how to
+change and view the run parameters.
+For more details on using the KeyPathwayMiner please visit our website: <https://exbio.wzw.tum.de/keypathwayminer/>.
+
+### Prepare data
+```{r prepare_data}
+source(system.file("inst/extdata/api_testing/", "matrix-hd-up.dat", package = "Rkpm"))
+# KeyPathWayMiner URL
+url <- "https://exbio.wzw.tum.de/keypathwayminer/"
+
+# Load indicator matrices as data.frame
+huntington_disease_up <- as.data.frame.matrix(read.delim("matrix-hd-up.dat", header = FALSE))
+
+huntington_disease_down <- as.data.frame.matrix(read.delim("matrix-hd-down.dat", header = FALSE))
+
+huntington_list <- list(huntington_disease_up, huntington_disease_down)
+
+# Get overview of available networks
+print(get_networks(url))
+
+# Get ID of I2D Homo_sapiens entrez network
+I2D.id <- get_networks(url)[["I2D Homo_sapiens entrez"]]
+
+```
+### Remote runs
+### Local runs
+
+
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

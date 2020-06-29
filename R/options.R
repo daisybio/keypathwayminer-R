@@ -7,22 +7,22 @@ MYPKGoptions <- settings::options_manager(execution = "Remote",
                                           graph_id = 1,
                                           strategy = "GLONE",
                                           remove_bens = FALSE,
-                                          use_range = FALSE,
-                                          k_min = 0, k_max = 0, k_step = 1,
-                                          l_min = 0, l_max = 0, l_step = 1,
-                                          l_same_percentage = FALSE, same_percentage = 0, computed_pathways = 10,
+                                          use_range_k = FALSE, k_min = 0, k_max = 0, k_step = 1,
+                                          use_range_l = FALSE, l_min = 0, l_max = 0, l_step = 1,
+                                          l_same_percentage = FALSE,
+                                          same_percentage = 0, computed_pathways = 10,
                                           with_perturbation = FALSE, unmapped_nodes = "Add to negative list",
                                           link_type = "OR",
                           .allowed = list(execution = settings::inlist("Remote", "Local"),
                                           async = settings::inlist(TRUE, FALSE),
                                           algorithm = settings::inlist("Greedy", "ACO", "Optimal"),
                                           strategy = settings::inlist("INES", "GLONE"),
+                                          unmapped_nodes = settings::inlist("Add to negative list", "Add to positive list"),
                                           remove_bens = settings::inlist(TRUE, FALSE),
                                           use_range = settings::inlist(TRUE, FALSE),
                                           l_same_percentage = settings::inlist(TRUE, FALSE),
                                           with_perturbation = settings::inlist(TRUE, FALSE),
-                                          link_type = settings::inlist("OR", "AND", "Custom")))
-
+                                          link_type = settings::inlist("OR", "AND")))
 
 #' Set or get options for my package
 #'

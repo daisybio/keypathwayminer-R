@@ -18,21 +18,7 @@ call_kpm_remote <- function(matrices, graph_file = NULL){
   }
 
   #Create settings object and pass kpm_options parameters
-  kpmSetup <- setup_kpm(indicator_matrices = matrices,
-                        graph_file = graph_file,
-                        algorithm = kpm_options()$algorithm,
-                        strategy =  kpm_options()$strategy,
-                        graph_id = kpm_options()$graph_id,
-                        remove_bens = kpm_options()$remove_bens,
-                        range = kpm_options()$use_range,
-                        k_min = kpm_options()$k_min, k_max = kpm_options()$k_max, k_step = kpm_options()$k_step,
-                        l_min = kpm_options()$l_min, l_max = kpm_options()$l_max, l_step = kpm_options()$l_step,
-                        l_same_percentage = kpm_options()$l_same_percentage, same_percentage = kpm_options()$same_percentage,
-                        attached_to_id = kpm_options()$quest_id,
-                        computed_pathways = kpm_options()$computed_pathways,
-                        with_perturbation = kpm_options()$with_perturbation,
-                        unmapped_nodes = kpm_options()$unmapped_nodes,
-                        link_type = kpm_options()$link_type)
+  kpmSetup <- setup_kpm(indicator_matrices = matrices, graph_file = graph_file)
 
   # Prepare result object
   result <- NULL
@@ -50,24 +36,9 @@ call_kpm_remote <- function(matrices, graph_file = NULL){
 #' Set up a JSON object in preparation of the job submission
 #'
 #' @return A list with settings, datasets and graph in JSON format.
-setup_kpm <- function(indicator_matrices,
-                      algorithm = "Greedy",
-                      strategy = "GLONE",
-                      graph_id = 1,
-                      graph_file,
-                      remove_bens = FALSE,
-                      range,
-                      k_min = 0, k_max = 0,  k_step = 1,
-                      l_min = 0, l_max = 0, l_step = 1,
-                      l_same_percentage = FALSE, same_percentage = 0,
-                      attached_to_id,
-                      computed_pathways = 20,
-                      with_perturbation = FALSE,
-                      unmapped_nodes = "Add to negative list",
-                      link_type = "OR"){
-
+setup_kpm <- function(indicator_matrices, graph_file){
   # Base64 encode datasetfiles files
-  dataset_list <- dataset_list(indicator_matrices, attached_to_id)
+  dataset_list <- dataset_list(indicator_matrices, kpm_options()$quest_id)
 
   # Create a run id
   run_id <- paste(sample(c(LETTERS[1:6], 0:9), 6, replace = TRUE), collapse="")
@@ -77,22 +48,23 @@ setup_kpm <- function(indicator_matrices,
     list(
       parameters = c(
         name = paste("R demo client run", run_id),
-        algorithm = algorithm,
-        strategy = strategy,
-        removeBENs = tolower(as.character(remove_bens)),
-        unmapped_nodes = unmapped_nodes,
-        computed_pathways = computed_pathways,
-        graphID = graph_id,
-        l_samePercentage = tolower(as.character(l_same_percentage)),
-        samePercentage_val = same_percentage,
-        k_values = list(c(val = k_min, val_step = k_step, val_max = k_max,
-                          use_range = tolower(as.character(range)), isPercentage="false")),
-        l_values = list(c(val = l_min, val_step = l_step, val_max = l_max,
-                          use_range = tolower(as.character(range)), isPercentage = "false",
+        algorithm = kpm_options()$algorithm,
+        strategy = kpm_options()$strategy,
+        removeBENs = tolower(as.character(kpm_options()$remove_bens)),
+        unmapped_nodes = kpm_options()$unmapped_nodes,
+        computed_pathways = kpm_options()$computed_pathways,
+        graphID = kpm_options()$graph_id,
+        l_samePercentage = tolower(as.character(kpm_options()$l_same_percentage)),
+        samePercentage_val = kpm_options()$same_percentage,
+        k_values = list(c(val = kpm_options()$k_min, val_step = kpm_options()$k_step, val_max = kpm_options()$k_max,
+                          use_range = tolower(as.character(kpm_options()$use_range_k)), isPercentage="false")),
+
+        l_values = list(c(val = kpm_options()$l_min, val_step = kpm_options()$l_step, val_max = kpm_options()$l_max,
+                          use_range = tolower(as.character(kpm_options()$use_range_l)), isPercentage = "false",
                           datasetName = paste("dataset", 1, sep = ""))
         )
       ),
-      withPerturbation = tolower(as.character(with_perturbation)),
+      withPerturbation = tolower(as.character(kpm_options()$with_perturbation)),
       perturbation = list(c( # perturbation can be left out, if withPeturbation parameter is set to false.
         technique = "Node-swap",
         startPercent = 5,
@@ -100,14 +72,14 @@ setup_kpm <- function(indicator_matrices,
         maxPercent = 15,
         graphsPerStep = 1
       )),
-      linkType = link_type,
-      attachedToID = attached_to_id,
+      linkType = kpm_options()$link_type,
+      attachedToID = kpm_options()$quest_id,
       positiveNodes = "",
       negativeNodes = ""
     ))
 
   # Add custom network if provided
-  graph <- graph_kpm(graph_file, attached_to_id)
+  graph <- graph_kpm(graph_file, kpm_options()$quest_id)
 
   return(list(settings, dataset_list, graph))
 }
@@ -189,8 +161,6 @@ graph_kpm <- function(graph_file, attached_to_id){
   }
   return(graph)
 }
-
-
 
 #' Helper method for error handling
 #'

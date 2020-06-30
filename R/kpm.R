@@ -13,18 +13,23 @@
 #' to see all networks.
 kpm <- function(indicator_matrices, graph_file = NULL) {
     message(paste("Run type: ",kpm_options()$execution))
+
     #### Prepare files ####
     files <- check_files(indicator_matrices, graph_file)
     matrices_list <- files[[1]]
     graph <- files[[2]]
 
-    #### Run KPM & Get results ####
-    if (kpm_options()$execution == "Remote") {
-        results <- call_kpm_remote(indicator_matrices, graph_file)
-    } else if (kpm_options()$execution == "Local") {
-        results <- call_kpm_local(indicator_matrices, graph_file)
-    }
-    #### TODO: Visualize results ####
+    #### Check parameters ####
+    check_parameters()
+
+    # #### Run KPM & Get results ####
+    # if (kpm_options()$execution == "Remote") {
+    #     results <- call_kpm_remote(indicator_matrices, graph_file)
+    # } else if (kpm_options()$execution == "Local") {
+    #     results <- call_kpm_local(indicator_matrices, graph_file)
+    # }
+
+    #### @todo: Visualize results ####
 }
 
 #' Function which checks and processes files
@@ -119,35 +124,103 @@ check_files <- function(indicator_matrices, graph_file){
     } else if (is.null(graph_file) & kpm_options()$execution == "Remote"){
         message("No graph file provided. Network will be selected from the web page using the graph_id.")
     }
-    message("Checks completed.")
+    message("File checks completed.")
     return(list(matrices, graph_file))
 }
 
-
-#Initialize JVM and register Java classes and native code contained in the package.
-.onLoad <- function(libname, pkgname) {
-    message(paste("Initializing JVM and appending jars to classpath:", .jpackage(pkgname, lib.loc = libname)))
-
-    # Check if keypathwayminer standalone and core were added to clas path
-    core <- FALSE
-    standalone <- FALSE
-    for(i in 1:length(.jclassPath())){
-        if(grepl(pattern = "keypathwayminer-core-5.0.jar", x = .jclassPath()[i]) == TRUE){
-            core <- TRUE
-        }else if(grepl(pattern = "keypathwayminer-standalone-5.0.jar", x = .jclassPath()[i]) == TRUE){
-            standalone <- TRUE
+#' Function which check parameters
+#'
+#' Checks case and gene exception parameters
+#' as well as perturbation paramets. Checks sanity
+#' of parameters and if they are provided in the correct
+#' form.
+check_parameters <- function(){
+#### Check case exceptions parameter ####
+    if(kpm_options()$use_range_l){
+        # Batch run for l parameter
+        if(!(length(matrices) == length(kpm_options()$l_min) &
+             length(matrices) == length(kpm_options()$l_step) &
+             length(matrices) == length(kpm_options()$l_max))){
+            stop("Number of matrices is not equal to the number of given l parameters.")
+        }else if(!(class(kpm_options()$l_min) == "numeric" &
+                   class(kpm_options()$l_step) == "numeric" &
+                   class(kpm_options()$l_max) == "numeric")){
+            stop("The parameters l_min, l_step and l_max must be numeric values or numeric vectors.")
+        }
+    } else if(!kpm_options()$use_range_l) {
+        # Normal run for l parameter
+        if(!(length(matrices) == length(kpm_options()$l_min))){
+            stop("Number of matrices is not equal to the number of given l parameters.")
+        } else if(!(class(kpm_options()$l_min) == "numeric")){
+            stop("The parameter l_min must be a numeric value or a numeric vector.")
         }
     }
 
-    message(paste("Standalone jar added to class path: ",standalone))
-    message(paste("Core jar added to class path: ",standalone))
+    # Sanity check l parameters
+    l_min <- kpm_options()$l_min
+    l_step <- kpm_options()$l_step
+    l_max <- kpm_options()$l_max
 
-    if(standalone & core){
-        message("Rkpm ready for local execution")
-    }else {
-        message(paste("Local execution not possible at the moment.",
-                      "Visit https://exbio.wzw.tum.de/keypathwayminer/ for more information."
-                      ,sep = "\n"))
+    case_1 <- l_max <= 0
+    case_2 <- l_min > l_max
+    case_3 <- l_step == 0
+    case_4 <- (l_max - l_step < l_min)
+
+    if(TRUE %in% case_1) stop("Configuration is incorrect: Invalid l_max")
+    if(TRUE %in% case_2) stop("Configuration is incorrect: Invalid l_min. It is larger than l_max.")
+    if(TRUE %in% case_3) stop("Configuration is incorrect: Invalid l_step. Must be larger than 0.")
+    if(TRUE %in% case_4) stop("Configuration is incorrect: Incrementation must be in range")
+
+#### Check gene exceptions parameter ####
+if(kpm_options()$algorithm == "INES"){
+    if(kpm_options()$use_range_k){
+        # For batch runs
+        if(!(class(kpm_options()$k_min) == "numeric" &
+           class(kpm_options()$k_step) == "numeric" &
+           class(kpm_options()$k_max) == "numeric")){
+            # In case one of the k_range parameters is not nummeric
+            stop("Please provide numeric (integer) values for k_min, k_step and k_max.")
+        }else if(!(length(kpm_options()$k_min) == 1 &
+                   length(kpm_options()$k_step) == 1 &
+                   length(kpm_options()$k_max) == 1)) {
+            # In case one of the k_range parameters has not length 1
+            stop("The parameters k_min, k_step and k_max must be all of length 1.")
+        }
+    } else if(!kpm_options()$use_range_k) {
+        # For normal runs
+        if(!(class(kpm_options()$k_min) == "numeric")){
+            stop("Please provide a numeric (integer) value for k_min")
+        } else if(!(length(kpm_options()$k_min) == 1)){
+            stop("The parameter k_min must be of length 1.")
+        }
     }
+        }
+# Sanity check k-parameters
+    if (kpm_options()$k_max<= 0) stop(paste("Configuration is incorrect: ", "Invalid k_max", sep = ""))
+
+    if (kpm_options()$k_min > kpm_options()$k_max){
+        stop(paste("Configuration is incorrect: ", "Invalid k_min. It is larger than k_max", sep = ""))
+    }
+
+    if (kpm_options()$k_step == 0) {
+        stop(paste("Configuration is incorrect: ", "Invalid k_Step. Must be larger than 0", sep = ""))
+    }
+
+    if (kpmSettings.MAX_K - kpmSettings.INC_K < kpmSettings.MIN_K) {
+        stop(paste("Configuration is incorrect: ", "Invalid k_Step. Incrementation must be in range", sep = ""))
+    }
+
+#### Check perturbation parameters ####
+if(kpm_options()$with_perturbation){
+    case_1 <- kpm_options()$perturbation_start <= 0
+    case_2 <- kpm_options()$perturbation_start > kpm_options()$perturbation_max
+    case_3 <- kpm_options()$perturbation_step == 0
+    case_4 <- kpm_options()$perturbation_max - kpm_options()$perturbation_step < kpm_options()$perturbation_start
+
+    if(case_1) stop("Configuration is incorrect: Invalid l_max")
+    if(case_2) stop("Configuration is incorrect: Invalid l_min. It is larger than l_max.")
+    if(case_3) stop("Configuration is incorrect: Invalid l_step. Must be larger than 0.")
+    if(case_4) stop("Configuration is incorrect: Incrementation must be in range")
 }
 
+}

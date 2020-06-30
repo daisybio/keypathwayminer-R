@@ -66,11 +66,11 @@ setup_kpm <- function(indicator_matrices, graph_file){
       ),
       withPerturbation = tolower(as.character(kpm_options()$with_perturbation)),
       perturbation = list(c( # perturbation can be left out, if withPeturbation parameter is set to false.
-        technique = "Node-swap",
-        startPercent = 5,
-        stepPercent = 1,
-        maxPercent = 15,
-        graphsPerStep = 1
+        technique = kpm_options()$perturbation_technique,
+        startPercent = kpm_options()$perturbation_start,
+        stepPercent = kpm_options()$perturbation_step,
+        maxPercent = kpm_options()$perturbation_max,
+        graphsPerStep = kpm_options()$graphs_per_step
       )),
       linkType = kpm_options()$link_type,
       attachedToID = kpm_options()$quest_id,

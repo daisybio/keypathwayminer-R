@@ -76,11 +76,10 @@ kpm_options(execution = "Local", strategy = "INES", algorithm ="Greedy",l_min=5,
             perturbation_start = 10,
             perturbation_step = 10,
             perturbation_max = 20,
-            graphs_per_step = 1
-            )
+            graphs_per_step = 1,
+            resource_folder = paste(getwd(),"inst/extdata/sampleNetwork.sif",sep ="/"))
 
 kpm(graph_file = graph_file, indicator_matrices  = huntington_disease_up)
-
 
 ```
 

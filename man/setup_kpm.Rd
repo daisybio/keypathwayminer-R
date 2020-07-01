@@ -4,28 +4,7 @@
 \alias{setup_kpm}
 \title{Set up a JSON object in preparation of the job submission}
 \usage{
-setup_kpm(
-  indicator_matrices,
-  algorithm = "Greedy",
-  strategy = "GLONE",
-  graph_id = 1,
-  graph_file,
-  remove_bens = FALSE,
-  range,
-  k_min = 0,
-  k_max = 0,
-  k_step = 1,
-  l_min = 0,
-  l_max = 0,
-  l_step = 1,
-  l_same_percentage = FALSE,
-  same_percentage = 0,
-  attached_to_id,
-  computed_pathways = 20,
-  with_perturbation = FALSE,
-  unmapped_nodes = "Add to negative list",
-  link_type = "OR"
-)
+setup_kpm(indicator_matrices, graph_file)
 }
 \value{
 A list with settings, datasets and graph in JSON format.

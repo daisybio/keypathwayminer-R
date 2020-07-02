@@ -2,23 +2,19 @@
 % Please edit documentation in R/remote_utils.R
 \name{call_kpm_remote}
 \alias{call_kpm_remote}
-\title{Method used to create a job submission}
+\title{Method for running Rkpm remotely}
 \usage{
 call_kpm_remote(matrices, graph_file = NULL)
 }
 \arguments{
-\item{indicator_matrices}{List. Indicator matrices that will be used.}
+\item{matrices}{List. Indicator matrices that will be used.}
 
-\item{attached_to_id}{String. The quest id this job has been attached to.}
-
-\item{async}{Boolean. Submit a new job asynchronously?}
-
-\item{...}{Options. Run parameters.}
+\item{graph_file}{String. Path to graph_file.}
 }
 \value{
 Results object with runId, resultGraphs, comment, succes,resultUrl
  and questId.
 }
 \description{
-Method used to create a job submission
+Method used to create a job submission.
 }

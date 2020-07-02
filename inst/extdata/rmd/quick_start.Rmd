@@ -48,7 +48,7 @@ graph_file = system.file("extdata", "sampleNetwork.sif", package="Rkpm")
 ```
 ### Remote runs
 ### Local runs
-```{r Load example datar}
+```{r Load example data}
 huntington_disease_up <- as.data.frame.matrix(read.delim("matrix-hd-up.dat", header = FALSE))
 
 huntington_disease_down <- as.data.frame.matrix(read.delim("matrix-hd-down.dat", header = FALSE))

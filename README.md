@@ -14,15 +14,13 @@ Overview
 =================
 <!--ts-->
    * [Purpose](#purpose)
+   * [For users](#for-users)
    * [Setup JVM](#setup-jvm)
       * [Linux](#linux)
       * [macOS](#macOs)
       * [Windows](#windows)
-   * [Parameters](#parameters)
-      * [Input file parameters](#input-file-parameters)
-      * [Input options basic parameters](#input-options-basic-parameters)
-      * [Output parameters](#output-parameters)
-      * [Advanced options](#advanced-options)
+   * [Quickstart](#quickstart)
+   * [Want to code on the package ?](#want-to-code-on-the-package)
 <!--te-->
 
 Purpose

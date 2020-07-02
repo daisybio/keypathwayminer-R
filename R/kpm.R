@@ -144,6 +144,7 @@ check_parameters <- function(indicator_matrices){
     message(">Checking parameters")
 #### Check case exceptions parameter ####
     if(kpm_options()$use_range_l){
+        if(kpm_options()$execution == "Local"){
         # Batch run for l parameter
         if(!(length(indicator_matrices) == length(kpm_options()$l_min) &
              length(indicator_matrices) == length(kpm_options()$l_step) &
@@ -168,15 +169,43 @@ check_parameters <- function(indicator_matrices){
         if(TRUE %in% case_2) stop("Configuration is incorrect: Invalid l_min. It is larger than l_max.")
         if(TRUE %in% case_3) stop("Configuration is incorrect: Invalid l_step. Must be larger than 0.")
         if(TRUE %in% case_4) stop("Configuration is incorrect: Incrementation must be in range")
+
+        } else if(kpm_options()$execution == "Remote"){
+            if(!kpm_options()$l_same_percentage & length(matrices) > 1){
+                stop("Batch run only supported with one matrix in remote mode. If you want to perform a
+                      batch run with multiple matrices consider changing to local execution.")
+            }else if(!kpm_options()$l_same_percentage &
+                     length(matrices) == 1 &
+                     (!class(kpm_options()$l_min) == numeric|!length(kpm_options()$l_min)!=1)&
+                     (!class(kpm_options()$l_step) == numeric|!length(kpm_options()$l_step)!=1)&
+                     (!class(kpm_options()$l_max) == numeric|!length(kpm_options()$l_max)!=1)){
+                stop("l_min, l_step and l_max must be numeric and of not a vector.")
+            }else if(kpm_options()$l_same_percentage){
+                stop("The l_same_percentage variable is set to TRUE on a batch run. If you want to perform a
+                      batch run with multiple matrices consider changing to local execution.")
+            }
+        }
+
     } else if(!kpm_options()$use_range_l) {
-        # Normal run for l parameter
+        # Normal run ony l_min is considered
+        if(kpm_options()$execution == "Local"){
         if(!(length(indicator_matrices) == length(kpm_options()$l_min))){
             stop("Number of matrices is not equal to the number of given l parameters.")
         } else if(!(class(kpm_options()$l_min) == "numeric")){
             stop("The parameter l_min must be a numeric value or a numeric vector.")
         }
-    }
+        }else if(kpm_options()$execution == "Remote"){
+            if(!kpm_options()$l_same_percentage & length(matrices) > 1){
+                stop("In remote execution you need to set l_same_percentage = TRUE and set a same_percentage value.
+                      If you want to define different L parameters for every matrix consider changing to local execution.")
+            }else if(!kpm_options()$l_same_percentage &
+                     length(matrices) == 1 &
+                     (!class(kpm_options()$l_min) == numeric|!length(kpm_options()$l_min)!=1)){
+                stop("L_min must be numeric and of not a vector.")
+            }
+        }
 
+    }
     message("\tCase exception parameters: √")
 #### Check gene exceptions parameter ####
 if(kpm_options()$algorithm == "INES"){

@@ -3,20 +3,17 @@
   message(paste("Initializing JVM and appending jars to classpath:", .jpackage(pkgname, lib.loc = libname)))
 
   # Check if keypathwayminer standalone and core were added to clas path
-  core <- FALSE
   standalone <- FALSE
   for(i in 1:length(.jclassPath())){
-    if(grepl(pattern = "keypathwayminer-core-5.0.jar", x = .jclassPath()[i]) == TRUE){
-      core <- TRUE
-    }else if(grepl(pattern = "keypathwayminer-standalone-5.0.jar", x = .jclassPath()[i]) == TRUE){
+  if(grepl(pattern = "keypathwayminer-standalone-5.0.jar", x = .jclassPath()[i]) == TRUE){
       standalone <- TRUE
     }
   }
 
   message(paste("Standalone jar added to class path: ",standalone))
-  message(paste("Core jar added to class path: ",core))
 
-  if(standalone & core){
+  if(standalone & test_jvm()){
+    # If jar is on the classpath and jvm is set to 1.8
     message("Rkpm ready for local execution")
   }else {
     warning(paste("Local execution not possible at the moment.",

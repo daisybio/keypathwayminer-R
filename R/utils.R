@@ -7,7 +7,8 @@
 test_jvm <- function(){
     java_version <- .jcall("java/lang/System", "S", "getProperty", "java.runtime.version")
     if(!grepl(pattern = "1.8", x = java_version)){
-        warning("Utils: Java version other than 1.8 detected. It is not sure if RJAMI will work since JAMI was developed for Java 8. It does definitely not work for older Java versions.")
+        warning("Utils: Java version other than 1.8 detected. It is not sure if Rkpm will work since Rkpm was compiled for Java 8.
+                It does definitely not work for older Java versions.")
         return(FALSE)
     }
     else{

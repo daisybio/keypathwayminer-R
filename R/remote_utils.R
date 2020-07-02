@@ -1,10 +1,11 @@
 #### Main - Methods ####
-#' Method used to create a job submission
+#' Method for running Rkpm remotely
 #'
-#' @param indicator_matrices List. Indicator matrices that will be used.
-#' @param attached_to_id String. The quest id this job has been attached to.
-#' @param async Boolean. Submit a new job asynchronously?
-#' @param ... Options. Run parameters.
+#' Method used to create a job submission.
+#'
+#' @param matrices List. Indicator matrices that will be used.
+#' @param graph_file String. Path to graph_file.
+#'
 #' @return Results object with runId, resultGraphs, comment, succes,resultUrl
 #'  and questId.
 call_kpm_remote <- function(matrices, graph_file = NULL){

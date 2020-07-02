@@ -65,8 +65,7 @@ to_java_arguments <- function(matrices, graph_file) {
     }
 
   }
- # return(.jarray(arguments))
-  return(arguments)
+  return(.jarray(arguments))
 }
 
 get_case_exceptions <- function(matrices, arguments) {

@@ -1,38 +1,21 @@
+# Important note in the local execution the user can specify for every
+# datasets a specific l-value or a ranged l-value.
 call_kpm_local <- function(matrices, graph_file){
-  # Important note in the local execution the user can specify for every
-  # datasets a specific l-value or a ranged l-value.
+  # Directory where input files and properties files are stored
+  datasets_file <- kpm_options()$resource_folder
+  properties_file <- kpm_options()$properties_file
+  # Convert option parameters to java command line arguments
+  args <- to_java_arguments(matrices = matrices, graph_file = graph_file)
 
   #### Initialize java objects ####
-  # Create a settings object
-  kpm_settings <- .jnew(class = "dk/sdu/kpm/KPMSettings")
+  main <- .jnew(class = "de/mpg/mpiinf/ag1/kpm/main/Main")
 
-  # Create a propertie file parser object and pass kpm settings object
-  properties_file_parser <- .jnew("de/mpg/mpiinf/ag1/kpm/parsers/PropertiesFileParser",
-                                  kpm_settings)
-
-  # Save directory where input files are stored
-  datasets_file <- system.file("extdata", "datasets_file.txt", package="Rkpm")
-
-  # Call parse function from propertie file parser, pass datasets path and store it in a
-  # parameter object.
-  parameters <- .jcall(obj  = properties_file_parser,
-                       returnSig = "Lde/mpg/mpiinf/ag1/kpm/Parameters;",
-                       method = "parse",
-                       .jnew(class = "java/lang/String", datasets_file))
-
-    args <- .jarray(list("-strategy=GLONE", "-algo=GREEDY", "-L1=5"))
-
-  # ArgsParametersParser argsParser = new ArgsParametersParser(kpmSettings);
-  # params = argsParser.parse(args, params);
-  argument_parser <- .jnew("de/mpg/mpiinf/ag1/kpm/parsers/ArgsParametersParser", kpm_settings)
-
-  parameters <- .jcall(obj = argument_parser,
-                       returnSig = "Lde/mpg/mpiinf/ag1/kpm/Parameters;",
-                       method = "parse",
-                       args, parameters)
-
-  #### kpmSetting & Parameters ####
-
+  .jcall(obj  = main,
+         returnSig = "V",
+         method = "runR",
+         args,
+         .jnew(class = "java/lang/String", datasets_file),
+         .jnew(class = "java/lang/String", properties_file))
 }
 
 
@@ -82,6 +65,7 @@ to_java_arguments <- function(matrices, graph_file) {
     }
 
   }
+ # return(.jarray(arguments))
   return(arguments)
 }
 
@@ -101,6 +85,7 @@ get_case_exceptions <- function(matrices, arguments) {
         arguments <- c(arguments, paste("-L",i,"=", kpm_options()$l_min[i], sep=""))
       }
   }
+
   return(arguments)
 }
 

@@ -7,7 +7,7 @@ Description: The following package provides an easy way for using KeyPathwayMine
     Given a biological network and a set of case-control studies, KeyPathwayMiner efficiently extracts all maximal
     connected sub-networks.These sub-networks contain the genes that are mainly dysregulated, e.g., differentially
     expressed, in most cases studied.
-Version: 0.0.0.9001
+Version: 0.0.0.9002
 Author: Markus List and Konstantinos Mechteridis
 Maintainer: The package maintainer <konstantinos.mechteridis@tum.de>
 License: GNU GENERAL PUBLIC LICENSE

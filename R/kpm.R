@@ -1,5 +1,3 @@
-kpm(graph_file = graph_file, indicator_matrices  = huntington_disease_up)
-
 #' Main method used for running KPM
 #'
 #' Runs KeyPathwayMiner localy via the standalone
@@ -13,8 +11,9 @@ kpm(graph_file = graph_file, indicator_matrices  = huntington_disease_up)
 #' a graph from the website (only for remote runs).
 #' Use getNetworks('https://exbio.wzw.tum.de/keypathwayminer/')
 #' to see all networks.
+#' @export
 kpm <- function(indicator_matrices, graph_file = NULL) {
-    message(paste(">Run type: ",kpm_options()$execution))
+    message(paste(">Run type: ", kpm_options()$execution))
 
     #### Prepare files ####
     files <- check_files(indicator_matrices, graph_file)
@@ -26,12 +25,12 @@ kpm <- function(indicator_matrices, graph_file = NULL) {
 
     to_java_arguments(indicator_matrices, graph_file)
 
-    # #### Run KPM & Get results ####
-    # if (kpm_options()$execution == "Remote") {
-    #     results <- call_kpm_remote(indicator_matrices, graph_file)
-    # } else if (kpm_options()$execution == "Local") {
-    #     results <- call_kpm_local(indicator_matrices, graph_file)
-    # }
+    #### Run KPM & Get results ####
+    if (kpm_options()$execution == "Remote") {
+        results <- call_kpm_remote(indicator_matrices, graph_file)
+    } else if (kpm_options()$execution == "Local") {
+        results <- call_kpm_local(indicator_matrices, graph_file)
+    }
 
     #### @todo: Visualize results ####
 }

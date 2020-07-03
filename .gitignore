@@ -37,3 +37,4 @@ vignettes/*.pdf
 
 # OS generated files
 *.DS_Store
+inst/doc

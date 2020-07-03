@@ -1,0 +1,128 @@
+---
+title: Rkpm - Package for the web and standalone version of KeyPathwayMiner
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Rkpm}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+```{r, include = FALSE}
+# General markdown options
+# Collapses output and comments it to 
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## I. Introduction
+### KeyPathwayMiner
+Given a **biological network** and a **set of case-control studies**, KeyPathwayMiner(KPM) efficiently extracts all             **maximal connected sub-networks**. These sub-networks contain the genes that are **mainly** dysregulated, e.g.,           differentially expressed, in **most** cases studied:
+
+   * The exact quantities for “mainly” and “most” are modeled with two easy-to-interpret parameters **(K, L)** that allows      the user to control the number of outliers (not dysregulated genes/cases) in the solutions.
+     
+Two different approaches for extracting subnetworks that are enriched for active/deregulated genes have been               implemented:
+
+  * **INES:**  Extract all maximal sub-networks containing nodes with no more than L inactive cases (0's) besides of K                    exceptions.
+      
+  * **GLONE:** Extracts maximal sub-networks where the total sum of **not**-active/diff. exp. cases is at most L. 
+      
+For more information please visit the [KPM website](https://exbio.wzw.tum.de/keypathwayminer/).
+
+### Rkpm
+The following package provides an easy way for using KPM and visualize the extracted subnetworks via R.
+The user can decide whether he wants to call KPM on his computer (via standalone) or with the Web API. 
+With the kpm_options object the arguments for the execution of the program can be easily processed and viewed.
+
+
+## II. Setup Rkpm
+Rkpm can be currently installed from github by using the devtools package
+```{r download_from_github_repo, eval=FALSE}
+library(devtools)
+install_github("konstantinosM/Rkpm")
+```
+If installation was successful the package can be loaded via
+```{r load_rkpm,}
+library(Rkpm)
+```
+**Prerequisites:**
+
+ * When loading the package a script will test if your R is using java jvm 1.8.
+ * And if the standalone jar was correcly attached to your classpath.
+ 
+If **both** requirements are met you are ready to go.
+
+### Common problems
+
+## III. Getting started
+In the following section, we will take a look at how to run Rkpm **remotely** and **locally**.  We will play around with the options manager **kpm_options()** which contains all parameters needed for running KPM Finally, we will prepare different input data and go through multiple examples of how to run Rkpm with different parameters. 
+
+### Options
+The options manager provides the user with a variety of arguments he can customize for his execution. To get documentation and overview of all parameters available you can run the following commands:
+```{r options_manager}
+# For the documentation
+?kpm_options()
+
+# For a  general overview of all parameters use without head
+head(kpm_options())
+```
+You can change the options by choosing the option you want and assigning it to a new value like that:
+```{r change_option}
+# Initial value
+kpm_options()$algorithm
+
+# Change algorithm to ACO
+kpm_options(algorithm = "ACO")
+
+# After changing the value
+kpm_options()$algorithm
+
+# You can also change multiple parameters by seperating them with a comma
+kpm_options(algorithm = "Optimal", execution = "Local")
+```
+
+**Important note:** The **web** service does not allow to set **case exceptions (L)** for each dataset an individualy at the moment. Robustness analysis is also not support via Remote execution. If you want to use one of the two things then please use the **Local** execution type.
+
+
+
+### Input data
+Multiple input files can be provided to use in Rkpm, but the most important ones are the:
+
+ * **datasets file/s** from the expression studies. Either numeric (e.g. p-values or fold changes) or as indicator matrix.
+ * **graph file** containing all the interactions of the protein interaction network. 
+ 
+The other files are only relevant for the local execution and will be will be discussed later on.
+
+Lets get started with the dataset files:
+```{r datasets_files}
+# Read colon-gene-expression-up-05 indicator_matrix as data.frame. 
+colon_expression_up <- as.data.frame.matrix(read.delim(
+                                       system.file(package = "Rkpm", "extdata/datasets", "colon-gene-expression-UP-p0.05.txt"),
+                                       header = FALSE))
+
+# Preview  first 5 rows and first 15 columns of the matrix
+colon_expression_up[1:5,1:15]
+
+# Read huntington_disease_up as data.frame
+huntington_disease_up <- as.data.frame.matrix(read.delim(
+                                        system.file(package = "Rkpm", "extdata/datasets", "huntington-gene-expression-UP.txt"),
+                                        header = TRUE))
+# Huntigton disease up
+huntington_disease_up[1:5,1:6]
+```
+The entries of the huntington_disease_up dataset are p-values. To create an indicator matrix we will use the to_indicator_matrix() function as follows: 
+```{r to_indicator_matrix}
+
+```
+In the next step we will read in a graph_file for local and remote use. We will show how to choose a graphID from a preloaded in the KPM-Web API:
+```{r graph_file}
+
+# graph_file = system.file("extdata", "sampleNetwork.sif", package="Rkpm")
+
+# Get overview of available networks
+#print(get_networks(url))
+```
+
+
+## IV. Conclusion
+Our goal is to simplify the user's data analysis work process. Users can perform their analysis directly in R without having to worry about how to access Jar files or set up HTTP requests. At the same time, R provides an efficient way to handle and further process data.

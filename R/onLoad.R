@@ -1,6 +1,6 @@
 .onLoad <- function(libname, pkgname) {
   #### Initialize JVM and register Java classes and native code contained in the package. ####
-  message(paste("Initializing JVM and appending jars to classpath:", .jpackage(pkgname, lib.loc = libname)))
+  .jpackage(pkgname, lib.loc = libname)
 
   # Check if keypathwayminer standalone and core were added to clas path
   standalone <- FALSE

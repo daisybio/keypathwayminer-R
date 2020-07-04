@@ -4,10 +4,13 @@
 \alias{quest_progress_url}
 \title{Get progress url}
 \usage{
-quest_progress_url(quest_id)
+quest_progress_url(
+  session_id,
+  url = "https://exbio.wzw.tum.de/keypathwayminer/"
+)
 }
 \arguments{
-\item{quest_id}{}
+\item{session_id}{}
 }
 \value{
 Returns progress url for the respective run.

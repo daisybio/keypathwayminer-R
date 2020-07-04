@@ -3,7 +3,7 @@
 # does not need to be documented.
 MYPKGoptions <- settings::options_manager(execution = "Remote",
                                           async = TRUE,
-                                          quest_id = NULL,
+                                          session_id = NULL,
                                           url = "https://exbio.wzw.tum.de/keypathwayminer/",
                                           algorithm = "Greedy",
                                           graph_id = 1,
@@ -72,7 +72,7 @@ MYPKGoptions <- settings::options_manager(execution = "Remote",
 #' \itemize{
 #'  \item{\code{async}}{ (\code{Boolean}) \cr \code{TRUE =} Submit job asynchronously (returns immediately)
 #'                                        \cr \code{FALSE =} Submit a new job am (returns when job is complete)}
-#'  \item{\code{quest_id}}{ (\code{String}) The id of the job to be queried}
+#'  \item{\code{session_id}}{ (\code{String}) The id of the job to be queried}
 #'  \item{\code{url}}{ (\code{String}) URL for HTTP request}
 #'  \item{\code{graph_id}}{ (\code{Integer}) The id of one of the networks that are available when you call get_networks()}
 #'  \item{\code{unmapped_nodes}}{ (\code{"Add to negative list", "Add to positive list"}) String What should be done with unmapped nodes, i.e. should they be added

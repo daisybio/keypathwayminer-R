@@ -23,16 +23,13 @@ kpm <- function(indicator_matrices, graph_file = NULL) {
     #### Check parameters ####
     check_parameters(indicator_matrices)
 
-    to_java_arguments(indicator_matrices, graph_file)
-
     #### Run KPM & Get results ####
     if (kpm_options()$execution == "Remote") {
         results <- call_kpm_remote(indicator_matrices, graph_file)
     } else if (kpm_options()$execution == "Local") {
         results <- call_kpm_local(indicator_matrices, graph_file)
     }
-
-    #### @todo: Visualize results ####
+    return(results)
 }
 
 #' Function which checks and processes files
@@ -171,14 +168,14 @@ check_parameters <- function(indicator_matrices){
         if(TRUE %in% case_4) stop("Configuration is incorrect: Incrementation must be in range")
 
         } else if(kpm_options()$execution == "Remote"){
-            if(!kpm_options()$l_same_percentage & length(matrices) > 1){
+            if(!kpm_options()$l_same_percentage & length(indicator_matrices) > 1){
                 stop("Batch run only supported with one matrix in remote mode. If you want to perform a
                       batch run with multiple matrices consider changing to local execution.")
             }else if(!kpm_options()$l_same_percentage &
-                     length(matrices) == 1 &
-                     (!class(kpm_options()$l_min) == numeric|!length(kpm_options()$l_min)!=1)&
-                     (!class(kpm_options()$l_step) == numeric|!length(kpm_options()$l_step)!=1)&
-                     (!class(kpm_options()$l_max) == numeric|!length(kpm_options()$l_max)!=1)){
+                     length(indicator_matrices) == 1 &
+                     (!class(kpm_options()$l_min) == "numeric" | length(kpm_options()$l_min)!=1)&
+                     (!class(kpm_options()$l_step) == "numeric" | length(kpm_options()$l_step)!=1)&
+                     (!class(kpm_options()$l_max) == "numeric" | length(kpm_options()$l_max)!=1)){
                 stop("l_min, l_step and l_max must be numeric and of not a vector.")
             }else if(kpm_options()$l_same_percentage){
                 stop("The l_same_percentage variable is set to TRUE on a batch run. If you want to perform a
@@ -195,13 +192,13 @@ check_parameters <- function(indicator_matrices){
             stop("The parameter l_min must be a numeric value or a numeric vector.")
         }
         }else if(kpm_options()$execution == "Remote"){
-            if(!kpm_options()$l_same_percentage & length(matrices) > 1){
+            if(!kpm_options()$l_same_percentage & length(indicator_matrices) > 1){
                 stop("In remote execution you need to set l_same_percentage = TRUE and set a same_percentage value.
                       If you want to define different L parameters for every matrix consider changing to local execution.")
             }else if(!kpm_options()$l_same_percentage &
-                     length(matrices) == 1 &
-                     (!class(kpm_options()$l_min) == numeric|!length(kpm_options()$l_min)!=1)){
-                stop("L_min must be numeric and of not a vector.")
+                     length(indicator_matrices) == 1 &
+                     (!class(kpm_options()$l_min) == "numeric" | length(kpm_options()$l_min) != 1)){
+                stop("l_min must be numeric and not a vector in the remote execution.")
             }
         }
 

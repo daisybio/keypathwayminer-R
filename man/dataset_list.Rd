@@ -4,12 +4,10 @@
 \alias{dataset_list}
 \title{Encodes a list of datasets}
 \usage{
-dataset_list(indicator_matrices, attached_to_id)
+dataset_list(indicator_matrices)
 }
 \arguments{
 \item{indicator_matrices}{List of indicator matrices to be encoded}
-
-\item{attached_to_id}{Quest id for the current run.}
 }
 \value{
 Encoded list of datasets with their respective questId.

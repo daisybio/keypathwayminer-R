@@ -4,12 +4,10 @@
 \alias{graph_kpm}
 \title{Helper method to encode custom network file}
 \usage{
-graph_kpm(graph_file, attached_to_id)
+graph_kpm(graph_file)
 }
 \arguments{
 \item{graph_file}{Path to graph file which should be encoded.}
-
-\item{attached_to_id}{Respective questId.}
 }
 \value{
 Encoded network file or NULL if no graph file submitted.

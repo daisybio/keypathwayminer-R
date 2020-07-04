@@ -4,13 +4,13 @@
 \alias{get_status}
 \title{Method to check up on a submitted job.}
 \usage{
-get_status(quest_id)
+get_status(quest_id, url = "https://exbio.wzw.tum.de/keypathwayminer/")
 }
 \arguments{
 \item{quest_id}{String. The quest id this job has been attached to.}
 }
 \value{
-Status of the job for given quest_id.
+Status of the job for given quest_id
 }
 \description{
 Useful to monitor the job progress and current status.

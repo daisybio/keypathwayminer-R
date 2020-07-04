@@ -1,51 +1,3 @@
----
-title: "QuickStart"
-author: "Markus List and Konstantinos Mechteridis"
-output: html_document
----
-
-
-
-## QuickStart KeyPathwayMiner R-package {.tabset}
-This is an R Markdwon document on how to get started with the KeyPathwayMiner R-package.
-We will go through how to execute local and remote calls of KeyPathwayMiner and how to
-change and view the run parameters.
-For more details on using the KeyPathwayMiner please visit our website: <https://exbio.wzw.tum.de/keypathwayminer/>.
-
-### Prepare data
-```{r prepare_data}
-# library("rJava")
-# library("rjson")
-# library("RCurl")
-# library("roxygen2")
-# library("settings")
-# library("testthat")
-# library("devtools")
-# library("renv")
-# library("formatR")  # formatR::tidy_dir('R')
-# library("lintr")  # lintr::lint_package()
-# library(foreach)
-
-#source(system.file("inst/extdata/api_testing/", "matrix-hd-up.dat", package = "Rkpm"))
-# KeyPathWayMiner URL
-#url <- "https://exbio.wzw.tum.de/keypathwayminer/"
-
-# Load indicator matrices as data.frame
-huntington_disease_up <- as.data.frame.matrix(read.delim("matrix-hd-up.dat", header = FALSE))
-
-huntington_disease_down <- as.data.frame.matrix(read.delim("matrix-hd-down.dat", header = FALSE))
-
-huntington_list <- list(huntington_disease_up, huntington_disease_down)
-
-graph_file = system.file("extdata", "sampleNetwork.sif", package="Rkpm")
-
-# Get overview of available networks
-#print(get_networks(url))
-
-# Get ID of I2D Homo_sapiens entrez network
-#I2D.id <- get_networks(url)[["I2D Homo_sapiens entrez"]]
-
-```
 ### Remote runs
 ### Local runs
 ```{r Load example data}
@@ -67,7 +19,8 @@ kpm_options(execution = "Local", strategy = "INES", algorithm ="Greedy",l_min=5,
             perturbation_step = 10,
             perturbation_max = 20,
             graphs_per_step = 1,
-            resource_folder = system.file(package = "Rkpm", "extdata/"))
+            resource_folder = system.file(package = "Rkpm", "extdata/"),
+            properties_file = system.file(package = "Rkpm", "kpm.properties"))
 
 kpm(graph_file = graph_file, indicator_matrices  = huntington_disease_up)
 settings::reset(kpm_options)

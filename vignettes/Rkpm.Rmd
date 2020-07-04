@@ -14,7 +14,29 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
+```{r quick_load_data, include = FALSE}
+library(Rkpm)
+colon_expression_up <- as.data.frame.matrix(read.delim(
+  system.file(package = "Rkpm",
+              "extdata/datasets",
+              "colon-gene-expression-UP-p0.05.txt"),
+  header = FALSE))
 
+huntington_disease_up <- as.data.frame.matrix(read.delim(
+  system.file(package = "Rkpm",
+              "extdata/datasets",
+              "huntington-gene-expression-UP.txt"),
+  header = TRUE))
+
+huntington_disease_up <- to_indicator_matrix(numerical_matrix = huntington_disease_up,
+                                             operator = "<", threshold = 0.005)
+
+sample_network = system.file("extdata", "sampleNetwork.sif", package="Rkpm")
+# Path to colon methylation matrix
+colon_methylation <- system.file(package = "Rkpm",
+                                            "extdata/datasets",
+                                            "colon-methylation-matrix-p0.05.txt")
+```
 ## I. Introduction
 ### KeyPathwayMiner
 Given a **biological network** and a **set of case-control studies**, KeyPathwayMiner(KPM) efficiently extracts all             **maximal connected sub-networks**. These sub-networks contain the genes that are **mainly** dysregulated, e.g.,           differentially expressed, in **most** cases studied:
@@ -37,7 +59,7 @@ With the kpm_options object the arguments for the execution of the program can b
 
 ## II. Setup Rkpm
 Rkpm can be currently installed from github by using the devtools package
-```{r download_from_github_repo, eval=FALSE}
+```{r download_from_github_repo, eval = FALSE}
 library(devtools)
 install_github("konstantinosM/Rkpm")
 ```
@@ -51,8 +73,6 @@ library(Rkpm)
  * And if the standalone jar was correcly attached to your classpath.
  
 If **both** requirements are met you are ready to go.
-
-### Common problems
 
 ## III. Getting started
 In the following section, we will take a look at how to run Rkpm **remotely** and **locally**.  We will play around with the options manager **kpm_options()** which contains all parameters needed for running KPM Finally, we will prepare different input data and go through multiple examples of how to run Rkpm with different parameters. 
@@ -80,10 +100,13 @@ kpm_options()$algorithm
 # You can also change multiple parameters by seperating them with a comma
 kpm_options(algorithm = "Optimal", execution = "Local")
 ```
+Reset your options for a new run like that:
+```{r reset_option}
+# Initial value
+reset_options()
+```
 
 **Important note:** The **web** service does not allow to set **case exceptions (L)** for each dataset an individualy at the moment. Robustness analysis is also not support via Remote execution. If you want to use one of the two things then please use the **Local** execution type.
-
-
 
 ### Input data
 Multiple input files can be provided to use in Rkpm, but the most important ones are the:
@@ -93,35 +116,218 @@ Multiple input files can be provided to use in Rkpm, but the most important ones
  
 The other files are only relevant for the local execution and will be will be discussed later on.
 
+#### Dataset file/s
 Lets get started with the dataset files:
 ```{r datasets_files}
 # Read colon-gene-expression-up-05 indicator_matrix as data.frame. 
 colon_expression_up <- as.data.frame.matrix(read.delim(
-                                       system.file(package = "Rkpm", "extdata/datasets", "colon-gene-expression-UP-p0.05.txt"),
+                                       system.file(package = "Rkpm",
+                                                   "extdata/datasets",
+                                                   "colon-gene-expression-UP-p0.05.txt"),
                                        header = FALSE))
 
-# Preview  first 5 rows and first 15 columns of the matrix
+# Preview colon expression indicator matrix
 colon_expression_up[1:5,1:15]
 
 # Read huntington_disease_up as data.frame
 huntington_disease_up <- as.data.frame.matrix(read.delim(
-                                        system.file(package = "Rkpm", "extdata/datasets", "huntington-gene-expression-UP.txt"),
+                                        system.file(package = "Rkpm",
+                                                    "extdata/datasets",
+                                                    "huntington-gene-expression-UP.txt"),
                                         header = TRUE))
-# Huntigton disease up
+
+# Preview huntigton disease up numerical matrix
 huntington_disease_up[1:5,1:6]
 ```
 The entries of the huntington_disease_up dataset are p-values. To create an indicator matrix we will use the to_indicator_matrix() function as follows: 
 ```{r to_indicator_matrix}
+# Convert numerical to indicator matrix
+huntington_disease_up <- to_indicator_matrix(numerical_matrix = huntington_disease_up,
+                                             operator = "<", threshold = 0.005)
 
+# Huntigton disease up
+huntington_disease_up[1:5,1:9]
 ```
-In the next step we will read in a graph_file for local and remote use. We will show how to choose a graphID from a preloaded in the KPM-Web API:
-```{r graph_file}
+You can also just provide the path to an indicator matrix file.  Assuming the matrix is provided in the right format Rkpm will automatically detect the type of input and processes it according to the execution type (local or remote):
+```{r path_to_indicator_matrix}
+# Path to colon methylation matrix
+colon_methylation <- system.file(package = "Rkpm",
+                                            "extdata/datasets",
+                                            "colon-methylation-matrix-p0.05.txt")
+```
 
-# graph_file = system.file("extdata", "sampleNetwork.sif", package="Rkpm")
-
+#### Graph file
+In the next step, we will go through how to prepare the network files for the execution.
+Firstly the graph_file can be provided as a path:
+```{r graph_file_path}
+sample_network = system.file("extdata", "sampleNetwork.sif", package="Rkpm")
+```
+For the remote execution, the user can as well select a graph_file from the web service.
+```{r get_networks}
 # Get overview of available networks
-#print(get_networks(url))
+get_networks()
 ```
+Now the user just needs to save the graph_id from the graph he wants to use:
+```{r graph_id}
+# We will choose the Krogan Sars-COV2 + IID human host interactome whith graph_id = 13
+kpm_options(graph_id = 13)
+```
+### Execution {.tabset}
+Once all the input files are prepared we are ready to start de novo pathway enrichment analysis.
+
+#### Remote
+Lets take a look where remote RKPM will perfom the HTPP requests.
+```{r intialize}
+# KeyPathWayMiner URL:
+kpm_options()$url
+```
+Start with a simple run on one dataset with fixed parameters for K and L using INES in a blocking call(async = FALSE). Blocking meaning the user will have to wait until the execution is complete. For this run we will use the graph_id 10 which is the "I2D Homo_sapiens entrez" graph.
+```{r remote_execution_example1, eval = FALSE}
+# Configure options for the run
+kpm_options(execution = "Remote",
+            async = FALSE,
+            strategy = "INES",
+            remove_bens = TRUE,
+            algorithm = "Greedy",
+            l_min = 8,
+            k_min = 1,
+            graph_id = 10)
+
+# Start run with huntington_disease_up dataset
+run <- kpm(indicator_matrices = huntington_disease_up)
+
+# Get your results from
+print(paste("Browse to", run$resultUrl, "to see the results"))
+
+# Reset setting for next run
+settings::reset(kpm_options)
+```
+
+----
+
+In the next example we will perfom a ranged run in a blocking call using INES. 
+By setting `use_range_k = TRUE` and `use_range_l = TRUE` you can provide a range for the parameters L and K.
+**Comment:** `l_min = 4`, `l_max = 8` and `l_step = 2` would mean that the KPM will run with L = 4, L = 6 and L = 8.
+When use_range is set to FALSE only l_min is relevat. The same applies to K.
+```{r remote_execution_example2, eval = FALSE}
+# Configure options for the run
+kpm_options(execution = "Remote",
+            async = FALSE,
+            strategy = "INES",
+            remove_bens = TRUE,
+            algorithm = "Greedy",
+            use_range_l = TRUE, l_min = 4, l_step = 2, l_max = 8,
+            use_range_k = TRUE, k_min = 0, k_step = 1, k_max = 2,
+            graph_id = 13)
+
+# Start run with colon_expression_up dataset
+run <- kpm(indicator_matrices = colon_expression_up)
+
+# Get your results from
+print(paste("Browse to", run$resultUrl, "to see the results"))
+
+# Reset setting for next run
+settings::reset(kpm_options)
+```
+
+----
+
+In the last example for the remote execution, we will take a look at how to combine and use multiple datasets. We will start a run with INES, K = 1 and L = 10% for the two datasets huntington_disease_up and colon_expression_up. This time the job will be submitted asynchronously. This means the user will not have to wait for the job to complete. He can check on a later time if the job is complete.
+```{r remote_execution_example3a, eval = FALSE}
+kpm_options(execution = "Remote",
+            async = TRUE,
+            strategy = "INES",
+            remove_bens = TRUE,
+            algorithm = "Greedy",
+            l_same_percentage = TRUE, same_percentage = 10,
+            k_min = 1, 
+            graph_id = 13,
+            link_type = "OR")
+```  
+You should have noticed that the link_type was set to OR. This means the two datasets will be logically connected with the "OR" operator.
+```{r remote_execution_example3b, eval = FALSE}
+# Add the two datasets to a list
+indicator_matrices <- list(colon_expression_up, huntington_disease_up)
+
+# Run kpm 
+run <- kpm(indicator_matrices = indicator_matrices)
+
+# Extract job ID (called quest id)
+quest_id <- run$questID
+
+# Open the result page where you can  monitor the progress of both tasks
+print(quest_progress_url(session_id = kpm_options()$session_id))
+
+#Get status of the Job and if complete download the resuls
+if(get_status(quest_id = quest_id)$completed){
+  results_example_3 <- get_results(quest_id = quest_id)
+} 
+
+# Reset settings
+settings::reset(kpm_options)
+```
+
+**Note:** The web service does not allow individual fixed parameters to be set for each dataset at the moment. If you want to do that you will have to use local execution as explained in the next section. 
+
+#### Local
+```{r With perturbation}
+# Use perturbation
+kpm_options(execution = "Local", strategy = "INES", algorithm ="Greedy",l_min=5,
+            k_min = 2, perturbation_technique ="nodeswap",
+            with_perturbation = TRUE,
+            perturbation_start = 10,
+            perturbation_step = 10,
+            perturbation_max = 20,
+            graphs_per_step = 1,
+            resource_folder = system.file(package = "Rkpm", "extdata/"),
+            properties_file = system.file(package = "Rkpm",  "kpm.properties"))
+
+kpm(graph_file = sample_network, indicator_matrices  = huntington_disease_up)
+
+settings::reset(kpm_options)
+```
+
+```{r Combine multiple datasets}
+indicator_matrices = list(huntington_disease_up, colon_expression_up)
+# Combine multiple datasets:
+kpm_options(execution = "Local", 
+            strategy = "GLONE",
+            algorithm ="Greedy",
+            l_min=c(5,2),
+            resource_folder = system.file(package = "Rkpm", "extdata/"),
+            properties_file = system.file(package = "Rkpm",  "kpm.properties"))
+# Run kpm
+kpm(graph_file = sample_network, indicator_matrices  = indicator_matrices)
+
+# Reset settings
+settings::reset(kpm_options)
+```
+
+```{r Batch run}
+indicator_matrices = list(colon_methylation, colon_expression_up)
+
+# Use ranged values with batch
+kpm_options(execution = "Local",
+            strategy = "INES",
+            algorithm ="Greedy",
+            l_min=c(1,1),
+            l_step=c(2,2),
+            l_max=c(3,3),
+            k_min = 1,
+            k_step = 2,
+            k_max = 3,
+            use_range_k = TRUE,
+            use_range_l = TRUE,
+            resource_folder = system.file(package = "Rkpm", "extdata/"),
+            properties_file = system.file(package = "Rkpm",  "kpm.properties"))
+
+# Run kpm
+kpm(graph_file = sample_network, indicator_matrices  = indicator_matrices)
+
+# Reset settings
+settings::reset(kpm_options)
+```
+
 
 
 ## IV. Conclusion

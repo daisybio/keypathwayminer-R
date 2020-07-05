@@ -54,14 +54,14 @@ For more information please visit the [KPM website](https://exbio.wzw.tum.de/key
 ### Rkpm
 The following package provides an easy way for using KPM and visualize the extracted subnetworks via R.
 The user can decide whether he wants to call KPM on his computer (via standalone) or with the Web API. 
-With the kpm_options object the arguments for the execution of the program can be easily processed and viewed.
+With the `kpm_options()` object the arguments for the execution of the program can be easily processed and viewed.
 
 
 ## II. Setup Rkpm
 Rkpm can be currently installed from github by using the devtools package
 ```{r download_from_github_repo, eval = FALSE}
 library(devtools)
-install_github("konstantinosM/Rkpm")
+install_github(repo = "konstantinosM/Rkpm", build_vignettes = TRUE)
 ```
 If installation was successful the package can be loaded via
 ```{r load_rkpm,}
@@ -75,10 +75,10 @@ library(Rkpm)
 If **both** requirements are met you are ready to go.
 
 ## III. Getting started
-In the following section, we will take a look at how to run Rkpm **remotely** and **locally**.  We will play around with the options manager **kpm_options()** which contains all parameters needed for running KPM Finally, we will prepare different input data and go through multiple examples of how to run Rkpm with different parameters. 
+In the following section, we will take a look at how to run Rkpm **remotely** and **locally**.  We will play around with the options manager **kpm_options()** which contains all parameters needed for running KPM. Finally, we will prepare different input data and go through multiple examples of how to run Rkpm with different parameters. 
 
 ### Options
-The options manager provides the user with a variety of arguments he can customize for his execution. To get documentation and overview of all parameters available you can run the following commands:
+The options manager provides the user with a variety of arguments he can customize for his execution. To get a documentation and overview of all parameters available you can run the following commands:
 ```{r options_manager}
 # For the documentation
 ?kpm_options()
@@ -105,8 +105,6 @@ Reset your options for a new run like that:
 # Initial value
 reset_options()
 ```
-
-**Important note:** The **web** service does not allow to set **case exceptions (L)** for each dataset an individualy at the moment. Robustness analysis is also not support via Remote execution. If you want to use one of the two things then please use the **Local** execution type.
 
 ### Input data
 Multiple input files can be provided to use in Rkpm, but the most important ones are the:
@@ -158,11 +156,12 @@ colon_methylation <- system.file(package = "Rkpm",
 
 #### Graph file
 In the next step, we will go through how to prepare the network files for the execution.
+
 Firstly the graph_file can be provided as a path:
 ```{r graph_file_path}
 sample_network = system.file("extdata", "sampleNetwork.sif", package="Rkpm")
 ```
-For the remote execution, the user can as well select a graph_file from the web service.
+For the remote execution, the user can as well select a graph_id from the web service.
 ```{r get_networks}
 # Get overview of available networks
 get_networks()
@@ -176,7 +175,7 @@ kpm_options(graph_id = 13)
 Once all the input files are prepared we are ready to start de novo pathway enrichment analysis.
 
 #### Remote
-Lets take a look which URL RKPM will use for the HTPP requests.
+Lets take a look which URL Rkpm will use for the HTPP requests.
 ```{r intialize}
 # KeyPathWayMiner URL:
 kpm_options()$url
@@ -206,9 +205,12 @@ settings::reset(kpm_options)
 ----
 
 In the next example we will perfom a ranged run in a blocking call using INES. 
-By setting `use_range_k = TRUE` and `use_range_l = TRUE` you can provide a range for the parameters L and K.
+By setting `use_range_k = TRUE` and `use_range_l = TRUE` you 
+specify that the parameters L and K should be ranged.
+
 **Comment:** `l_min = 4`, `l_max = 8` and `l_step = 2` would mean that the KPM will run with L = 4, L = 6 and L = 8.
-When use_range is set to FALSE only l_min is relevat. The same applies to K.
+
+When `use_range` is set to **FALSE** only l_min is relevat. The same applies to K.
 ```{r remote_execution_example2, eval = FALSE}
 # Configure options for the run
 kpm_options(execution = "Remote",
@@ -267,12 +269,12 @@ if(get_status(quest_id = quest_id)$completed){
 settings::reset(kpm_options)
 ```
 
-**Note:** The web service does not allow individual fixed parameters to be set for each dataset at the moment. If you want to do that you will have to use local execution as explained in the next section. 
+**Important note:** The **web** service does not allow individual fixed (L case-exceptions) parameters to be set for each matrix at the moment. Robustness analysis is also not supported via Remote execution. If you want to use one of those two things then please use the **Local** execution type.
 
 #### Local
 For users who want to conduct more extensive analysis, the local execution is the way to go. Not only is the user able to specify different case exceptions parameters (L) for every dataset but he can also analyze the robustness of the provided network by choosing one of the four perturbation techniques.
 
-For the users who want to go even more into detail, we provide a properties file where the user can specify the default parameters of the local run. To access and edit the properties file use `edit(file = system.file(package = "Rkpm", "kpm.properties"))`. Keep in mind that options set with kpm_options() have higher priority than the options in the kpm.properites file.
+For the users who want to go even more into detail, we provide a properties file where the user can specify the default parameters for the local run. To access and edit the properties file use `edit(file = system.file(package = "Rkpm", "kpm.properties"))`. Keep in mind that options set with kpm_options() have higher priority than the options in the kpm.properites file.
 
 In the first example, we will perform an unranged run using INES. In addition to that we will analyse the robustness of the network with the perturbation technique "nodeswap" and the following parameters:
 ```{r With perturbation, eval = FALSE}
@@ -342,7 +344,7 @@ settings::reset(kpm_options)
 For the first datasets we are using `l_min = 1, l_step = 2, l_max = 3` and for the second dataset
 `l_min = 3, l_step = 4 and l_max = 6`.
 
-**Note:** The results of the local run will be saved in the results folder on you working directory. If you to save you results in another place, change the results_folder option in the properties file.
+**Note:** The results of the local run will be saved in the results folder on you working directory. If you wish to save you results in another place, change the results_folder option in the properties file.
 
 ## IV. Conclusion
 Our goal is to simplify the user's work process when using KeyPathwayMiner. Users can perform their analysis directly in R without having to worry about how to access Jar files or set up HTTP requests. 

@@ -111,13 +111,13 @@ reset_options()
 ### Input data
 Multiple input files can be provided to use in Rkpm, but the most important ones are the:
 
- * **datasets file/s** from the expression studies. Either numeric (e.g. p-values or fold changes) or as indicator matrix.
+ * **matrix file/s** from the expression studies. Either numeric (e.g. p-values or fold changes) or as indicator matrix.
  * **graph file** containing all the interactions of the protein interaction network. 
  
-The other files are only relevant for the local execution and will be will be discussed later on.
+The other files are only relevant for the local execution. For detailed information on all the files and their exact input format use `vignette("input_files_format")`.
 
 #### Dataset file/s
-Lets get started with the dataset files:
+Lets get started with the dataset files (matrix files):
 ```{r datasets_files}
 # Read colon-gene-expression-up-05 indicator_matrix as data.frame. 
 colon_expression_up <- as.data.frame.matrix(read.delim(
@@ -172,7 +172,7 @@ Now the user just needs to save the graph_id from the graph he wants to use:
 # We will choose the Krogan Sars-COV2 + IID human host interactome whith graph_id = 13
 kpm_options(graph_id = 13)
 ```
-### Execution {.tabset}
+### Execution 
 Once all the input files are prepared we are ready to start de novo pathway enrichment analysis.
 
 #### Remote

@@ -18,7 +18,7 @@ Overview
 <!--ts-->
    * [Purpose](#purpose)
    * [Prerequisites](#prerequisites)
-      * [Typical problems](#common-problems)
+      * [Common problems](#common-problems)
    * [Get started](#get-started)
       * [Users](#user)
       * [Developers](#developer)

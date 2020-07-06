@@ -61,7 +61,7 @@ With the `kpm_options()` object the arguments for the execution of the program c
 KeyPathwayMineR can be currently installed from github by using the devtools package
 ```{r download_from_github_repo, eval = FALSE}
 library(devtools)
-install_github(repo = "konstantinosM/KeyPathwayMineR", build_vignettes = TRUE)
+install_github(repo = "baumbachlab/KeyPathwayMineR", build_vignettes = TRUE)
 ```
 If installation was successful the package can be loaded via
 ```{r load_KeyPathwayMineR}

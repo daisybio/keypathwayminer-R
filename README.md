@@ -20,8 +20,8 @@ Overview
    * [Prerequisites](#prerequisites)
       * [Common problems](#common-problems)
    * [Get started](#get-started)
-      * [Users](#user)
-      * [Developers](#developer)
+      * [Users](#users)
+      * [Developers](#developers)
    
 
 <!--te-->

@@ -7,7 +7,7 @@
 test_jvm <- function(){
     java_version <- .jcall("java/lang/System", "S", "getProperty", "java.runtime.version")
     if(!grepl(pattern = "1.8", x = java_version)){
-        warning("Utils: Java version other than 1.8 detected. It is not sure if KeyPathwayMineR will work since KeyPathwayMineR.")
+        warning("Utils: Java version other than 1.8 detected. You need to use Java 1.8 for KeyPathwayMineR local execution to work correctly.")
         return(FALSE)
     }else {
         message("Utils: The Java virtual machine is available and has the correct version.")

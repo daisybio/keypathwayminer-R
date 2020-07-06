@@ -1,5 +1,5 @@
 ---
-title: KeyPathwayMineR - Package for the web and standalone version of KeyPathwayMiner
+title: KeyPathwayMineR - R Package for the web and standalone version of KeyPathwayMiner
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{KeyPathwayMineR}

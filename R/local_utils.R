@@ -1,4 +1,4 @@
-#' Method for running Rkpm localy
+#' Method for running KeyPathwayMineR localy
 #'
 #' @param indicator_matrices List of paths to the indicator matrices that will be used.
 #' @param graph_file String. Path to graph_file.

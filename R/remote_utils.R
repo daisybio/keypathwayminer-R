@@ -1,5 +1,5 @@
 #### Main - Methods ####
-#' Method for running Rkpm remotely
+#' Method for running KeyPathwayMineR remotely
 #'
 #' Method used to create a job submission.
 #'

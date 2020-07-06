@@ -2,7 +2,7 @@
 % Please edit documentation in R/remote_utils.R
 \name{call_kpm_remote}
 \alias{call_kpm_remote}
-\title{Method for running Rkpm remotely}
+\title{Method for running KeyPathwayMineR remotely}
 \usage{
 call_kpm_remote(matrices, graph_file = NULL)
 }

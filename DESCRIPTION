@@ -1,4 +1,4 @@
-Package: Rkpm
+Package: KeyPathwayMineR
 Type: Package
 Title: KeyPathwayMiner R-Package
 Description: The following package provides an easy way for using KeyPathwayMiner and visualize its results via R.

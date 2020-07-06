@@ -2,7 +2,7 @@
 % Please edit documentation in R/local_utils.R
 \name{call_kpm_local}
 \alias{call_kpm_local}
-\title{Method for running Rkpm localy}
+\title{Method for running KeyPathwayMineR localy}
 \usage{
 call_kpm_local(indicator_matrices, graph_file)
 }
@@ -15,5 +15,5 @@ call_kpm_local(indicator_matrices, graph_file)
 Saves the results in folder results.
 }
 \description{
-Method for running Rkpm localy
+Method for running KeyPathwayMineR localy
 }

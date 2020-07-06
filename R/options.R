@@ -40,13 +40,13 @@ MYPKGoptions <- settings::options_manager(execution = "Remote",
                                           perturbation_technique = settings::inlist('edgeremove', 'edgerewire', 'nodeswap'),
                                           link_type = settings::inlist("OR", "AND","CUSTOM")))
 
-#' Set or get options for Rkpm
+#' Set or get options for KeyPathwayMineR
 #'
 #' @param ... Option names to retrieve option values or \code{[key]=[value]} pairs to set options.
 #'
 #' @section I. Options for remote and local use:
 #' \itemize{
-#'  \item{\code{execution}}{ (\code{"Local" or "Remote"}) Execution type of Rkpm. Either via RestfulAPI or standalobe jar}
+#'  \item{\code{execution}}{ (\code{"Local" or "Remote"}) Execution type of KeyPathwayMineR. Either via RestfulAPI or standalobe jar}
 #'  \item{\code{algorithm}}{ (\code{"Greedy", "ACO", "Optimal"}) The algorithm that will be used to extract the pathways}
 #'  \item{\code{strategy}}{ (\code{"GLONE", "INES"}) The strategy that will be used to extract pathways}
 #'  \item{\code{remove_bens}}{ (\code{Boolean}) If TRUE border exception nodes will be removed}

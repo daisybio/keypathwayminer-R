@@ -1,5 +1,5 @@
 ---
-title: "Rkpm - Format of the input files"
+title: "KeyPathwayMineR - Format of the input files"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{input_files_format}
@@ -29,14 +29,14 @@ knitr::opts_chunk$set(
 | ...                               |
 
 
-**For local execution:** If you want change the seperator to a comma or space or use a header you will have to define this in the kpm_properties file. You can do that by using `edit(file = system.file(package = "Rkpm", "kpm.properties"))` and changing **graph_file_has_header**, **graph_file_separator**.
+**For local execution:** If you want change the seperator to a comma or space or use a header you will have to define this in the kpm_properties file. You can do that by using `edit(file = system.file(package = "KeyPathwayMineR", "kpm.properties"))` and changing **graph_file_has_header**, **graph_file_separator**.
 
-**Usage:**  Once your file has the correct format provide it to Rkpm as string with the **path** to the file:
+**Usage:**  Once your file has the correct format provide it to KeyPathwayMineR as string with the **path** to the file:
 `kpm(graph_file = PATH_TO_YOUR_NETWORK, indicator_matrices)`
 
 ## Matrix file/s
 **Description:** Files containing matrices from the expression studies.
-KPM can take as input **several** of these files, which can be defined either through R (example in `vignette("Rkpm")`) 
+KPM can take as input **several** of these files, which can be defined either through R (example in `vignette("KeyPathwayMineR")`) 
 or in the DATASETS file (see below). 
 
 **For:** `Remote` and `Local` execution.
@@ -50,9 +50,9 @@ or in the DATASETS file (see below).
 | ...                                      |
 | ...                                      |
 
-**For local execution:** If you want change the seperator to a comma or space or use a header you will have to define this in the kpm_properties file. You can do that by using `edit(file = system.file(package = "Rkpm", "kpm.properties"))` and changing **matrix_files_have_header**, **matrix_files_separator**.
+**For local execution:** If you want change the seperator to a comma or space or use a header you will have to define this in the kpm_properties file. You can do that by using `edit(file = system.file(package = "KeyPathwayMineR", "kpm.properties"))` and changing **matrix_files_have_header**, **matrix_files_separator**.
 
-**Usage:** Once your file has the correct format provide it to Rkpm as **path** or as `data.frame`. Or as a list of both. Use `vignette("Rkpm")` for examples.
+**Usage:** Once your file has the correct format provide it to KeyPathwayMineR as **path** or as `data.frame`. Or as a list of both. Use `vignette("KeyPathwayMineR")` for examples.
 
 
 ## Dataset file 
@@ -70,9 +70,9 @@ indicator matrix file and it's corresponding L parameter .
 | ...                                                |
 | ...                                                |
 
-**For local execution:** If you want change the seperator to a comma or space or use a header you will have to define this in the kpm_properties file. You can do that by using `edit(file = system.file(package = "Rkpm", "kpm.properties"))` and changing **datasets_file_separator** , **datasets_file_has_header**.
+**For local execution:** If you want change the seperator to a comma or space or use a header you will have to define this in the kpm_properties file. You can do that by using `edit(file = system.file(package = "KeyPathwayMineR", "kpm.properties"))` and changing **datasets_file_separator** , **datasets_file_has_header**.
 
-**Usage:**  Once your file has the correct format override the **path** in the kpm.properties file by using `edit(file = system.file(package = "Rkpm", "kpm.properties"))` and changing **datasets_file** to the correct path.
+**Usage:**  Once your file has the correct format override the **path** in the kpm.properties file by using `edit(file = system.file(package = "KeyPathwayMineR", "kpm.properties"))` and changing **datasets_file** to the correct path.
 
 ## Positive/Negative list file 
 **Description:** These are optional files that contain
@@ -91,5 +91,5 @@ priority when searching for pathways.
 | ...       |
 
 
-**Usage:** Once your file has the correct format override the **path** in the kpm.properties file by using `edit(file = system.file(package = "Rkpm", "kpm.properties"))` and changing **negative_file** or **positive_file**.
+**Usage:** Once your file has the correct format override the **path** in the kpm.properties file by using `edit(file = system.file(package = "KeyPathwayMineR", "kpm.properties"))` and changing **negative_file** or **positive_file**.
 

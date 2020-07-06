@@ -1,5 +1,5 @@
 
-Rkpm - R package of KeyPathwayMiner
+KeyPathwayMineR - R package of KeyPathwayMiner
 ============
 The following package provides an easy way for using KeyPathwayMiner and visualize its results via R.
 The user can decide whether he wants to call KeyPathwayMiner on his computer (via standalone) or with the Web api. 

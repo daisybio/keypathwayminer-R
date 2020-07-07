@@ -9,10 +9,10 @@ install_github("baumbachlab/keypathwayminer-R", build_vignettes = TRUE)
 library(KeyPathwayMineR)
 
 #### Prepare data ####
-colon_expression_up <- as.data.frame.matrix(read.delim(
+huntington_disease_down <- as.data.frame.matrix(read.delim(
   system.file(package = "KeyPathwayMineR",
               "extdata/datasets",
-              "colon-gene-expression-UP-p0.05.txt"),header = FALSE))
+              "huntington-gene-expression-DOWN.txt"),header = FALSE))
 
 huntington_disease_up <- as.data.frame.matrix(read.delim(
   system.file(package = "KeyPathwayMineR",

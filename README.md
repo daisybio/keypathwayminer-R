@@ -1,6 +1,8 @@
 
 KeyPathwayMineR - R package 
-============
+============ 
+<img src="inst/image/hex/KeyPathwayMineR_hexSticker.png" width = "175" height = "200" align="right" /> 
+
 Given a **biological network** and a **set of case-control studies**, KeyPathwayMiner(KPM) efficiently extracts all             **maximal connected sub-networks**. These sub-networks contain the genes that are **mainly** dysregulated, e.g.,           differentially expressed, in **most** cases studied:
 
 * The exact quantities for “mainly” and “most” are modeled with two easy-to-interpret parameters **(K, L)** that allows      the user to control the number of outliers (not dysregulated genes/cases) in the solutions.

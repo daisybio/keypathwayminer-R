@@ -14,13 +14,11 @@
 
   if(standalone & test_jvm()){
     # If jar is on the classpath and jvm is set to 1.8
-    message("KeyPathwayMineR ready for local execution")
+    message("KeyPathwayMineR ready for execution")
   }else {
     warning(paste("Local execution not possible at the moment.",
                   "Visit https://exbio.wzw.tum.de/keypathwayminer/ for more information."
                   ,sep = "\n"))
   }
-
-  # @todo Check if Url for api calls is available
 
 }

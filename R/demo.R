@@ -39,7 +39,7 @@ kpm_options(execution = "Remote",
             link_type = "OR")
 
 # Add the two datasets to a list
-indicator_matrices <- list(colon_expression_up, huntington_disease_up)
+indicator_matrices <- list(huntington_disease_down, huntington_disease_up)
 
 # Run kpm
 run <- kpm(indicator_matrices = indicator_matrices)

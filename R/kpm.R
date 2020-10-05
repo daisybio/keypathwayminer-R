@@ -107,7 +107,7 @@ check_files <- function(indicator_matrices, graph_file){
                    "Valid input: a filepath, a data.frame or a list which can contain both.",
                    "For more information visit: https://exbio.wzw.tum.de/keypathwayminer/",sep = "\n"))
     }
-    message("\tIndicator matrices: √")
+    message("\tIndicator matrices: checked")
     #### Check graph_file ####
     if(!is.null(graph_file)){
         if(is.character(graph_file)&(!file.exists(graph_file) | tools::file_ext(graph_file) != "sif")){
@@ -115,7 +115,7 @@ check_files <- function(indicator_matrices, graph_file){
                        "\nMake sure the graph_file is in sif format and has a .sif extension.",
                        "\nGiven filepath: ", graph_file))
         }
-    message("\tGraph file: √")
+    message("\tGraph file: checked")
     } else if(is.null(graph_file) & kpm_options()$execution == "Local"){
         # In case a graph_file was not provide on a local run
         stop(paste("For local runs you must provide a graph_file.",
@@ -203,7 +203,7 @@ check_parameters <- function(indicator_matrices){
         }
 
     }
-    message("\tCase exception parameters: √")
+    message("\tCase exception parameters: checked")
 #### Check gene exceptions parameter ####
 if(kpm_options()$algorithm == "INES"){
     if(kpm_options()$use_range_k){
@@ -242,7 +242,7 @@ if(kpm_options()$algorithm == "INES"){
         }
     }
 }
-    message("\tGene exception parameters: √")
+    message("\tGene exception parameters: checked")
 #### Check perturbation parameters ####
 if(kpm_options()$with_perturbation){
     case_1 <- kpm_options()$perturbation_start <= 0
@@ -255,7 +255,7 @@ if(kpm_options()$with_perturbation){
     if(case_3) stop("Configuration is incorrect: Invalid l_step. Must be larger than 0.")
     if(case_4) stop("Configuration is incorrect: Incrementation must be in range")
 }
-    message("\tPerturbation parameters: √")
+    message("\tPerturbation parameters: checked")
 
     message(">Parameters checks complete")
 }

@@ -6,8 +6,7 @@
 #' @param matrices List. Indicator matrices that will be used.
 #' @param graph_file String. Path to graph_file.
 #'
-#' @return Results object with runId, resultGraphs, comment, succes, resultUrl
-#'  and questId.
+#' @return Results object containing all execution_configurations and the input parameters of the current run.
 call_kpm_remote <- function(matrices, graph_file = NULL){
 
   #Url of KeyPathwayMiner website
@@ -21,17 +20,17 @@ call_kpm_remote <- function(matrices, graph_file = NULL){
   #Create settings object and pass kpm_options parameters
   kpmSetup <- setup_kpm(indicator_matrices = matrices, graph_file = graph_file)
 
-  # Prepare result object
-  result <- NULL
-
   # Print out settings for debugging purposes
   print(sprintf("url: %s", url))
   print(sprintf("settings: %s", kpmSetup[[1]]))
 
-  # Submit
-  result <- submit_kpm(kpmSetup)
+  # Prepare result object
+  remote_result <- NULL
 
-  return(result)
+  # Submit
+  remote_result <- submit_kpm(kpmSetup)
+
+  return(save_remote_results(remote_result))
 }
 
 #' Set up a JSON object in preparation of the job submission
@@ -48,7 +47,7 @@ setup_kpm <- function(indicator_matrices, graph_file){
   settings <- rjson::toJSON(
     list(
       parameters = c(
-        name = paste("R demo client run", run_id),
+        name = paste("KeyPathwayMineR remote run", run_id),
         algorithm = kpm_options()$algorithm,
         strategy = kpm_options()$strategy,
         removeBENs = tolower(as.character(kpm_options()$remove_bens)),
@@ -121,8 +120,55 @@ submit_kpm <- function(kpmSetup){
   })
 }
 
-#### Helper - Methods ####
+#'  Save results of the remote run
+#'
+#'  Method to save the results provided
+#'  from the remote run.
+#'
+#' @param remote_results The results returned from the remote run
+#'
+#' @return Result object
+save_remote_results <- function(remote_results){
+  configurations <- list()
+  graphs <- remote_results$resultGraphs
+  for (i in 1:length(graphs)) {
+    # Determine configuration e.g. K=5 and L=20
+    configuration = paste("K-", graphs[[i]]$k,"-L-", graphs[[i]]$l, sep = "")
 
+    # Get interactions
+    extracted_pathway_interactions <- graphs[[i]]$edges
+    interactions_source <- c()
+    interactions_target <- c()
+    for(j in 1:length(extracted_pathway_interactions)){
+      interactions_source <- c(interactions_source, extracted_pathway_interactions[[j]]$source)
+      interactions_target <- c(interactions_target, extracted_pathway_interactions[[j]]$target)
+    }
+
+    # Get nodes
+    extracted_pathway_nodes <- graphs[[i]]$nodes
+    nodes <- c()
+    for(k in 1:length(extracted_pathway_nodes)){
+      nodes <- c(nodes, extracted_pathway_nodes[[k]]$id)
+    }
+
+    # Save results
+    if(!configuration %in% names(configurations)){
+      # Create new entry for new configuration if configuration does not exist already
+      configurations[[configuration]] <- new("Configuration", configuration = configuration, k = graphs[[i]]$k, l_values = list(L1 = graphs[[i]]$l), pathways = list())
+    }
+    pathway = paste("Pathway-", length(configurations[[configuration]]@pathways) + 1, sep="")
+    configurations[[configuration]]@pathways <- append(configurations[[configuration]]@pathways,
+                                                       setNames(list(new("Pathway",
+                                                                         edges = data.frame(source = interactions_source, target = interactions_target),
+                                                                         nodes =  data.frame(nodes = nodes),
+                                                                         num_edges = length(interactions_source),
+                                                                         num_nodes = length(nodes))), pathway))
+  }
+
+  return (new("Result", parameters = kpm_options(), configurations = configurations))
+}
+
+#### Helper - Methods ####
 #'  Encodes a list of datasets
 #'
 #'  Helper method to encode a list of datasets (indicator matrices)

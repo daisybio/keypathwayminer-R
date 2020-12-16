@@ -156,6 +156,14 @@ save_remote_results <- function(remote_results){
       # Create new entry for new configuration if configuration does not exist already
       configurations[[configuration]] <- new("Configuration", configuration = configuration, k = graphs[[i]]$k, l_values = list(L1 = graphs[[i]]$l), pathways = list())
     }
+    # If it is the Union Set save it under configurations@union_network
+    if(graphs[[i]]$isUnionSet == TRUE){
+      configurations[[configuration]]@union_network <- new("Pathway",
+                                                           edges = data.frame(source = interactions_source, target = interactions_target),
+                                                           nodes =  data.frame(nodes = nodes),
+                                                           num_edges = length(interactions_source),
+                                                           num_nodes = length(nodes))
+    }else{
     pathway = paste("Pathway-", length(configurations[[configuration]]@pathways) + 1, sep="")
     configurations[[configuration]]@pathways <- append(configurations[[configuration]]@pathways,
                                                        setNames(list(new("Pathway",
@@ -163,8 +171,8 @@ save_remote_results <- function(remote_results){
                                                                          nodes =  data.frame(nodes = nodes),
                                                                          num_edges = length(interactions_source),
                                                                          num_nodes = length(nodes))), pathway))
+    }
   }
-
   return (new("Result", parameters = kpm_options(), configurations = configurations))
 }
 

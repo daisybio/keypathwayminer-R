@@ -1,4 +1,4 @@
-# TODO write documentation for classes and methods
+# TODO write documentation for all classes and methods
 # TODO write export functions to save results as txt and sif files
 #### Classes ####
 # Class for storing the results of a KPM execution
@@ -25,10 +25,5 @@ setClass("Pathway",
 
 # Exceptions parameters of a run configuration and all the corresponding paths
 setClass("Configuration",
-         slots = c(configuration = "character", k = "numeric", l_values = "list", pathways = "list"),
-         prototype = list(configuration = NA_character_, k = NA_real_, l_values = list(), pathways = list()))
-
-#### Functions ####
-
-
-
+         slots = c(configuration = "character", k = "numeric", l_values = "list", union_network = "Pathway" , pathways = "list"),
+         prototype = list(configuration = NA_character_, k = NA_real_, l_values = list(), union_network = new("Pathway"),pathways = list()))

@@ -6,20 +6,22 @@
 #' @return Saves the results in folder results.
 call_kpm_local <- function(indicator_matrices, graph_file){
   # Directory where input files and properties files are stored
-  datasets_file <- kpm_options()$resource_folder
-  properties_file <- kpm_options()$properties_file
+  datasets_file <- system.file(package = "KeyPathwayMineR", "extdata/")
+  properties_file <- paste(datasets_file, kpm_options()$properties_file, sep = "/")
+
   # Convert option parameters to java command line arguments
   args <- to_java_arguments(indicator_matrices = indicator_matrices, graph_file = graph_file)
 
   #### Initialize java objects ####
   main <- .jnew(class = "de/mpg/mpiinf/ag1/kpm/main/Main")
+  path_to_local_results = .jcall(obj  = main,
+                                 returnSig = "Ljava/lang/String;",
+                                 method = "runR",
+                                 args,
+                                .jnew(class = "java/lang/String", datasets_file),
+                                .jnew(class = "java/lang/String", properties_file))
 
-  .jcall(obj  = main,
-         returnSig = "V",
-         method = "runR",
-         args,
-         .jnew(class = "java/lang/String", datasets_file),
-         .jnew(class = "java/lang/String", properties_file))
+  return(save_local_results(paste(getwd(), "/",path_to_local_results,"/tables/", sep = "")))
 }
 
 #' Method which transform kpm_options() to java arguments.
@@ -95,4 +97,84 @@ get_case_exceptions <- function(indicator_matrices, arguments) {
 
   return(arguments)
 }
+
+#'  Save results of the local run
+#'
+#'  Method to save the results provided
+#'  from the lccal run.
+#'
+#' @param path_to_results The path to the results folder of the local run
+#'
+#' @return Result object
+#' @importFrom magrittr %>%
+#' @import dplyr
+#' @import vroom
+save_local_results <- function(path_to_results){
+  # List to save all configurations
+  configurations <- list()
+  # If no results for specific configuration exist
+  no_results = FALSE
+
+  # Read pathway stats file
+  pathway_stats <- vroom::vroom(paste(path_to_results,"/pathways_stats.txt", sep = ""), delim = "\t")
+
+  # Get all Case exception identifiers for current run.
+  # E.g. 2 Datasets --> 2 Identifiers c(L1,L2)
+  case_exception_identifiers <- names(pathway_stats)[startsWith(names(pathway_stats),"L")]
+
+  # Sort identifiers
+  case_exception_identifiers <- paste("L", as.numeric(gsub("L","", case_exception_identifiers)), sep = "")
+
+  # Parse results
+  for(i in 1:nrow(pathway_stats)){
+    # Determine configuration
+    # Node-exceptions
+    configuration <- paste("K-", pathway_stats[i,"K"], sep = "")
+
+    # Case-exceptions
+    for(identifier in case_exception_identifiers){
+      configuration <- paste(configuration, "-", identifier, "-", pathway_stats[i, identifier], sep = "")
+    }
+
+    # When the ID = 1 it means we have a new configuration
+    if(pathway_stats[i, "PATHWAY_ID"] == 1){
+      # Create new configuration
+      configurations[[configuration]] <- new("Configuration", configuration = configuration, k = as.numeric(pathway_stats[i, "K"]), l_values = as.list(unlist(pathway_stats[i, case_exception_identifiers])), pathways = list())
+
+      # If the number of nodes for the current configuration is 0
+      if(pathway_stats[i,"# NODES"] == 0) {
+        no_results = TRUE
+        # skip to next iteration and do not read tables for this specific configuration
+        next
+      }
+
+     # Read nodes file for specific configuration
+      nodes <- vroom::vroom(paste(path_to_results,"/pathway-", configuration,"-nodes-KPM.txt", sep = ""), delim = "\t", col_names = c("pathway", "Node"))
+
+      # Read interactions file for specific configuration
+      interactions <- vroom::vroom(paste(path_to_results, "/pathway-", configuration, "-interactions-KPM.txt", sep = ""), delim = "\t", col_select = c(1, 2, 4), col_names = c("pathway", "source", "interaction","target"))
+      no_results = FALSE
+
+    }
+    if(!no_results){
+    # Determine number of pathway for specific configuration
+    pathway_num = length(configurations[[configuration]]@pathways) + 1
+    pathway = paste("Pathway-", pathway_num, sep = "")
+
+    # For current pathway(pathway_stats[i, "PATHWAY_ID"] = id) determine edges, nodes, stats
+    configurations[[configuration]]@pathways <- append(configurations[[configuration]]@pathways,
+                                                       setNames(list(new("Pathway",
+                                                                         edges = dplyr::filter(interactions, pathway == pathway_num) %>% select(c(2,3)),
+                                                                         nodes = dplyr::filter(nodes, pathway == pathway_num) %>%select(2),
+                                                                         num_edges = as.integer(pathway_stats[i, "# EDGES"]),
+                                                                         num_nodes = as.integer(pathway_stats[i, "# NODES"]),
+                                                                         avg_exp = as.numeric(pathway_stats[i, "AVG. DIFF. EXP. CASES"]),
+                                                                         info_content = as.numeric(gsub(",",".",pathway_stats[i, "AVG. INFO. CONTENT"])))), pathway))
+
+    }
+    }
+
+  return (new("Result", parameters = kpm_options(), configurations = configurations))
+}
+
 

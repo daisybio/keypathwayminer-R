@@ -22,8 +22,9 @@ setClass("Pathway",
                           avg_exp = NA_real_,
                           info_content = NA_real_))
 
-
 # Exceptions parameters of a run configuration and all the corresponding paths
 setClass("Configuration",
          slots = c(configuration = "character", k = "numeric", l_values = "list", union_network = "Pathway" , pathways = "list"),
-         prototype = list(configuration = NA_character_, k = NA_real_, l_values = list(), union_network = new("Pathway"),pathways = list()))
+         prototype = list(configuration = NA_character_, k = NA_real_, l_values = list(), union_network = new("Pathway"), pathways = list()))
+
+

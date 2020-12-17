@@ -21,7 +21,6 @@ MYPKGoptions <- settings::options_manager(execution = "Remote",
                                           perturbation_technique = "nodeswap",
                                           unmapped_nodes = "Add to negative list",
                                           link_type = "OR",
-                                          resource_folder = "/extdata",
                                           properties_file = "kpm.properties",
                            .allowed = list(execution = settings::inlist("Remote", "Local"),
                                           async = settings::inlist(TRUE, FALSE),
@@ -83,7 +82,6 @@ MYPKGoptions <- settings::options_manager(execution = "Remote",
 #'
 #' @section III. Parameters only for local execution:
 #' \itemize{
-#'   \item{\code{resource_folder}}{ (\code{String}) Path to folder with example datasets}
 #'   \item{\code{properties_file}}{ (\code{String}) Path to properties file}
 #'   }
 #' \strong{Options for network robustness analysis:}

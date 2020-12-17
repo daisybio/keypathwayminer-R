@@ -14,7 +14,7 @@ call_kpm_remote <- function(matrices, graph_file = NULL){
 
   #Generate random UUID for the session if none was provided
   if(is.null(kpm_options()$session_id)){
-    kpm_options(session_id = paste(sample(c(LETTERS[1:6],0:9), 32, replace = TRUE), collapse = ""))
+    kpm_options(session_id = paste(sample(c(LETTERS[1:6], 0:9), 32, replace = TRUE), collapse = ""))
   }
 
   #Create settings object and pass kpm_options parameters
@@ -41,7 +41,7 @@ setup_kpm <- function(indicator_matrices, graph_file){
   dataset_list <- dataset_list(indicator_matrices)
 
   # Create a run id
-  run_id <- paste(sample(c(LETTERS[1:6], 0:9), 6, replace = TRUE), collapse="")
+  run_id <- paste(sample(c(LETTERS[1:6], 0:9), 6, replace = TRUE), collapse = "")
 
   # Setup the json settings:
   settings <- rjson::toJSON(

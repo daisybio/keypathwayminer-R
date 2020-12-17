@@ -17,8 +17,11 @@ Imports:
     settings,
     RCurl,
     rjson,
-    foreach
-RoxygenNote: 7.1.0
+    foreach,
+    dplyr,
+    vroom,
+    magrittr
+RoxygenNote: 7.1.1
 Suggests: 
     knitr,
     rmarkdown

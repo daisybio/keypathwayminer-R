@@ -2,15 +2,15 @@
 % Please edit documentation in R/utils.R
 \name{test_jvm}
 \alias{test_jvm}
-\title{Fcuntion for testing if rJava works}
+\title{Checks the version of the JVM.}
 \usage{
 test_jvm()
 }
 \value{
-TRUE if the correct Java version is detected, FALSE otherwise
+TRUE if Java version 1.8 or higher is detected, FALSE otherwise
 }
 \description{
-Fcuntion for testing if rJava works
+Checks the version of the JVM.
 }
 \examples{
 test_jvm()

@@ -12,8 +12,7 @@ call_kpm_remote(matrices, graph_file = NULL)
 \item{graph_file}{String. Path to graph_file.}
 }
 \value{
-Results object with runId, resultGraphs, comment, succes, resultUrl
- and questId.
+Results object containing all execution_configurations and the input parameters of the current run.
 }
 \description{
 Method used to create a job submission.

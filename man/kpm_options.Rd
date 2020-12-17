@@ -65,7 +65,6 @@ Note: The \strong{web service} does not allow individual fixed parameters to be 
 \section{III. Parameters only for local execution}{
 
 \itemize{
-  \item{\code{resource_folder}}{ (\code{String}) Path to folder with example datasets}
   \item{\code{properties_file}}{ (\code{String}) Path to properties file}
   }
 \strong{Options for network robustness analysis:}

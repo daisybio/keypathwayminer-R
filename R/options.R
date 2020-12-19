@@ -1,43 +1,47 @@
 # Variable, global to package's namespace.
 # This function is not exported to user space and
 # does not need to be documented.
-MYPKGoptions <- settings::options_manager(execution = "Remote",
-                                          async = TRUE,
-                                          session_id = NULL,
-                                          url = "https://exbio.wzw.tum.de/keypathwayminer/",
-                                          algorithm = "Greedy",
-                                          graph_id = 1,
-                                          strategy = "GLONE",
-                                          remove_bens = FALSE,
-                                          use_range_k = FALSE, k_min = 1, k_max = 3, k_step = 1,
-                                          use_range_l = FALSE, l_min = 0, l_max = 0, l_step = 1,
-                                          l_same_percentage = FALSE, same_percentage = 0,
-                                          computed_pathways = 20,
-                                          perturbation_start = 10,
-                                          perturbation_step = 10,
-                                          perturbation_max = 20,
-                                          graphs_per_step = 1,
-                                          with_perturbation = FALSE,
-                                          perturbation_technique = "nodeswap",
-                                          unmapped_nodes = "Add to negative list",
-                                          link_type = "OR",
-                                          properties_file = "kpm.properties",
-                           .allowed = list(execution = settings::inlist("Remote", "Local"),
-                                          async = settings::inlist(TRUE, FALSE),
-                                          algorithm = settings::inlist("Greedy", "ACO", "Optimal"),
-                                          strategy = settings::inlist("INES", "GLONE"),
-                                          unmapped_nodes = settings::inlist("Add to negative list", "Add to positive list"),
-                                          remove_bens = settings::inlist(TRUE, FALSE),
-                                          use_range_k = settings::inlist(TRUE, FALSE),
-                                          use_range_l = settings::inlist(TRUE, FALSE),
-                                          l_same_percentage = settings::inlist(TRUE, FALSE),
-                                          same_percentage = settings:: inrange(0, 100),
-                                          perturbation_start = settings:: inrange(0, 100),
-                                          perturbation_step = settings:: inrange(0, 100),
-                                          perturbation_max = settings:: inrange(0, 100),
-                                          with_perturbation = settings::inlist(TRUE, FALSE),
-                                          perturbation_technique = settings::inlist('edgeremove', 'edgerewire', 'nodeswap'),
-                                          link_type = settings::inlist("OR", "AND","CUSTOM")))
+MYPKGoptions <- settings::options_manager(
+  execution = "Remote",
+  async = TRUE,
+  session_id = NULL,
+  url = "https://exbio.wzw.tum.de/keypathwayminer/",
+  algorithm = "Greedy",
+  graph_id = 1,
+  strategy = "GLONE",
+  remove_bens = FALSE,
+  use_range_k = FALSE, k_min = 1, k_max = 3, k_step = 1,
+  use_range_l = FALSE, l_min = 0, l_max = 0, l_step = 1,
+  l_same_percentage = FALSE, same_percentage = 0,
+  computed_pathways = 20,
+  perturbation_start = 10,
+  perturbation_step = 10,
+  perturbation_max = 20,
+  graphs_per_step = 1,
+  with_perturbation = FALSE,
+  perturbation_technique = "nodeswap",
+  unmapped_nodes = "Add to negative list",
+  link_type = "OR",
+  properties_file = "kpm.properties",
+  .allowed = list(
+    execution = settings::inlist("Remote", "Local"),
+    async = settings::inlist(TRUE, FALSE),
+    algorithm = settings::inlist("Greedy", "ACO", "Optimal"),
+    strategy = settings::inlist("INES", "GLONE"),
+    unmapped_nodes = settings::inlist("Add to negative list", "Add to positive list"),
+    remove_bens = settings::inlist(TRUE, FALSE),
+    use_range_k = settings::inlist(TRUE, FALSE),
+    use_range_l = settings::inlist(TRUE, FALSE),
+    l_same_percentage = settings::inlist(TRUE, FALSE),
+    same_percentage = settings::inrange(0, 100),
+    perturbation_start = settings::inrange(0, 100),
+    perturbation_step = settings::inrange(0, 100),
+    perturbation_max = settings::inrange(0, 100),
+    with_perturbation = settings::inlist(TRUE, FALSE),
+    perturbation_technique = settings::inlist("edgeremove", "edgerewire", "nodeswap"),
+    link_type = settings::inlist("OR", "AND", "CUSTOM")
+  )
+)
 
 #' Set or get options for KeyPathwayMineR
 #'
@@ -65,7 +69,7 @@ MYPKGoptions <- settings::options_manager(execution = "Remote",
 #'  \item{\code{l_min}}{ (\code{Integer or Vector})  Starting value of l range or l value if l is not ranged}
 #'  \item{\code{l_step}}{ (\code{Integer or Vector}) How l should be increased within the range}
 #'  \item{\code{l_max}}{ (\code{Integer or Vector}) The maximum l value, i.e. the upper limit of the range}
-#'}
+#' }
 #'
 #' @section II. Parameters only for remote execution:
 #' \itemize{
@@ -99,11 +103,11 @@ MYPKGoptions <- settings::options_manager(execution = "Remote",
 #'  \strong{Example 1: } One matrix and not ranged:\cr\code{kpm_options(l_min=4)}\cr\cr
 #'  \strong{Example 2: } Two matrices and not ranged:\cr\code{kpm_options(l_min=c(1,2))}\cr\cr
 #'  \strong{Example 3: } Three matrices and ranged:\cr\code{kpm_options(l_min=c(1,2,4), l_step=c(1,1,2), l_max=c(2,3,8))}\cr\cr
-#' The \emph{n-th} position in each vector corresponds to the \emph{n-th} matrix.\cr\cr
+#' The \emph{n-th} position in each vector corresponds to the \emph{n-th} matrix/dataset.\cr\cr
 #' Note: The \strong{web service} does not allow individual fixed parameters to be set for each dataset at the moment.
 #' @export
 kpm_options <- function(...) {
-    # protect against the use of reserved words.
-    settings::stop_if_reserved(...)
-    MYPKGoptions(...)
+  # protect against the use of reserved words.
+  settings::stop_if_reserved(...)
+  MYPKGoptions(...)
 }

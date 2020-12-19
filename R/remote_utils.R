@@ -7,17 +7,17 @@
 #' @param graph_file String. Path to graph_file.
 #'
 #' @return Results object containing all execution_configurations and the input parameters of the current run.
-call_kpm_remote <- function(matrices, graph_file = NULL){
+call_kpm_remote <- function(matrices, graph_file = NULL) {
 
-  #Url of KeyPathwayMiner website
+  # Url of KeyPathwayMiner website
   url <- kpm_options()$url
 
-  #Generate random UUID for the session if none was provided
-  if(is.null(kpm_options()$session_id)){
+  # Generate random UUID for the session if none was provided
+  if (is.null(kpm_options()$session_id)) {
     kpm_options(session_id = paste(sample(c(LETTERS[1:6], 0:9), 32, replace = TRUE), collapse = ""))
   }
 
-  #Create settings object and pass kpm_options parameters
+  # Create settings object and pass kpm_options parameters
   kpmSetup <- setup_kpm(indicator_matrices = matrices, graph_file = graph_file)
 
   # Print out settings for debugging purposes
@@ -36,7 +36,7 @@ call_kpm_remote <- function(matrices, graph_file = NULL){
 #' Set up a JSON object in preparation of the job submission
 #'
 #' @return A list with settings, datasets and graph in JSON format.
-setup_kpm <- function(indicator_matrices, graph_file){
+setup_kpm <- function(indicator_matrices, graph_file) {
   # Base64 encode datasetfiles files
   dataset_list <- dataset_list(indicator_matrices)
 
@@ -56,13 +56,16 @@ setup_kpm <- function(indicator_matrices, graph_file){
         graphID = kpm_options()$graph_id,
         l_samePercentage = tolower(as.character(kpm_options()$l_same_percentage)),
         samePercentage_val = kpm_options()$same_percentage,
-        k_values = list(c(val = kpm_options()$k_min, val_step = kpm_options()$k_step, val_max = kpm_options()$k_max,
-                          use_range = tolower(as.character(kpm_options()$use_range_k)), isPercentage="false")),
+        k_values = list(c(
+          val = kpm_options()$k_min, val_step = kpm_options()$k_step, val_max = kpm_options()$k_max,
+          use_range = tolower(as.character(kpm_options()$use_range_k)), isPercentage = "false"
+        )),
 
-        l_values = list(c(val = kpm_options()$l_min, val_step = kpm_options()$l_step, val_max = kpm_options()$l_max,
-                          use_range = tolower(as.character(kpm_options()$use_range_l)), isPercentage = "false",
-                          datasetName = paste("dataset", 1, sep = ""))
-        )
+        l_values = list(c(
+          val = kpm_options()$l_min, val_step = kpm_options()$l_step, val_max = kpm_options()$l_max,
+          use_range = tolower(as.character(kpm_options()$use_range_l)), isPercentage = "false",
+          datasetName = paste("dataset", 1, sep = "")
+        ))
       ),
       withPerturbation = tolower(as.character(kpm_options()$with_perturbation)),
       perturbation = list(c( # perturbation can be left out, if withPeturbation parameter is set to false.
@@ -76,7 +79,8 @@ setup_kpm <- function(indicator_matrices, graph_file){
       attachedToID = kpm_options()$session_id,
       positiveNodes = "",
       negativeNodes = ""
-    ))
+    )
+  )
 
   # Add custom network if provided
   graph <- graph_kpm(graph_file)
@@ -91,31 +95,35 @@ setup_kpm <- function(indicator_matrices, graph_file){
 #' @param kpmSetup kpmSetup
 #'
 #' @return Results in json format.
-submit_kpm <- function(kpmSetup){
-  withTryCatch(function(){
-    #Choose whether it is an asynchronous job or not
-    if(kpm_options()$async) {
-      url <- paste(kpm_options()$url, "requests/submitAsync", sep="")
+submit_kpm <- function(kpmSetup) {
+  withTryCatch(function() {
+    # Choose whether it is an asynchronous job or not
+    if (kpm_options()$async) {
+      url <- paste(kpm_options()$url, "requests/submitAsync", sep = "")
     } else {
-      url <- paste(kpm_options()$url, "requests/submit", sep="")
+      url <- paste(kpm_options()$url, "requests/submit", sep = "")
     }
 
-    #If a default graph is used we should not send the graph attribute
-    if(is.null(kpmSetup[[3]])){
-      result <- RCurl::postForm(url, kpmSettings = kpmSetup[[1]],
-                                datasets = kpmSetup[[2]])
+    # If a default graph is used we should not send the graph attribute
+    if (is.null(kpmSetup[[3]])) {
+      result <- RCurl::postForm(url,
+        kpmSettings = kpmSetup[[1]],
+        datasets = kpmSetup[[2]]
+      )
     } else {
-      result <- RCurl::postForm(url, kpmSettings = kpmSetup[[1]],
-                                datasets = kpmSetup[[2]], graph = kpmSetup[[3]])
+      result <- RCurl::postForm(url,
+        kpmSettings = kpmSetup[[1]],
+        datasets = kpmSetup[[2]], graph = kpmSetup[[3]]
+      )
     }
 
-    #Get results
+    # Get results
     jsonResult <- rjson::fromJSON(result)
 
-    #Print status comment to console
+    # Print status comment to console
     print(jsonResult["comment"])
 
-    #Return results
+    # Return results
     return(jsonResult)
   })
 }
@@ -127,19 +135,19 @@ submit_kpm <- function(kpmSetup){
 #'
 #' @param remote_results The results returned from the remote run
 #'
-#' @return Result object
-save_remote_results <- function(remote_results){
+#' @return Result object.
+save_remote_results <- function(remote_results) {
   configurations <- list()
   graphs <- remote_results$resultGraphs
   for (i in 1:length(graphs)) {
     # Determine configuration e.g. K=5 and L=20
-    configuration = paste("K-", graphs[[i]]$k,"-L-", graphs[[i]]$l, sep = "")
+    configuration <- paste("K-", graphs[[i]]$k, "-L-", graphs[[i]]$l, sep = "")
 
     # Get interactions
     extracted_pathway_interactions <- graphs[[i]]$edges
     interactions_source <- c()
     interactions_target <- c()
-    for(j in 1:length(extracted_pathway_interactions)){
+    for (j in 1:length(extracted_pathway_interactions)) {
       interactions_source <- c(interactions_source, extracted_pathway_interactions[[j]]$source)
       interactions_target <- c(interactions_target, extracted_pathway_interactions[[j]]$target)
     }
@@ -147,33 +155,37 @@ save_remote_results <- function(remote_results){
     # Get nodes
     extracted_pathway_nodes <- graphs[[i]]$nodes
     nodes <- c()
-    for(k in 1:length(extracted_pathway_nodes)){
+    for (k in 1:length(extracted_pathway_nodes)) {
       nodes <- c(nodes, extracted_pathway_nodes[[k]]$id)
     }
 
     # Save results
-    if(!configuration %in% names(configurations)){
+    if (!configuration %in% names(configurations)) {
       # Create new entry for new configuration if configuration does not exist already
       configurations[[configuration]] <- new("Configuration", configuration = configuration, k = graphs[[i]]$k, l_values = list(L1 = graphs[[i]]$l), pathways = list())
     }
     # If it is the Union Set save it under configurations@union_network
-    if(graphs[[i]]$isUnionSet == TRUE){
+    if (graphs[[i]]$isUnionSet == TRUE) {
       configurations[[configuration]]@union_network <- new("Pathway",
-                                                           edges = data.frame(source = interactions_source, target = interactions_target),
-                                                           nodes =  data.frame(nodes = nodes),
-                                                           num_edges = length(interactions_source),
-                                                           num_nodes = length(nodes))
-    }else{
-    pathway = paste("Pathway-", length(configurations[[configuration]]@pathways) + 1, sep="")
-    configurations[[configuration]]@pathways <- append(configurations[[configuration]]@pathways,
-                                                       setNames(list(new("Pathway",
-                                                                         edges = data.frame(source = interactions_source, target = interactions_target),
-                                                                         nodes =  data.frame(nodes = nodes),
-                                                                         num_edges = length(interactions_source),
-                                                                         num_nodes = length(nodes))), pathway))
+        edges = data.frame(source = interactions_source, target = interactions_target),
+        nodes = data.frame(nodes = nodes),
+        num_edges = length(interactions_source),
+        num_nodes = length(nodes)
+      )
+    } else {
+      pathway <- paste("Pathway-", length(configurations[[configuration]]@pathways) + 1, sep = "")
+      configurations[[configuration]]@pathways <- append(
+        configurations[[configuration]]@pathways,
+        setNames(list(new("Pathway",
+          edges = data.frame(source = interactions_source, target = interactions_target),
+          nodes = data.frame(nodes = nodes),
+          num_edges = length(interactions_source),
+          num_nodes = length(nodes)
+        )), pathway)
+      )
     }
   }
-  return (new("Result", parameters = kpm_options(), configurations = configurations))
+  return(new("Result", parameters = kpm_options(), configurations = configurations))
 }
 
 #### Helper - Methods ####
@@ -186,7 +198,7 @@ save_remote_results <- function(remote_results){
 #'
 #' @return Encoded list of datasets with their respective questId.
 #' @importFrom foreach %do%
-dataset_list <- function(indicator_matrices){
+dataset_list <- function(indicator_matrices) {
   counter <- 0
   datasetList <- foreach::foreach(indicator.matrix = indicator_matrices) %do% {
     txt.con <- textConnection("tmp.file", "w")
@@ -205,11 +217,11 @@ dataset_list <- function(indicator_matrices){
 #' @param graph_file Path to graph file which should be encoded.
 #'
 #' @return Encoded network file or NULL if no graph file submitted.
-graph_kpm <- function(graph_file){
-  if(!is.null(graph_file)){
+graph_kpm <- function(graph_file) {
+  if (!is.null(graph_file)) {
     graph <- base64EncFile(graph_file)
-    graph <- rjson::toJSON(c(name =basename(graph_file), graphName = basename(graph_file), attachedToID = kpm_options()$session_id, contentBase64 = graph))
-  }else{
+    graph <- rjson::toJSON(c(name = basename(graph_file), graphName = basename(graph_file), attachedToID = kpm_options()$session_id, contentBase64 = graph))
+  } else {
     graph <- NULL
   }
   return(graph)
@@ -218,17 +230,20 @@ graph_kpm <- function(graph_file){
 #' Helper method for error handling
 #'
 #' @param surroundedFunc Function in which the TryCatch error handling should be applied.
-withTryCatch <- function(surroundedFunc){
-  tryCatch({
-    surroundedFunc()
-  }, error = function(e) {
-    if("COULDNT_CONNECT" %in% class(e)){
-      stop("Couldn't connect to url.")
-    }else{
-      stop(paste("Unexpected error:", e$message))
+withTryCatch <- function(surroundedFunc) {
+  tryCatch(
+    {
+      surroundedFunc()
+    },
+    error = function(e) {
+      if ("COULDNT_CONNECT" %in% class(e)) {
+        stop("Couldn't connect to url.")
+      } else {
+        stop(paste("Unexpected error:", e$message))
+      }
+      return(NULL)
     }
-    return(NULL)
-  })
+  )
 }
 
 #' Method to check up on a submitted job.
@@ -239,14 +254,14 @@ withTryCatch <- function(surroundedFunc){
 #'
 #' @return Status of the job for given quest_id
 #' @export
-get_status <- function(quest_id, url = "https://exbio.wzw.tum.de/keypathwayminer/"){
-  withTryCatch(function(){
-    url <- paste(url, "requests/runStatus", sep="")
+get_status <- function(quest_id, url = "https://exbio.wzw.tum.de/keypathwayminer/") {
+  withTryCatch(function() {
+    url <- paste(url, "requests/runStatus", sep = "")
     print(sprintf("url: %s", url))
     result <- RCurl::postForm(url, questID = quest_id)
     jsonResult <- rjson::fromJSON(result)
 
-    if(tolower(jsonResult["success"]) == "cancelled"){
+    if (tolower(jsonResult["success"]) == "cancelled") {
       print("Run has been cancelled.")
       return
     }
@@ -265,17 +280,17 @@ get_status <- function(quest_id, url = "https://exbio.wzw.tum.de/keypathwayminer
 #' @export
 #' @return If run was successful return result in json
 #' format otherwise null.
-get_results <- function(quest_id, url = "https://exbio.wzw.tum.de/keypathwayminer/"){
-  withTryCatch(function(){
-   url <- paste(url, "requests/results", sep = "")
+get_results <- function(quest_id, url = "https://exbio.wzw.tum.de/keypathwayminer/") {
+  withTryCatch(function() {
+    url <- paste(url, "requests/results", sep = "")
     print(sprintf("url: %s", url))
 
     result <- RCurl::postForm(url, questID = quest_id)
     jsonResult <- rjson::fromJSON(result)
 
-    if(tolower(jsonResult["success"]) == "true"){
+    if (tolower(jsonResult["success"]) == "true") {
       return(jsonResult)
-    }else{
+    } else {
       return(NULL)
     }
   })
@@ -291,12 +306,16 @@ get_results <- function(quest_id, url = "https://exbio.wzw.tum.de/keypathwaymine
 #' get_networks("https://exbio.wzw.tum.de/keypathwayminer/")
 #' @export
 #' @importFrom foreach %do%
-get_networks <- function(url = "https://exbio.wzw.tum.de/keypathwayminer/"){
-  kpm_url <- paste(url, "rest/availableNetworks/", sep="")
+get_networks <- function(url = "https://exbio.wzw.tum.de/keypathwayminer/") {
+  kpm_url <- paste(url, "rest/availableNetworks/", sep = "")
   result <- RCurl::getURL(kpm_url)
   jsonResult <- rjson::fromJSON(result)
-  networks <- foreach::foreach(network = jsonResult, .combine = append)%do%{network[[1]]}
-  names(networks) <- foreach::foreach(network = jsonResult, .combine = append) %do% {network[[2]]}
+  networks <- foreach::foreach(network = jsonResult, .combine = append) %do% {
+    network[[1]]
+  }
+  names(networks) <- foreach::foreach(network = jsonResult, .combine = append) %do% {
+    network[[2]]
+  }
   return(networks)
 }
 
@@ -308,9 +327,11 @@ get_networks <- function(url = "https://exbio.wzw.tum.de/keypathwayminer/"){
 #'
 #' @return Returns progress url for the respective run.
 #' @export
-quest_progress_url <- function(session_id, url = "https://exbio.wzw.tum.de/keypathwayminer/"){
+quest_progress_url <- function(session_id, url = "https://exbio.wzw.tum.de/keypathwayminer/") {
   kpm_progress_url <- paste(url, "requests/quests?attachedToId=",
-                            session_id, "&hideTitle=false", sep="")
+    session_id, "&hideTitle=false",
+    sep = ""
+  )
 
   return(kpm_progress_url)
 }
@@ -323,7 +344,6 @@ quest_progress_url <- function(session_id, url = "https://exbio.wzw.tum.de/keypa
 #' @param fileName String. Name of the file to be encoded.
 #'
 #' @return Base 64 eencoded file.
-base64EncFile <- function(file_name){
+base64EncFile <- function(file_name) {
   return(RCurl::base64(readChar(file_name, file.info(file_name)$size)))
 }
-

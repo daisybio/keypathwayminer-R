@@ -18,7 +18,7 @@ matrix a specific or ranged l-value.\cr\cr
  \strong{Example 1: } One matrix and not ranged:\cr\code{kpm_options(l_min=4)}\cr\cr
  \strong{Example 2: } Two matrices and not ranged:\cr\code{kpm_options(l_min=c(1,2))}\cr\cr
  \strong{Example 3: } Three matrices and ranged:\cr\code{kpm_options(l_min=c(1,2,4), l_step=c(1,1,2), l_max=c(2,3,8))}\cr\cr
-The \emph{n-th} position in each vector corresponds to the \emph{n-th} matrix.\cr\cr
+The \emph{n-th} position in each vector corresponds to the \emph{n-th} matrix/dataset.\cr\cr
 Note: The \strong{web service} does not allow individual fixed parameters to be set for each dataset at the moment.
 }
 \section{I. Options for remote and local use}{

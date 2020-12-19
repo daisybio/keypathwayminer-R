@@ -3,31 +3,32 @@
 #' @return TRUE if Java version 1.8 or higher is detected, FALSE otherwise
 #' @export
 #'
-#' @examples test_jvm()
-test_jvm <- function(){
-    # deterrmine java version
-    java_version <- .jcall("java/lang/System", "S", "getProperty", "java.runtime.version")
+#' @examples
+#' test_jvm()
+test_jvm <- function() {
+  # deterrmine java version
+  java_version <- .jcall("java/lang/System", "S", "getProperty", "java.runtime.version")
 
-    message(paste("Java version detected:", java_version))
-  if(startsWith(java_version,"1.8")){
-      message("\tA Java virtual machine is available and has a supported version.")
-      return(TRUE)
-  }else if(startsWith(java_version,"9")||
-             startsWith(java_version,"10")||
-             startsWith(java_version,"11")||
-             startsWith(java_version,"12")||
-             startsWith(java_version,"13")||
-             startsWith(java_version,"14")||
-             startsWith(java_version,"15")||
-             startsWith(java_version,"16")||
-             startsWith(java_version,"17")){
-      warning("KeyPathwayMineR was tested and build with Java 1.8.\nIf you encounter problems with the newer versions of Java, we recommend switching to Java 1.8.")
-      message("\tA Java virtual machine is available and has a supported version.")
-      return(TRUE)
-  }else {
-      warning("Java version other than 1.8 detected.\nMake sure you are using Java 1.8 or later. Versions older than Java 1.8 are not supported.")
-      return(FALSE)
-    }
+  message(paste("Java version detected:", java_version))
+  if (startsWith(java_version, "1.8")) {
+    message("\tA Java virtual machine is available and has a supported version.")
+    return(TRUE)
+  } else if (startsWith(java_version, "9") ||
+    startsWith(java_version, "10") ||
+    startsWith(java_version, "11") ||
+    startsWith(java_version, "12") ||
+    startsWith(java_version, "13") ||
+    startsWith(java_version, "14") ||
+    startsWith(java_version, "15") ||
+    startsWith(java_version, "16") ||
+    startsWith(java_version, "17")) {
+    warning("KeyPathwayMineR was tested and build with Java 1.8.\nIf you encounter problems with the newer versions of Java, we recommend switching to Java 1.8.")
+    message("\tA Java virtual machine is available and has a supported version.")
+    return(TRUE)
+  } else {
+    warning("Java version other than 1.8 detected.\nMake sure you are using Java 1.8 or later. Versions older than Java 1.8 are not supported.")
+    return(FALSE)
+  }
 }
 
 #' Resets kpm_options to default values
@@ -59,9 +60,9 @@ test_jvm <- function(){
 #' @export
 #'
 #' @return Reseted option_manager
-reset_options <- function(){
- settings::reset(kpm_options)
- message("Utils: Options reseted successfully.")
+reset_options <- function() {
+  settings::reset(kpm_options)
+  message("Utils: Options reseted successfully.")
 }
 
 #' Convertes numerical matrix to an indicator matrix
@@ -76,25 +77,25 @@ reset_options <- function(){
 #'
 #' @return Indicator matrix.
 #' @export
-to_indicator_matrix <- function(numerical_matrix, operator = "<", threshold = 0.05){
-    if(!is.null(numerical_matrix) & is.data.frame(numerical_matrix)){
-      # Split gene_id and expression values
-        ids = numerical_matrix[,1]
-        numerical_matrix = numerical_matrix[,2:length(numerical_matrix[])]
-        if(operator == ">"){
-            # if > threshold -> active
-            numerical_matrix = ifelse(numerical_matrix > threshold, 1, 0)
-            # Prepend gene_ids
-            return(data.frame(ID = ids, numerical_matrix))
-        }else if (operator == "<"){
-            #if < threshold -> active
-            numerical_matrix = ifelse(numerical_matrix < threshold, 1, 0)
-            # Prepend gene_ids
-            return(data.frame(ID = ids,numerical_matrix))
-        }else {
-            stop("Please provide a valid operator (< or >).")
-        }
-    }else {
-      stop("Please provide a valid matrix.")
+to_indicator_matrix <- function(numerical_matrix, operator = "<", threshold = 0.05) {
+  if (!is.null(numerical_matrix) & is.data.frame(numerical_matrix)) {
+    # Split gene_id and expression values
+    ids <- numerical_matrix[, 1]
+    numerical_matrix <- numerical_matrix[, 2:length(numerical_matrix[])]
+    if (operator == ">") {
+      # if > threshold -> active
+      numerical_matrix <- ifelse(numerical_matrix > threshold, 1, 0)
+      # Prepend gene_ids
+      return(data.frame(ID = ids, numerical_matrix))
+    } else if (operator == "<") {
+      # if < threshold -> active
+      numerical_matrix <- ifelse(numerical_matrix < threshold, 1, 0)
+      # Prepend gene_ids
+      return(data.frame(ID = ids, numerical_matrix))
+    } else {
+      stop("Please provide a valid operator (< or >).")
     }
+  } else {
+    stop("Please provide a valid matrix.")
+  }
 }

@@ -10,7 +10,7 @@ save_remote_results(remote_results)
 \item{remote_results}{The results returned from the remote run}
 }
 \value{
-Result object
+Result object.
 }
 \description{
 Method to save the results provided

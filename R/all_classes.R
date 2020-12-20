@@ -74,12 +74,12 @@ setMethod(f = "export_to_iGraph", signature = "Pathway", definition = function(p
 #' @param  pathway_object pathway object of a configuration.
 #' @param  sep seperator used to seperate the graph file.
 #' @param  format format of the file. If specified sep slot is not used.
-setGeneric(name = "export_graph", def = function(pathway_object, file, sep = "\t", format = "") standardGeneric("export_graph"))
+setGeneric(name = "export_edges", def = function(pathway_object, file, sep = "\t", format = "") standardGeneric("export_edges"))
 
 #' @export
 #' @importFrom tibble add_column
-#' @describeIn export_graph Use write.table to export a graph.
-setMethod(f = "export_graph", signature = "Pathway", definition = function(pathway_object, file, sep = "\t", format = "") {
+#' @describeIn export_edges Use write.table to export a graph.
+setMethod(f = "export_edges", signature = "Pathway", definition = function(pathway_object, file, sep = "\t", format = "") {
   if (format == "") {
     write.table(pathway_object@edges, file = file, quote = FALSE, sep = sep, row.names = FALSE, col.names = FALSE)
   } else if (tolower(format) == "sif") {
@@ -87,6 +87,21 @@ setMethod(f = "export_graph", signature = "Pathway", definition = function(pathw
   } else {
     message("The graph will not be exported because the format is not supported")
   }
+})
+
+
+
+#' Export node ids
+#'
+#'
+#' @param  file path where the file is saved
+#' @param  pathway_object pathway object of a configuration.
+setGeneric(name = "export_nodes", def = function(pathway_object, file) standardGeneric("export_nodes"))
+
+#' @export
+#' @describeIn export_nodes Use write.table to export a graph.
+setMethod(f = "export_nodes", signature = "Pathway", definition = function(pathway_object, file) {
+    write.table(pathway_object@nodes, file = file, quote = FALSE, row.names = FALSE, col.names = FALSE)
 })
 
 

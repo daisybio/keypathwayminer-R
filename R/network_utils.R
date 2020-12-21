@@ -3,6 +3,7 @@
 #' @param configuration  Configuration object for which the union network should be computed.
 #'
 #' @return The union network as a pathway object
+#' @importFrom igraph graph_from_data_frame
 create_union_network <- function(configuration) {
   pathways <- configuration@pathways
   # Creates a union network of all pathways of a specific configuration

@@ -177,8 +177,8 @@ kpm_options(
   with_perturbation = TRUE,
   perturbation_start = 10,
   perturbation_step = 10,
-  perturbation_max = 50,
-  graphs_per_step = 5
+  perturbation_max = 20,
+  graphs_per_step = 2
 )
 
 # Execute remote run by using a custom graph_file

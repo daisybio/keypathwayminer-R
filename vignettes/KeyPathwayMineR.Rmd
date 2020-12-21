@@ -1,9 +1,7 @@
 ---
-title: "KeyPathwayMineR"
+title: "KeyPathwayMineR - R Package for the web and standalone version of KeyPathwayMiner"
 date: FALSE
-output: 
-  BiocStyle::html_document:
-  collapse: TRUE
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{KeyPathwayMineR}
   %\VignetteEngine{knitr::rmarkdown}

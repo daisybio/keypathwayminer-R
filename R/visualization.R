@@ -1,6 +1,3 @@
-# # Load data to play with
-# load("~/Desktop/testdata/R data/huntigton-ines-batch-local.Rdata")
-
 #### Shiny ####
 #' Shiny App for KeyPathwayMineR results
 #'
@@ -132,8 +129,6 @@ visualize_result <- function(result) {
         sidebarLayout(
           sidebarPanel(
             width = 3,
-
-            # Input: Selector for choosing dataset ----
             selectInput(
               inputId = "configuration",
               label = "Choose a configuration:",

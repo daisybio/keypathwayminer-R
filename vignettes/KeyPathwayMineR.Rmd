@@ -41,7 +41,9 @@ huntington_disease_down <- as.data.frame.matrix(read.delim(
     package = "KeyPathwayMineR",
     "extdata/datasets",
     "huntington-gene-expression-DOWN.txt"
-  ), header = FALSE))
+  ),
+  header = FALSE
+))
 
 sample_network <- system.file("extdata", "sampleNetwork.sif", package = "KeyPathwayMineR")
 ```
@@ -85,8 +87,9 @@ huntington_disease_down <- as.data.frame.matrix(read.delim(
     package = "KeyPathwayMineR",
     "extdata/datasets",
     "huntington-gene-expression-DOWN.txt"
-  ), header = FALSE))
-
+  ),
+  header = FALSE
+))
 ```
 The entries of the huntington_disease_up dataset are p-values. To create an indicator matrix the to_indicator_matrix() function can be used.
 ```{r datasets_files_b}
@@ -272,7 +275,7 @@ settings::reset(kpm_options)
 
 kpm_options(
   execution = "Remote",
-  async = TRUE,
+  async = FALSE,
   strategy = "INES",
   algorithm = "Greedy",
   remove_bens = TRUE,

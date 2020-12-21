@@ -138,6 +138,10 @@ submit_kpm <- function(kpmSetup) {
 save_remote_results <- function(remote_results) {
   configurations <- list()
   graphs <- remote_results$resultGraphs
+  if(is.null(graphs)){
+    # If async == TRUE
+    return(new("ResultRemote", parameters = kpm_options(), configurations = configurations, json_result = remote_results))
+  }
   last_configuration <- ""
   for (i in 1:length(graphs)) {
     # Determine configuration e.g. K=5 and L=20
@@ -282,10 +286,9 @@ get_status <- function(quest_id, url = "https://exbio.wzw.tum.de/keypathwayminer
 #'
 #' @param quest_id Jobs respective quest_id.
 #'
-#' @export
 #' @return If run was successful return result in json
 #' format otherwise null.
-get_results <- function(quest_id, url = "https://exbio.wzw.tum.de/keypathwayminer/") {
+fetch_results <- function(quest_id, url = "https://exbio.wzw.tum.de/keypathwayminer/") {
   withTryCatch(function() {
     url <- paste(url, "requests/results", sep = "")
     print(sprintf("url: %s", url))

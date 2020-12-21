@@ -3,7 +3,6 @@
 #' @param configuration  Configuration object for which the union network should be computed.
 #'
 #' @return The union network as a pathway object
-#' @import from igraph graph_from_data_frame
 create_union_network <- function(configuration) {
   pathways <- configuration@pathways
   # Creates a union network of all pathways of a specific configuration
@@ -33,7 +32,6 @@ create_union_network <- function(configuration) {
 #' @param configuration  Configuration object for which the groups should be determined,
 #'
 #' @return Data frame with the node ids and the pathways they originate from
-#' @import from igraph graph_from_data_frame
 determine_union_groups <- function(union_nodes, configuration) {
   union_nodes[["group"]] <- list(c())
   pathways <- configuration@pathways

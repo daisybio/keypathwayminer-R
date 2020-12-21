@@ -23,7 +23,7 @@ call_kpm_local <- function(indicator_matrices, graph_file) {
     .jnew(class = "java/lang/String", properties_file)
   )
 
-  return(save_local_results(paste(getwd(), "/", path_to_local_results, "/tables/", sep = "")))
+  return(save_local_results(paste(getwd(), "/", path_to_local_results, sep = "")))
 }
 
 #' Method which transform kpm_options() to java arguments.
@@ -114,6 +114,7 @@ get_case_exceptions <- function(indicator_matrices, arguments) {
 #' @return Result object
 #' @importFrom magrittr %>%
 save_local_results <- function(path_to_results) {
+  message(path_to_results)
   # List to save all configurations
   configurations <- list()
   # If no results for specific configuration exist
@@ -129,6 +130,8 @@ save_local_results <- function(path_to_results) {
   # Sort identifiers
   case_exception_identifiers <- paste("L", as.numeric(gsub("L", "", case_exception_identifiers)), sep = "")
 
+  # temp variable to
+  old_configuration <- ""
   # Parse results
   for (i in 1:nrow(pathway_stats)) {
     # Determine configuration
@@ -142,6 +145,10 @@ save_local_results <- function(path_to_results) {
 
     # When the ID = 1 it means we have a new configuration
     if (pathway_stats[i, "PATHWAY_ID"] == 1) {
+      if (configuration != old_configuration && old_configuration != "") {
+        # When the configuration changes the union network for the previous configuration is determined
+        configurations[[old_configuration]]@union_network <- create_union_network(configuration = configurations[[old_configuration]])
+      }
       # Create new configuration
       configurations[[configuration]] <- new("Configuration", configuration = configuration, k = as.numeric(pathway_stats[i, "K"]), l_values = as.list(unlist(pathway_stats[i, case_exception_identifiers])), pathways = list())
 
@@ -153,11 +160,12 @@ save_local_results <- function(path_to_results) {
       }
 
       # Read nodes file for specific configuration
-      nodes <- vroom::vroom(paste(path_to_results, "/pathway-", configuration, "-nodes-KPM.txt", sep = ""), delim = "\t", col_names = c("pathway", "Node"))
+      nodes <- vroom::vroom(paste(path_to_results, "/pathway-", configuration, "-nodes-KPM.txt", sep = ""), delim = "\t", col_names = c("pathway", "node"))
 
       # Read interactions file for specific configuration
       interactions <- vroom::vroom(paste(path_to_results, "/pathway-", configuration, "-interactions-KPM.txt", sep = ""), delim = "\t", col_select = c(1, 2, 4), col_names = c("pathway", "source", "interaction", "target"))
       no_results <- FALSE
+      old_configuration <- configuration
     }
     if (!no_results) {
       # Determine number of pathway for specific configuration
@@ -178,6 +186,7 @@ save_local_results <- function(path_to_results) {
       )
     }
   }
-
+  # Add the last union network
+  configurations[[old_configuration]]@union_network <- create_union_network(configuration = configurations[[old_configuration]])
   return(new("Result", parameters = kpm_options(), configurations = configurations))
 }

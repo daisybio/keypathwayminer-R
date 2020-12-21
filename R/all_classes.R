@@ -101,7 +101,7 @@ setGeneric(name = "export_nodes", def = function(pathway_object, file) standardG
 #' @export
 #' @describeIn export_nodes Use write.table to export a graph.
 setMethod(f = "export_nodes", signature = "Pathway", definition = function(pathway_object, file) {
-    write.table(pathway_object@nodes, file = file, quote = FALSE, row.names = FALSE, col.names = FALSE)
+  write.table(pathway_object@nodes, file = file, quote = FALSE, row.names = FALSE, col.names = FALSE)
 })
 
 

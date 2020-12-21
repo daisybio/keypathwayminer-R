@@ -168,7 +168,7 @@ save_remote_results <- function(remote_results) {
     if (graphs[[i]]$isUnionSet == TRUE) {
       configurations[[configuration]]@union_network <- new("Pathway",
         edges = data.frame(source = interactions_source, target = interactions_target),
-        nodes = data.frame(nodes = nodes),
+        nodes = data.frame(node = nodes),
         num_edges = length(interactions_source),
         num_nodes = length(nodes)
       )

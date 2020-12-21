@@ -207,8 +207,7 @@ visualize_result <- function(result) {
           )
         )
       )
-    ),
-    tabPanel("Parameters")
+    )
   ))
 
   shinyApp(ui = ui, server = server)

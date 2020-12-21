@@ -10,6 +10,17 @@ setClass("Result",
   slots = c(parameters = "list", configurations = "list"),
   prototype = list(parameters = list(), configurations = list())
 )
+#' ResultRemote
+#'
+#' Contains one additional slot which saves
+#' the json as returned by the server.
+#'
+#' @slot json_result json_result returned from the restfulAPI.
+setClass("ResultRemote",
+         contains = "Result",
+         slots = c(json_result = "list"),
+         prototype = list(json_result = list()))
+
 
 
 #' A pathway of a specific configuration.
@@ -133,3 +144,22 @@ setGeneric(name = "get_pathways", def = function(result_object, configuration) s
 setMethod(f = "get_pathways", signature = "Result", definition = function(result_object, configuration) {
   return(result_object@configurations[[configuration]])
 })
+
+#' Return result url
+#'
+#' Only for remote execution
+#'
+#' @param result_object Result of the current run.
+#'
+#' @return Url to KPM web server.
+setGeneric(name = "get_result_url", def = function(result_object) standardGeneric("get_result_url"))
+
+#' @describeIn get_result_url Returns result URL
+#' @export
+setMethod(f = "get_result_url", signature = "ResultRemote", definition = function(result_object) {
+  return(result_object@json_result[["resultUrl"]])
+})
+
+
+
+

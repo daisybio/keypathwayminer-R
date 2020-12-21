@@ -3,7 +3,7 @@
 # does not need to be documented.
 MYPKGoptions <- settings::options_manager(
   execution = "Remote",
-  async = TRUE,
+  async = FALSE,
   session_id = NULL,
   url = "https://exbio.wzw.tum.de/keypathwayminer/",
   algorithm = "Greedy",

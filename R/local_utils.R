@@ -23,7 +23,7 @@ call_kpm_local <- function(indicator_matrices, graph_file) {
     .jnew(class = "java/lang/String", properties_file)
   )
 
-  return(save_local_results(paste(getwd(), "/", path_to_local_results, sep = "")))
+  return(save_local_results(path_to_local_results))
 }
 
 #' Method which transform kpm_options() to java arguments.
@@ -49,7 +49,7 @@ to_java_arguments <- function(indicator_matrices, graph_file) {
       sep = ""
     ))
 
-    arguments <- c(arguments, paste("-perturbation_technique=", kpm_options()$perturbation_technique, sep = ""))
+    arguments <- c(arguments, paste("-perturbationTechnique=", kpm_options()$perturbation_technique, sep = ""))
   }
   # Get graph file path
   arguments <- c(arguments, paste("-graphFile=", graph_file, sep = ""))
@@ -78,6 +78,9 @@ to_java_arguments <- function(indicator_matrices, graph_file) {
       arguments <- c(arguments, paste("-K=", kpm_options()$k_min, sep = ""))
     }
   }
+
+  # Add results folder to arguments
+  arguments <- c(arguments, paste("-resultsDir=", getwd(), "/results", sep = ""))
   return(.jarray(arguments))
 }
 

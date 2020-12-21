@@ -8,7 +8,6 @@
 #'
 #' @return Results object containing all execution_configurations and the input parameters of the current run.
 call_kpm_remote <- function(matrices, graph_file = NULL) {
-
   # Url of KeyPathwayMiner website
   url <- kpm_options()$url
 
@@ -113,10 +112,10 @@ submit_kpm <- function(kpmSetup) {
     } else {
       result <- RCurl::postForm(url,
         kpmSettings = kpmSetup[[1]],
-        datasets = kpmSetup[[2]], graph = kpmSetup[[3]]
+        datasets = kpmSetup[[2]],
+        graph = kpmSetup[[3]]
       )
     }
-
     # Get results
     jsonResult <- rjson::fromJSON(result)
 
@@ -139,24 +138,32 @@ submit_kpm <- function(kpmSetup) {
 save_remote_results <- function(remote_results) {
   configurations <- list()
   graphs <- remote_results$resultGraphs
+  last_configuration <- ""
   for (i in 1:length(graphs)) {
     # Determine configuration e.g. K=5 and L=20
     configuration <- paste("K-", graphs[[i]]$k, "-L-", graphs[[i]]$l, sep = "")
 
     # Get interactions
     extracted_pathway_interactions <- graphs[[i]]$edges
-    interactions_source <- c()
-    interactions_target <- c()
-    for (j in 1:length(extracted_pathway_interactions)) {
-      interactions_source <- c(interactions_source, extracted_pathway_interactions[[j]]$source)
-      interactions_target <- c(interactions_target, extracted_pathway_interactions[[j]]$target)
+    interactions_source <- character()
+    interactions_target <- character()
+
+    if (length(extracted_pathway_interactions) != 0) {
+      # In case pathway is not empty
+      for (j in 1:length(extracted_pathway_interactions)) {
+        interactions_source <- c(interactions_source, extracted_pathway_interactions[[j]]$source)
+        interactions_target <- c(interactions_target, extracted_pathway_interactions[[j]]$target)
+      }
     }
 
     # Get nodes
     extracted_pathway_nodes <- graphs[[i]]$nodes
-    nodes <- c()
-    for (k in 1:length(extracted_pathway_nodes)) {
-      nodes <- c(nodes, extracted_pathway_nodes[[k]]$id)
+    nodes <- character()
+
+    if (length(extracted_pathway_nodes) != 0) {
+      for (k in 1:length(extracted_pathway_nodes)) {
+        nodes <- c(nodes, extracted_pathway_nodes[[k]]$id)
+      }
     }
 
     # Save results
@@ -164,15 +171,8 @@ save_remote_results <- function(remote_results) {
       # Create new entry for new configuration if configuration does not exist already
       configurations[[configuration]] <- new("Configuration", configuration = configuration, k = graphs[[i]]$k, l_values = list(L1 = graphs[[i]]$l), pathways = list())
     }
-    # If it is the Union Set save it under configurations@union_network
-    if (graphs[[i]]$isUnionSet == TRUE) {
-      configurations[[configuration]]@union_network <- new("Pathway",
-        edges = data.frame(source = interactions_source, target = interactions_target),
-        nodes = data.frame(node = nodes),
-        num_edges = length(interactions_source),
-        num_nodes = length(nodes)
-      )
-    } else {
+
+    if (!graphs[[i]]$isUnionSet) {
       pathway <- paste("Pathway-", length(configurations[[configuration]]@pathways) + 1, sep = "")
       configurations[[configuration]]@pathways <- append(
         configurations[[configuration]]@pathways,
@@ -184,8 +184,13 @@ save_remote_results <- function(remote_results) {
         )), pathway)
       )
     }
+    last_configuration <- configuration
   }
-  return(new("Result", parameters = kpm_options(), configurations = configurations))
+
+  # We compute the union set with igraph since it provides with more information than we can obtain from the server result
+  configurations[[last_configuration]]@union_network <- create_union_network(configuration = configurations[[last_configuration]])
+
+  return(new("ResultRemote", parameters = kpm_options(), configurations = configurations, json_result = remote_results))
 }
 
 #### Helper - Methods ####

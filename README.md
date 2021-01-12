@@ -48,7 +48,7 @@ KeyPathwayMiner is currently available on github and can be installed through th
           install_github("baumbachlab/keypathwayminer-R", build_vignettes = TRUE)
           
       # Load and attach KeyPathwayMineR 
-      library(KeyPathwayMineR)
+      library("KeyPathwayMineR")
 
 If the initialization was successful you will get following output:
       

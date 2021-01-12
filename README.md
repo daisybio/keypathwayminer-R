@@ -9,7 +9,7 @@ Given a **biological network** and a **set of case-control studies**, KeyPathway
      
 Two different approaches for extracting subnetworks that are enriched for active/deregulated genes have been               implemented:
 
-  * **INES:**  Extract all maximal sub-networks containing nodes with no more than L inactive cases (0's) besides of K exceptions.
+  * **INES:**  Extract all maximal sub-networks containing nodes with no more than L inactive cases besides of K exceptions.
       
   * **GLONE:** Extracts maximal sub-networks where the total sum of **not**-active/diff. exp. cases is at most L. 
       
@@ -44,8 +44,8 @@ Users
 KeyPathwayMiner is currently available on github and can be installed through the devtools R package:
       
       # Install KeyPathwayMineR from github and build vignettes
-       if (!require("devtools")) install.packages("devtools")
-          install_github("baumbachlab/keypathwayminer-R", build_vignettes = TRUE)
+      if (!requireNamespace("devtools", quietly = TRUE)) install.packages("devtools")
+      devtools::install_github("baumbachlab/keypathwayminer-R", build_vignettes = TRUE)
           
       # Load and attach KeyPathwayMineR 
       library("KeyPathwayMineR")

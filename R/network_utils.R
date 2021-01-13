@@ -47,3 +47,18 @@ determine_union_groups <- function(union_nodes, configuration) {
   union_nodes$group <- lapply(X = union_nodes$group, FUN = function(x) paste(x, collapse = ", "))
   return(union_nodes)
 }
+
+#' Converts igraph object to sif file.
+#'
+#' @param biological_network Biologial network as igraph object.
+#' @param path Path where the file should be saved.
+#'
+#' @export
+#'
+#' @import igraph
+igraph_to_sif <- function(biological_netwrok, path) {
+  edges <- as_data_frame(biological_netwrok, what = c("edges"))
+  edges$interaction_type <- "pp"
+  edges <- edges[, c("from", "interaction_type", "to")]
+  write.table(edges, sep = "\t", file = path)
+}

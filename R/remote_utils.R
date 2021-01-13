@@ -138,7 +138,7 @@ submit_kpm <- function(kpmSetup) {
 save_remote_results <- function(remote_results) {
   configurations <- list()
   graphs <- remote_results$resultGraphs
-  if(is.null(graphs)){
+  if (is.null(graphs)) {
     # If async == TRUE
     return(new("ResultRemote", parameters = kpm_options(), configurations = configurations, json_result = remote_results))
   }

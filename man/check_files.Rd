@@ -4,12 +4,12 @@
 \alias{check_files}
 \title{Function which checks and processes files}
 \usage{
-check_files(indicator_matrices, graph_file)
+check_files(indicator_matrices, graph)
 }
 \arguments{
 \item{indicator_matrices}{Filepath, data.frame or as a list of both.}
 
-\item{graph_file}{Filepath to the graph file in sif format.}
+\item{graph}{Filepath to the graph file in sif format or an igraph object.}
 }
 \value{
 Returns the data prepared for the respective run (local or remote).

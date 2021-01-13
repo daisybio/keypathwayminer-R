@@ -4,13 +4,13 @@
 \alias{kpm}
 \title{Main method used for running KPM}
 \usage{
-kpm(indicator_matrices, graph_file = NULL)
+kpm(indicator_matrices, graph = NULL)
 }
 \arguments{
-\item{indicator_matrices}{List of paths to the indicator matrices.}
+\item{indicator_matrices}{List of paths to the indicator matrices or data.frames.}
 
-\item{graph_file}{Path of the graph file. NULL if you want to use
-a graph from the website (only for remote runs).
+\item{graph}{Path of the graph file or an igraph object.
+NULL if you want to use a graph from the web service (only for remote runs).
 Use getNetworks('https://exbio.wzw.tum.de/keypathwayminer/')
 to see all networks.}
 }

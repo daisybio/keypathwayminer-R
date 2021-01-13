@@ -6,17 +6,17 @@
 #' You can view or change the run parameters through the
 #' kpm_options() function.
 #'
-#' @param indicator_matrices List of paths to the indicator matrices.
-#' @param graph_file Path of the graph file. NULL if you want to use
-#' a graph from the website (only for remote runs).
+#' @param indicator_matrices List of paths to the indicator matrices or data.frames.
+#' @param graph Path of the graph file or an igraph object.
+#' NULL if you want to use a graph from the web service (only for remote runs).
 #' Use getNetworks('https://exbio.wzw.tum.de/keypathwayminer/')
 #' to see all networks.
 #' @export
-kpm <- function(indicator_matrices, graph_file = NULL) {
+kpm <- function(indicator_matrices, graph = NULL) {
   message(paste(">Run type: ", kpm_options()$execution))
 
   #### Prepare files ####
-  files <- check_files(indicator_matrices, graph_file)
+  files <- check_files(indicator_matrices, graph)
   indicator_matrices <- files[[1]]
   graph_file <- files[[2]]
 
@@ -41,14 +41,14 @@ kpm <- function(indicator_matrices, graph_file = NULL) {
 #' always return filepaths.
 #'
 #' @param indicator_matrices Filepath, data.frame or as a list of both.
-#' @param graph_file Filepath to the graph file in sif format.
+#' @param graph Filepath to the graph file in sif format or an igraph object.
 #'
 #' @return Returns the data prepared for the respective run (local or remote).
 #' Indicator matrices: List of paths for local run and list of data.frames for remote run.
 #' Graph file: Null if no graph_file provided else path to graph_file.
-check_files <- function(indicator_matrices, graph_file) {
+check_files <- function(indicator_matrices, graph) {
   #### Check indicator_matrices ####
-  message(">Checking files")
+  message(">Checking input files and data strucures")
   if (!is.null(indicator_matrices)) {
     matrices <- list()
     # Before we start we check whether indicator_matrices consists only of one element
@@ -78,7 +78,7 @@ check_files <- function(indicator_matrices, graph_file) {
           # If matrix is given as data.frame
           if (kpm_options()$execution == "Local") {
             # Create temporary file
-            message("Writing indicator matrix to temporary file")
+            message("Writing indicator matrix to temporary file.")
             matrix_file <- tempfile(fileext = ".txt")
             write.table(matrix,
               file = matrix_file,
@@ -118,27 +118,32 @@ check_files <- function(indicator_matrices, graph_file) {
   }
   message("\tIndicator matrices: checked")
   #### Check graph_file ####
-  if (!is.null(graph_file)) {
-    if (is.character(graph_file) & (!file.exists(graph_file) | tools::file_ext(graph_file) != "sif")) {
+  if (!is.null(graph)) {
+    if (class(graph) == "igraph") {
+      message("Writing igraph object to temporary file.")
+      # Create temporary file
+      graph <- tempfile(fileext = ".sif")
+      igraph_to_sif(biological_netwrok = graph, path = graph)
+    } else if (is.character(graph) & (!file.exists(graph) | tools::file_ext(graph) != "sif")) {
       stop(paste(
         "The filepath of the graph_file does not exist.",
         "\nMake sure the graph_file is in sif format and has a .sif extension.",
-        "\nGiven filepath: ", graph_file
+        "\nGiven filepath: ", graph
       ))
     }
     message("\tGraph file: checked")
-  } else if (is.null(graph_file) & kpm_options()$execution == "Local") {
+  } else if (is.null(graph) & kpm_options()$execution == "Local") {
     # In case a graph_file was not provide on a local run
     stop(paste("For local runs you must provide a graph_file.",
       "Make sure the graph_file is in sif format and has a .sif extension.",
       "For more information visit: https://exbio.wzw.tum.de/keypathwayminer/",
       sep = "\n"
     ))
-  } else if (is.null(graph_file) & kpm_options()$execution == "Remote") {
-    message("No graph file provided. Network will be selected from the web page using the graph_id.")
+  } else if (is.null(graph) & kpm_options()$execution == "Remote") {
+    message("No graph file provided. Network will be selected from the web service using the graph_id parameter.")
   }
   message(">File checks completed")
-  return(list(matrices, graph_file))
+  return(list(matrices, graph))
 }
 
 #' Function which check parameters

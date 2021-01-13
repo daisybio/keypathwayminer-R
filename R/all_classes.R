@@ -17,9 +17,10 @@ setClass("Result",
 #'
 #' @slot json_result json_result returned from the restfulAPI.
 setClass("ResultRemote",
-         contains = "Result",
-         slots = c(json_result = "list"),
-         prototype = list(json_result = list()))
+  contains = "Result",
+  slots = c(json_result = "list"),
+  prototype = list(json_result = list())
+)
 
 
 
@@ -173,7 +174,7 @@ setGeneric(name = "is_finished", def = function(result_object) standardGeneric("
 #' @describeIn is_finished returns status of remote run
 #' @export
 setMethod(f = "is_finished", signature = "ResultRemote", definition = function(result_object) {
-  completed = get_status(quest_id = result_object@json_result[["questID"]])$completed
+  completed <- get_status(quest_id = result_object@json_result[["questID"]])$completed
   return(completed)
 })
 
@@ -190,8 +191,6 @@ setGeneric(name = "get_results", def = function(result_object) standardGeneric("
 #' @describeIn get_results returns RemoteResult object
 #' @export
 setMethod(f = "get_results", signature = "ResultRemote", definition = function(result_object) {
-  remote_results = fetch_results(quest_id = result_object@json_result[["questID"]])
+  remote_results <- fetch_results(quest_id = result_object@json_result[["questID"]])
   return(save_remote_results(remote_results))
 })
-
-

@@ -185,7 +185,7 @@ kpm_options(
 )
 
 # Execute remote run by using a custom graph_file
-local_example_1 <- kpm(graph_file = sample_network, indicator_matrices = huntington_disease_up)
+local_example_1 <- kpm(graph = sample_network, indicator_matrices = huntington_disease_up)
 
 # Visualize the results with shiny
 visualize_result(local_example_1)
@@ -205,7 +205,7 @@ kpm_options(
 )
 
 # Run kpm
-local_example_2 <- kpm(graph_file = sample_network, indicator_matrices = indicator_matrices)
+local_example_2 <- kpm(graph = sample_network, indicator_matrices = indicator_matrices)
 
 # Visualize the results with shin
 visualize_result(local_example_2)
@@ -232,7 +232,7 @@ kpm_options(
 )
 
 # Run kpm
-local_example_3 <- kpm(graph_file = sample_network, indicator_matrices = indicator_matrices)
+local_example_3 <- kpm(graph = sample_network, indicator_matrices = indicator_matrices)
 
 # Visualize the results with shiny
 visualize_result(local_example_3)

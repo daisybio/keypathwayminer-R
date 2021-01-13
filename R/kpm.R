@@ -122,8 +122,9 @@ check_files <- function(indicator_matrices, graph) {
     if (class(graph) == "igraph") {
       message("Writing igraph object to temporary file.")
       # Create temporary file
-      graph <- tempfile(fileext = ".sif")
-      igraph_to_sif(biological_netwrok = graph, path = graph)
+      temp_path <- tempfile(fileext = ".sif")
+      igraph_to_sif(biological_netwrok = graph, path = temp_path)
+      graph <- temp_path
     } else if (is.character(graph) & (!file.exists(graph) | tools::file_ext(graph) != "sif")) {
       stop(paste(
         "The filepath of the graph_file does not exist.",

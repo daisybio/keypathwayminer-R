@@ -116,6 +116,7 @@ get_case_exceptions <- function(indicator_matrices, arguments) {
 #'
 #' @return Result object
 #' @importFrom magrittr %>%
+#' @import gtools
 save_local_results <- function(path_to_results) {
   # List to save all configurations and pathways
   configurations <- list()
@@ -194,5 +195,8 @@ save_local_results <- function(path_to_results) {
     # Add the last union network
     configurations[[old_configuration]]@union_network <- create_union_network(configuration = configurations[[old_configuration]])
   }
+  # Sort extracted pathways by conifugration name
+  configurations<- configurations[gtools::mixedsort(names(configurations), decreasing = FALSE)]
+
   return(new("Result", parameters = kpm_options(), configurations = configurations))
 }

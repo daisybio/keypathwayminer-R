@@ -80,13 +80,7 @@ check_files <- function(indicator_matrices, graph) {
             # Create temporary file
             message("Writing indicator matrix to temporary file.")
             matrix_file <- tempfile(fileext = ".txt")
-            write.table(matrix,
-              file = matrix_file,
-              quote = FALSE,
-              sep = "\t",
-              row.names = FALSE,
-              col.names = FALSE
-            )
+            export_matrix(matrix = matrix, path = matrix_file)
             # Add filepath to list
             matrices <- append(matrices, matrix_file)
           } else if (kpm_options()$execution == "Remote") {

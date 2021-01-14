@@ -60,5 +60,5 @@ igraph_to_sif <- function(biological_netwrok, path) {
   edges <- as_data_frame(biological_netwrok, what = c("edges"))
   edges$interaction_type <- "pp"
   edges <- edges[, c("from", "interaction_type", "to")]
-  write.table(edges, sep = "\t", file = path)
+  write.table(edges, row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t", file = path)
 }

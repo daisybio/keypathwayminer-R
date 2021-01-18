@@ -38,3 +38,38 @@ export_matrix <- function(matrix, path) {
     col.names = FALSE
   )
 }
+
+#' Convertes numerical matrix to an indicator matrix
+#'
+#' Users can select numerical matrix and upload a matrix of numerical values, e.g. p-values or fold changes.
+#' These can then be converted to an indicator matrix on the fly with a user-defined threshold.
+#'
+#' @param numerical_matrix Numerical matrix provided as data.frame.
+#' The first row consists of gene_ids and the matrix must not have a header.
+#' @param operator Operator for converting the matrix. Either "<" or ">".
+#' @param threshold Threshold to use for converting the matrix.
+#'
+#' @return Indicator matrix.
+#' @export
+to_indicator_matrix <- function(numerical_matrix, operator = "<", threshold = 0.05) {
+  if (!is.null(numerical_matrix) & is.data.frame(numerical_matrix)) {
+    # Split gene_id and expression values
+    ids <- numerical_matrix[, 1]
+    numerical_matrix <- numerical_matrix[, 2:length(numerical_matrix[])]
+    if (operator == ">") {
+      # if > threshold -> active
+      numerical_matrix <- ifelse(numerical_matrix > threshold, 1, 0)
+      # Prepend gene_ids
+      return(data.frame(ID = ids, numerical_matrix))
+    } else if (operator == "<") {
+      # if < threshold -> active
+      numerical_matrix <- ifelse(numerical_matrix < threshold, 1, 0)
+      # Prepend gene_ids
+      return(data.frame(ID = ids, numerical_matrix))
+    } else {
+      stop("Please provide a valid operator (< or >).")
+    }
+  } else {
+    stop("Please provide a valid matrix.")
+  }
+}

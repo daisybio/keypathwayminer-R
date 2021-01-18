@@ -3,11 +3,11 @@
 #'
 #' Method used to create a job submission.
 #'
-#' @param matrices List. Indicator matrices that will be used.
+#' @param indicator_matrices List. Indicator matrices that will be used.
 #' @param graph_file String. Path to graph_file.
 #'
 #' @return Results object containing all execution_configurations and the input parameters of the current run.
-call_kpm_remote <- function(matrices, graph_file = NULL) {
+call_kpm_remote <- function(indicator_matrices, graph_file = NULL) {
   # Url of KeyPathwayMiner website
   url <- kpm_options()$url
 
@@ -17,7 +17,7 @@ call_kpm_remote <- function(matrices, graph_file = NULL) {
   }
 
   # Create settings object and pass kpm_options parameters
-  kpmSetup <- setup_kpm(indicator_matrices = matrices, graph_file = graph_file)
+  kpmSetup <- setup_kpm(indicator_matrices = indicator_matrices, graph_file = graph_file)
 
   # Print out settings for debugging purposes
   print(sprintf("url: %s", url))
@@ -262,7 +262,6 @@ withTryCatch <- function(surroundedFunc) {
 #' @param quest_id String. The quest id this job has been attached to.
 #'
 #' @return Status of the job for given quest_id
-#' @export
 get_status <- function(quest_id, url = "https://exbio.wzw.tum.de/keypathwayminer/") {
   withTryCatch(function() {
     url <- paste(url, "requests/runStatus", sep = "")

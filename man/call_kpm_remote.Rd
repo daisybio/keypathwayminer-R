@@ -4,10 +4,10 @@
 \alias{call_kpm_remote}
 \title{Method for running KeyPathwayMineR remotely}
 \usage{
-call_kpm_remote(matrices, graph_file = NULL)
+call_kpm_remote(indicator_matrices, graph_file = NULL)
 }
 \arguments{
-\item{matrices}{List. Indicator matrices that will be used.}
+\item{indicator_matrices}{List. Indicator matrices that will be used.}
 
 \item{graph_file}{String. Path to graph_file.}
 }

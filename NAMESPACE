@@ -3,7 +3,6 @@
 export(compute_z_scores)
 export(export_matrix)
 export(get_networks)
-export(get_status)
 export(igraph_to_sif)
 export(kpm)
 export(kpm_options)

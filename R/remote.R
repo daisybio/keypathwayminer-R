@@ -354,3 +354,53 @@ quest_progress_url <- function(session_id, url = "https://exbio.wzw.tum.de/keypa
 base64EncFile <- function(file_name) {
   return(RCurl::base64(readChar(file_name, file.info(file_name)$size)))
 }
+
+#' Check if asynchronous remote run is finished
+#'
+#' Only for remote execution
+#'
+#' @param result_object Result of the current run.
+#'
+#' @return TRUE if results are ready. FALSE if still processing.
+#' @export
+is_finished <- function(result_object){
+  if(class(result_object)!="ResultRemote"){
+    stop("Result object must be of type ResultRemote.")
+  }
+  completed <- get_status(quest_id = result_object@json_result[["questID"]])$completed
+  return(completed)
+}
+
+#' Returns result url
+#'
+#' Only for remote execution
+#'
+#'  @param result_object Result of the current run.
+#'
+#'  @return Url to the results on the KPM web server.
+#'  @export
+get_result_url <- function(result_object){
+  if(class(result_object)!="ResultRemote"){
+    stop("Result object must be of type ResultRemote.")
+  }
+  return(result_object@json_result[["resultUrl"]])
+
+}
+
+#' Fetches result for remote run.
+#'
+#' Only for remote execution.
+#' The job must be completed to get the results.
+#' Completion can be checked with is_finished(result_object).
+#'
+#' @param result_object Result of the current run.
+#'
+#' @return Remote result object.
+#' @export
+get_results <- function(result_object){
+  if(class(result_object)!="ResultRemote"){
+    stop("Result object must be of type ResultRemote.")
+  }
+  remote_results <- fetch_results(quest_id = result_object@json_result[["questID"]])
+  return(save_remote_results(remote_results))
+}

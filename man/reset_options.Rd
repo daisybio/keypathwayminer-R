@@ -31,6 +31,5 @@ Default options:
  perturbation_technique = "nodeswap",
  unmapped_nodes = "Add to negative list",
  link_type = "OR",
- resource_folder = "/extdata",
  properties_file = "kpm.properties"
 }

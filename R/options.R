@@ -105,6 +105,29 @@ MYPKGoptions <- settings::options_manager(
 #'  \strong{Example 3: } Three matrices and ranged:\cr\code{kpm_options(l_min=c(1,2,4), l_step=c(1,1,2), l_max=c(2,3,8))}\cr\cr
 #' The \emph{n-th} position in each vector corresponds to the \emph{n-th} matrix/dataset.\cr\cr
 #' Note: The \strong{web service} does not allow individual fixed parameters to be set for each dataset at the moment.
+#'
+#' @section Default parameters:
+#'  execution = "Remote",
+#'  async = TRUE,
+#'  quest_id = NULL,
+#'  url = "https://exbio.wzw.tum.de/keypathwayminer/",
+#'  algorithm = "Greedy",
+#'  graph_id = 1,
+#'  strategy = "GLONE",
+#'  remove_bens = FALSE,
+#'  use_range_k = FALSE, k_min = 1, k_max = 3, k_step = 1,
+#'  use_range_l = FALSE, l_min =0, l_max = 0, l_step = 1,
+#'  l_same_percentage = FALSE, same_percentage = 0,
+#'  computed_pathways = 20,
+#'  perturbation_start = 10,
+#'  perturbation_step = 10,
+#'  perturbation_max = 20,
+#'  graphs_per_step = 1,
+#'  with_perturbation = FALSE,
+#'  perturbation_technique = "nodeswap",
+#'  unmapped_nodes = "Add to negative list",
+#'  link_type = "OR",
+#'  properties_file = "kpm.properties"
 #' @export
 kpm_options <- function(...) {
   # protect against the use of reserved words.
@@ -135,7 +158,6 @@ kpm_options <- function(...) {
 #'  perturbation_technique = "nodeswap",
 #'  unmapped_nodes = "Add to negative list",
 #'  link_type = "OR",
-#'  resource_folder = "/extdata",
 #'  properties_file = "kpm.properties"
 #'
 #' @export

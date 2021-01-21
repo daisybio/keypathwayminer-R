@@ -22,7 +22,10 @@ Imports:
     vroom,
     magrittr,
     igraph,
-    tibble
+    tibble,
+    shiny,
+    visNetwork,
+    gtools
 RoxygenNote: 7.1.1
 Suggests: 
     knitr,

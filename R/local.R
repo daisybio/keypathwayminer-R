@@ -116,7 +116,7 @@ get_case_exceptions <- function(indicator_matrices, arguments) {
 #'
 #' @return Result object
 #' @importFrom magrittr %>%
-#' @import gtools
+#' @importFrom gtools mixedsort
 save_local_results <- function(path_to_results) {
   # List to save all configurations and pathways
   configurations <- list()

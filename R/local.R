@@ -117,6 +117,7 @@ get_case_exceptions <- function(indicator_matrices, arguments) {
 #' @return Result object
 #' @importFrom magrittr %>%
 #' @importFrom gtools mixedsort
+#' @importFrom tibble tibble
 save_local_results <- function(path_to_results) {
   # List to save all configurations and pathways
   configurations <- list()
@@ -158,18 +159,26 @@ save_local_results <- function(path_to_results) {
         # Create new configuration
         configurations[[configuration]] <- new("Configuration", configuration = configuration, k = as.numeric(pathway_stats[i, "K"]), l_values = as.list(unlist(pathway_stats[i, case_exception_identifiers])), pathways = list())
 
-        # If the number of nodes for the current configuration is 0
-        if (pathway_stats[i, "# NODES"] == 0) {
+        # If the number of nodes and interactions for the current configuration is 0
+        if (pathway_stats[i, "# NODES"] == 0 & pathway_stats[i, "# EDGES"] == 0) {
           no_results <- TRUE
           # skip to next iteration and do not read tables for this specific configuration
           next
         }
 
-        # Read nodes file for specific configuration
-        nodes <- vroom::vroom(paste(path_to_results, "/pathway-", configuration, "-nodes-KPM.txt", sep = ""), delim = "\t", col_names = c("pathway", "node"))
+        if (pathway_stats[i, "# NODES"] != 0) {
+          # Read nodes file for specific configuration
+          nodes <- vroom::vroom(paste(path_to_results, "/pathway-", configuration, "-nodes-KPM.txt", sep = ""), delim = "\t", col_names = c("pathway", "node"))
+        } else {
+          nodes <- tibble::tibble(pathway = character(), node = character())
+        }
 
-        # Read interactions file for specific configuration
-        interactions <- vroom::vroom(paste(path_to_results, "/pathway-", configuration, "-interactions-KPM.txt", sep = ""), delim = "\t", col_select = c(1, 2, 4), col_names = c("pathway", "source", "interaction", "target"))
+        if (pathway_stats[i, "# EDGES"] != 0) {
+          # Read interactions file for specific configuration
+          interactions <- vroom::vroom(file = paste(path_to_results, "/pathway-", configuration, "-interactions-KPM.txt", sep = ""), delim = "\t", col_select = c(1, 2, 4), col_names = c("pathway", "source", "interaction", "target"))
+        } else {
+          interactions = tibble::tibble(pathway = character(), source = character(), interaction = character(), target = character())
+        }
         no_results <- FALSE
         old_configuration <- configuration
       }
@@ -196,7 +205,7 @@ save_local_results <- function(path_to_results) {
     configurations[[old_configuration]]@union_network <- create_union_network(configuration = configurations[[old_configuration]])
   }
   # Sort extracted pathways by conifugration name
-  configurations<- configurations[gtools::mixedsort(names(configurations), decreasing = FALSE)]
+  configurations <- configurations[gtools::mixedsort(names(configurations), decreasing = FALSE)]
 
   return(new("Result", parameters = kpm_options(), configurations = configurations))
 }

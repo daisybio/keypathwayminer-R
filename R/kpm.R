@@ -269,3 +269,8 @@ check_parameters <- function(indicator_matrices) {
 
   message(">Parameters checks complete")
 }
+
+
+
+
+

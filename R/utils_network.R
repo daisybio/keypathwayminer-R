@@ -6,6 +6,8 @@
 #' @importFrom igraph graph_from_data_frame
 create_union_network <- function(configuration) {
   pathways <- configuration@pathways
+
+  if(length(pathways)!=0){
   # Creates a union network of all pathways of a specific configuration
   for (i in 1:length(pathways)) {
     if (i == 1) {
@@ -25,7 +27,9 @@ create_union_network <- function(configuration) {
     nodes = nodes,
     num_edges = as.integer(igraph::ecount(union_network)),
     num_nodes = as.integer(igraph::vcount(union_network))
-  ))
+  ))}else{
+    return(new("Pathway"))
+  }
 }
 
 #' Determines from which pathways a node originates

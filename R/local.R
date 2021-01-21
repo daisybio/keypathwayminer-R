@@ -140,40 +140,40 @@ save_local_results <- function(path_to_results) {
     # temp variable to
     old_configuration <- ""
     # Parse results
-    for (i in 1:nrow(pathway_stats)) {
+    for (pathway in 1:nrow(pathway_stats)) {
       # Determine configuration
       # Node-exceptions
-      configuration <- paste("K-", pathway_stats[i, "K"], sep = "")
+      configuration <- paste("K-", pathway_stats[pathway, "K"], sep = "")
 
       # Case-exceptions
       for (identifier in case_exception_identifiers) {
-        configuration <- paste(configuration, "-", identifier, "-", pathway_stats[i, identifier], sep = "")
+        configuration <- paste(configuration, "-", identifier, "-", pathway_stats[pathway, identifier], sep = "")
       }
 
       # When the ID = 1 it means we have a new configuration
-      if (as.numeric(pathway_stats[i, "PATHWAY_ID"]) == 1) {
+      if (as.numeric(pathway_stats[pathway, "PATHWAY_ID"]) == 1) {
         if (configuration != old_configuration && old_configuration != "") {
           # When the configuration changes the union network for the previous configuration is determined
           configurations[[old_configuration]]@union_network <- create_union_network(configuration = configurations[[old_configuration]])
         }
         # Create new configuration
-        configurations[[configuration]] <- new("Configuration", configuration = configuration, k = as.numeric(pathway_stats[i, "K"]), l_values = as.list(unlist(pathway_stats[i, case_exception_identifiers])), pathways = list())
+        configurations[[configuration]] <- new("Configuration", configuration = configuration, k = as.numeric(pathway_stats[pathway, "K"]), l_values = as.list(unlist(pathway_stats[pathway, case_exception_identifiers])), pathways = list())
 
         # If the number of nodes and interactions for the current configuration is 0
-        if (pathway_stats[i, "# NODES"] == 0 & pathway_stats[i, "# EDGES"] == 0) {
+        if (pathway_stats[pathway, "# NODES"] == 0 & pathway_stats[pathway, "# EDGES"] == 0) {
           no_results <- TRUE
           # skip to next iteration and do not read tables for this specific configuration
           next
         }
 
-        if (pathway_stats[i, "# NODES"] != 0) {
+        if (pathway_stats[pathway, "# NODES"] != 0) {
           # Read nodes file for specific configuration
           nodes <- vroom::vroom(paste(path_to_results, "/pathway-", configuration, "-nodes-KPM.txt", sep = ""), delim = "\t", col_names = c("pathway", "node"))
         } else {
           nodes <- tibble::tibble(pathway = character(), node = character())
         }
 
-        if (pathway_stats[i, "# EDGES"] != 0) {
+        if (pathway_stats[pathway, "# EDGES"] != 0) {
           # Read interactions file for specific configuration
           interactions <- vroom::vroom(file = paste(path_to_results, "/pathway-", configuration, "-interactions-KPM.txt", sep = ""), delim = "\t", col_select = c(1, 2, 4), col_names = c("pathway", "source", "interaction", "target"))
         } else {
@@ -193,14 +193,15 @@ save_local_results <- function(path_to_results) {
           setNames(list(new("Pathway",
             edges = dplyr::filter(interactions, pathway == pathway_num) %>% dplyr::select(c(2, 3)),
             nodes = dplyr::filter(nodes, pathway == pathway_num) %>% dplyr::select(2),
-            num_edges = as.integer(pathway_stats[i, "# EDGES"]),
-            num_nodes = as.integer(pathway_stats[i, "# NODES"]),
-            avg_exp = as.numeric(pathway_stats[i, "AVG. DIFF. EXP. CASES"]),
-            info_content = as.numeric(gsub(",", ".", pathway_stats[i, "AVG. INFO. CONTENT"]))
+            num_edges = as.integer(pathway_stats[pathway, "# EDGES"]),
+            num_nodes = as.integer(pathway_stats[pathway, "# NODES"]),
+            avg_exp = as.numeric(pathway_stats[pathway, "AVG. DIFF. EXP. CASES"]),
+            info_content = as.numeric(gsub(",", ".", pathway_stats[pathway, "AVG. INFO. CONTENT"]))
           )), pathway)
         )
       }
     }
+    old_configuration <- configuration
     # Add the last union network
     configurations[[old_configuration]]@union_network <- create_union_network(configuration = configurations[[old_configuration]])
   }

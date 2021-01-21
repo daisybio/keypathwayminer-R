@@ -66,3 +66,34 @@ igraph_to_sif <- function(biological_netwrok, path) {
   edges <- edges[, c("from", "interaction_type", "to")]
   write.table(edges, row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t", file = path)
 }
+
+#' Computes pathway statistics for all pathways in a result object.
+#'
+#' @param indicator_matrix
+#' @param result
+#'
+#' @export
+pathway_statistics <- function(indicator_matrix, result) {
+  configurations <- get_configurations(result)
+  # For all configurations in the result object
+  for (configuration in configurations) {
+    pathways <- get_pathways(result_object = result, configuration = configuration)
+    # Pathways
+    for (pathway_name in names(pathways@pathways)) {
+      pathway <- get_pathway(configuration = pathways, pathway_name = pathway_name)
+      nodes <- pathway@nodes$node
+      pathway_matrix <- indicator_matrix[indicator_matrix$id %in% nodes, ]
+      pathway <- set_avg_exp(pathway = pathway, new_avg_exp = sum(rowSums(pathway_matrix[-1])) / length(nodes))
+      result <- set_pathway(result_object = result, configuration_name =  configuration, pathway_name = pathway_name, pathway = pathway)
+    }
+    # Union network
+    union_network <- pathways@union_network
+    nodes <- union_network@nodes$node
+    pathway_matrix <- indicator_matrix[indicator_matrix$id %in% nodes, ]
+    union_network <- set_avg_exp(pathway = pathways@union_network, new_avg_exp = sum(rowSums(pathway_matrix[-1])) / length(nodes))
+    result <- set_pathway(result_object = result, configuration_name =  configuration, pathway = union_network, union = TRUE)
+
+  }
+  return(result)
+}
+

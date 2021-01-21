@@ -145,3 +145,52 @@ setGeneric(name = "get_pathways", def = function(result_object, configuration) s
 setMethod(f = "get_pathways", signature = "Result", definition = function(result_object, configuration) {
   return(result_object@configurations[[configuration]])
 })
+
+
+#' Get specific pathway of a configuration
+#'
+#' @param configuration
+#' @param pathway_name Name of the pathway to be extracted.
+#'
+#' @return Pathway from given configuration with specific pathway name.
+setGeneric(name = "get_pathway", def = function(configuration, pathway_name) standardGeneric("get_pathway"))
+
+#' @describeIn get_pathway Return pathway with specific pathway name.
+#' @export
+setMethod(f = "get_pathway", signature = "Configuration", definition = function(configuration, pathway_name) {
+  return(configuration@pathways[[pathway_name]])
+})
+
+#' Set pathway
+#'
+#' @param result_object
+#' @param configuration_name
+#' @param pathway_name
+#' @param union Boolean. Whether the pathway is a union network.
+setGeneric(name = "set_pathway", def = function(result_object, configuration_name, pathway_name="", pathway, union=FALSE) standardGeneric("set_pathway"))
+
+#' @describeIn set_pathway Set pathway in the result object.
+setMethod("set_pathway", signature = "Result", definition =  function(result_object, configuration_name, pathway_name, pathway, union){
+  if(union){
+    result_object@configurations[[configuration_name]]@union_network <- pathway
+  }else{
+    result_object@configurations[[configuration_name]]@pathways[[pathway_name]] <- pathway
+  }
+  return(result_object)
+})
+
+
+
+#' Set average differential expressed cases per gene
+#' @param pathway Pathway for which to set the value.
+#' @param new_avg_exp New average expression value.
+setGeneric("set_avg_exp", def = function(pathway, new_avg_exp)standardGeneric("set_avg_exp"))
+
+#' @describeIn set_avg_exp Sets avg_exp for a specific pathway.
+setMethod("set_avg_exp", signature = "Pathway", definition =  function(pathway, new_avg_exp){
+  pathway@avg_exp <- new_avg_exp
+  return(pathway)
+  })
+
+
+

@@ -180,7 +180,6 @@ setMethod("set_pathway", signature = "Result", definition =  function(result_obj
 })
 
 
-
 #' Set average differential expressed cases per gene
 #' @param pathway Pathway for which to set the value.
 #' @param new_avg_exp New average expression value.
@@ -191,6 +190,54 @@ setMethod("set_avg_exp", signature = "Pathway", definition =  function(pathway, 
   pathway@avg_exp <- new_avg_exp
   return(pathway)
   })
+
+#' Set number of edges given pathway object
+#' @param pathway
+#' @param num_edges
+setGeneric("set_edges", def = function(pathway, num_edges)standardGeneric("set_edges"))
+
+#' @describeIn set_edges Sets num_edges for a specific pathway.
+setMethod("set_edges", signature = "Pathway", definition =  function(pathway, num_edges){
+  pathway@num_edges <- num_edges
+  return(pathway)
+})
+
+#' Set number of nodes given pathway object
+#' @param pathway
+#' @param num_edges
+setGeneric("set_nodes", def = function(pathway, num_nodes)standardGeneric("set_nodes"))
+
+#' @describeIn set_nodes Sets num_nodes for a specific pathway.
+setMethod("set_nodes", signature = "Pathway", definition =  function(pathway, num_nodes){
+  pathway@num_nodes <- num_nodes
+  return(pathway)
+})
+
+#' Removes configuration from result object
+#' @param result_object
+#' @param configuration_name
+setGeneric("remove_configuration", def = function(result_object, configuration_name)standardGeneric("remove_configuration"))
+
+#' @describeIn Remove given configuration.
+setMethod("remove_configuration", signature = "Result", definition =  function(result_object, configuration_name){
+  result_object@configurations[[configuration_name]] <- NULL
+  return(result_object)
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

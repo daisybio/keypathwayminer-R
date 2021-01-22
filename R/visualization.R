@@ -11,6 +11,15 @@
 #' @import shiny
 #' @import visNetwork
 visualize_result <- function(result) {
+  # Filter out configurations with 0 pathways
+  configurations <- get_configurations(result)
+  for (configuration in configurations) {
+    if (length(get_pathways(result_object = result, configuration = configuration)@pathways) == 0) {
+      # If no pathways exist remove configuration from solution set
+      result <- remove_configuration(result_object = result, configuration_name = configuration)
+    }
+  }
+
   if (length(result@configurations) != 0) {
     server <- function(input, output) {
       # Determine configuration and pathway
@@ -54,6 +63,11 @@ visualize_result <- function(result) {
         pathway <- result@configurations[[input$configuration]]@pathways[[input$pathway]]
         paste("Number of edges: ", pathway@num_edges)
       })
+      output$avg_exp <- renderText({
+        pathway <- result@configurations[[input$configuration]]@pathways[[input$pathway]]
+        paste("Avg. differential expressed cases per gene: ", pathway@avg_exp)
+      })
+
       output$union_nodes <- renderText({
         union_network <- result@configurations[[input$configuration_union]]@union_network
         paste("Number of nodes: ", union_network@num_nodes)
@@ -62,14 +76,16 @@ visualize_result <- function(result) {
         union_network <- result@configurations[[input$configuration_union]]@union_network
         paste("Number of edges: ", union_network@num_edges)
       })
-      output$avg_exp <- renderText({
-        pathway <- result@configurations[[input$configuration]]@pathways[[input$pathway]]
-        paste("Average expression: ", pathway@avg_exp)
+      output$union_avg_exp <- renderText({
+        union_network <- result@configurations[[input$configuration_union]]@union_network
+        paste("Avg. differential expressed cases per gene: ", union_network@avg_exp)
       })
-      output$info_content <- renderText({
-        pathway <- result@configurations[[input$configuration]]@pathways[[input$pathway]]
-        paste("Information content: ", pathway@info_content)
-      })
+
+
+      # output$info_content <- renderText({
+      #   pathway <- result@configurations[[input$configuration]]@pathways[[input$pathway]]
+      #   paste("Information content: ", pathway@info_content)
+      # })
 
       # Functionality of export edges button
       observeEvent(input$export_edges, {
@@ -91,9 +107,6 @@ visualize_result <- function(result) {
           paste("Nodes saved in:", path)
         })
       })
-
-
-
 
 
 
@@ -156,14 +169,16 @@ visualize_result <- function(result) {
               fluidRow(
                 h4("Pathway statistics:"),
                 column(
-                  width = 4,
+                  width = 3,
                   verbatimTextOutput("nodes"),
+                ),
+                column(
+                  width = 3,
                   verbatimTextOutput("edges")
                 ),
                 column(
-                  width = 4,
-                  verbatimTextOutput("avg_exp"),
-                  verbatimTextOutput("info_content")
+                  width = 3,
+                  verbatimTextOutput("avg_exp")
                 )
               )
             )
@@ -196,9 +211,14 @@ visualize_result <- function(result) {
             fluidRow(
               h4("Pathway statistics:"),
               column(
-                width = 4,
-                verbatimTextOutput("union_nodes"),
+                width = 3,
+                verbatimTextOutput("union_nodes")
+              ), column(
+                width = 3,
                 verbatimTextOutput("union_edges")
+              ), column(
+                width = 3,
+                verbatimTextOutput("union_avg_exp")
               )
             )
           )

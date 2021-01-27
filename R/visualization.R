@@ -1,4 +1,3 @@
-#### Shiny ####
 #' Shiny App for KeyPathwayMineR results
 #'
 #' App for visualization and extraction of
@@ -49,6 +48,7 @@ visualize_result <- function(result) {
         visNetwork(main = paste("Configuration: ", input$configuration_union), nodes, edges, footer = "Tipp: Zoom in to see the individual gene id's") %>%
           visOptions(selectedBy = list(variable = "group", multiple = TRUE, sort = FALSE)) %>%
           visGroups(useDefaultGroups = TRUE) %>%
+          visExport(type = "jpeg") %>%
           visIgraphLayout()
       })
 
@@ -77,14 +77,8 @@ visualize_result <- function(result) {
       })
       output$union_avg_exp <- renderText({
         union_network <- result@configurations[[input$configuration_union]]@union_network
-        paste("Avg. differential expressed cases per gene: ", union_network@avg_exp)
+        paste("Avg. DE cases per gene: ", union_network@avg_exp)
       })
-
-
-      # output$info_content <- renderText({
-      #   pathway <- result@configurations[[input$configuration]]@pathways[[input$pathway]]
-      #   paste("Information content: ", pathway@info_content)
-      # })
 
       # Functionality of export edges button
       observeEvent(input$export_edges, {

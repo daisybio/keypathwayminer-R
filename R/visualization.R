@@ -25,11 +25,19 @@ visualize_result <- function(result) {
       output$network <- renderVisNetwork({
         pathway <- result@configurations[[input$configuration]]@pathways[[input$pathway]]
         edges <- data.frame(from = pathway@edges$source, to = pathway@edges$target)
-        nodes <- data.frame(id = unlist(pathway@nodes), label = unlist(pathway@nodes), title = paste('<a target="_blank" href = "https://www.ncbi.nlm.nih.gov/gene/?term=', unlist(pathway@nodes), '">Gene id: ', unlist(pathway@nodes), " (Visit NCBI)</a>", sep = ""))
-        visNetwork(submain = paste("Configuration: ", input$configuration), main = input$pathway, nodes, edges, footer = "Tipp: Zoom in to be able to see the individual gene id's") %>%
-          visIgraphLayout() %>%
-          visExport(type = "jpeg") %>%
-          visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE)
+  nodes <- data.frame(id = unlist(pathway@nodes), label = unlist(pathway@nodes), title = paste('<a target="_blank" href = "https://www.ncbi.nlm.nih.gov/gene/?term=', unlist(pathway@nodes), '">Gene id: ', unlist(pathway@nodes), " (Visit NCBI)</a>", sep = ""))
+
+   if (nrow(edges) == 0 & nrow(nodes) > 0) {
+          # In cases no edges exist but notes were extracted
+          visNetwork(submain = paste("Configuration: ", input$configuration), main = input$pathway, nodes, edges, footer = "Tipp: Zoom in to see the individual gene id's") %>%
+            visExport(type = "jpeg") %>%
+            visOptions(nodesIdSelection = TRUE)
+        } else if (length(edges) > 0) {
+          visNetwork(submain = paste("Configuration: ", input$configuration), main = input$pathway, nodes, edges, footer = "Tipp: Zoom in to see the individual gene id's") %>%
+            visIgraphLayout() %>%
+            visExport(type = "jpeg") %>%
+            visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE)
+        }
       })
 
       # Display union networks for specific configuration
@@ -38,7 +46,7 @@ visualize_result <- function(result) {
         nodes <- data.frame(id = unlist(union_network@nodes$node), label = unlist(union_network@nodes$node), group = unlist(union_network@nodes$group), title = paste('<a target="_blank" href = "https://www.ncbi.nlm.nih.gov/gene/?term=', unlist(union_network@nodes$node), '">Gene id: ', unlist(union_network@nodes$node), " (Visit NCBI)</a>", sep = ""))
         edges <- data.frame(from = union_network@edges$source, to = union_network@edges$target)
 
-        visNetwork(main = paste("Configuration: ", input$configuration_union), nodes, edges, footer = "Tipp: Zoom in to be able to see the individual gene id's") %>%
+        visNetwork(main = paste("Configuration: ", input$configuration_union), nodes, edges, footer = "Tipp: Zoom in to see the individual gene id's") %>%
           visOptions(selectedBy = list(variable = "group", multiple = TRUE, sort = FALSE)) %>%
           visGroups(useDefaultGroups = TRUE) %>%
           visIgraphLayout()
@@ -56,7 +64,7 @@ visualize_result <- function(result) {
       })
       output$avg_exp <- renderText({
         pathway <- result@configurations[[input$configuration]]@pathways[[input$pathway]]
-        paste("Avg. differential expressed cases per gene: ", pathway@avg_exp)
+        paste("Avg. DE cases per gene: ", pathway@avg_exp)
       })
 
       output$union_nodes <- renderText({

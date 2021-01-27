@@ -4,7 +4,7 @@ Title: KeyPathwayMiner R-Package
 Description: The following package provides an easy way for using KeyPathwayMiner and visualize its results via R.
     The user can decide whether he wants to call KeyPathwayMiner on his computer (via standalone) or with the Web api.
      With the kpm_options object the arguments for the execution of the program can be easily set and viewed.
-Version: 0.0.0.901
+Version: 0.0.0.905
 Author: Markus List and Konstantinos Mechteridis
 Maintainer: The package maintainer <konstantinos.mechteridis@tum.de>
 License: GNU GENERAL PUBLIC LICENSE

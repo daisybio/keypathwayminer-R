@@ -76,7 +76,23 @@ igraph_to_sif <- function(biological_netwrok, path) {
 #' @export
 pathway_statistics <- function(indicator_matrix, result) {
   configurations <- get_configurations(result)
+  message("Computing pathway statistics.")
+  # Filter out configurations with 0 pathways ####
+  message("\tFiltering out configurations with no pathways.")
+  removed <- 0
+  for (configuration in configurations) {
+    if (length(get_pathways(result_object = result, configuration = configuration)@pathways) == 0) {
+      # If no pathways exist remove configuration from solution set
+      result <- remove_configuration(result_object = result, configuration_name = configuration)
+      removed = removed + 1
+    }
+  }
+  message(paste0("\tFiltering completed. Removed ",removed," configurations."))
+  # Get updated configurations
+  configurations <- get_configurations(result)
+  # Computing pathway statistics####
   message(paste0("Computing pathway statistics for ",length(configurations)," configurations and ",length(configurations)*result@parameters$computed_pathways," pathways."))
+
   # For all configurations in the result object
   for (configuration in configurations) {
     pathways <- get_pathways(result_object = result, configuration = configuration)
@@ -101,3 +117,20 @@ pathway_statistics <- function(indicator_matrix, result) {
   }
   return(result)
 }
+# TODO
+plot_union_network_comparison <- function(result) {
+  configurations <- get_configurations(result)
+  config <- c()
+  numNodes <- c()
+  avgDiffExp <- c()
+  for (configuration in configurations) {
+    pathways <- get_pathways(result_object = result, configuration = configuration)
+    union_network <- pathways@union_network
+    config <- c(config, configuration)
+    numNodes <- c(numNodes, union_network@num_nodes)
+    avgDiffExp <- c(avgDiffExp, union_network@avg_exp)
+  }
+  return(tibble(config=config,numNodes=numNodes,avgDiffExp=avgDiffExp))
+}
+
+

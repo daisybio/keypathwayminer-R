@@ -151,14 +151,19 @@ setMethod(f = "get_pathways", signature = "Result", definition = function(result
 #'
 #' @param configuration
 #' @param pathway_name Name of the pathway to be extracted.
+#' @param union Boolean. Whether the pathway is a union network.
 #'
 #' @return Pathway from given configuration with specific pathway name.
-setGeneric(name = "get_pathway", def = function(configuration, pathway_name) standardGeneric("get_pathway"))
+setGeneric(name = "get_pathway", def = function(configuration, pathway_name = "", union = FALSE) standardGeneric("get_pathway"))
 
 #' @describeIn get_pathway Return pathway with specific pathway name.
 #' @export
-setMethod(f = "get_pathway", signature = "Configuration", definition = function(configuration, pathway_name) {
-  return(configuration@pathways[[pathway_name]])
+setMethod(f = "get_pathway", signature = "Configuration", definition = function(configuration, pathway_name, union) {
+  if (union) {
+    configuration@union_network
+  } else {
+    return(configuration@pathways[[pathway_name]])
+  }
 })
 
 #' Set pathway
@@ -167,13 +172,13 @@ setMethod(f = "get_pathway", signature = "Configuration", definition = function(
 #' @param configuration_name
 #' @param pathway_name
 #' @param union Boolean. Whether the pathway is a union network.
-setGeneric(name = "set_pathway", def = function(result_object, configuration_name, pathway_name="", pathway, union=FALSE) standardGeneric("set_pathway"))
+setGeneric(name = "set_pathway", def = function(result_object, configuration_name, pathway_name = "", pathway, union = FALSE) standardGeneric("set_pathway"))
 
 #' @describeIn set_pathway Set pathway in the result object.
-setMethod("set_pathway", signature = "Result", definition =  function(result_object, configuration_name, pathway_name, pathway, union){
-  if(union){
+setMethod("set_pathway", signature = "Result", definition = function(result_object, configuration_name, pathway_name, pathway, union) {
+  if (union) {
     result_object@configurations[[configuration_name]]@union_network <- pathway
-  }else{
+  } else {
     result_object@configurations[[configuration_name]]@pathways[[pathway_name]] <- pathway
   }
   return(result_object)
@@ -183,21 +188,21 @@ setMethod("set_pathway", signature = "Result", definition =  function(result_obj
 #' Set average differential expressed cases per gene
 #' @param pathway Pathway for which to set the value.
 #' @param new_avg_exp New average expression value.
-setGeneric("set_avg_exp", def = function(pathway, new_avg_exp)standardGeneric("set_avg_exp"))
+setGeneric("set_avg_exp", def = function(pathway, new_avg_exp) standardGeneric("set_avg_exp"))
 
 #' @describeIn set_avg_exp Sets avg_exp for a specific pathway.
-setMethod("set_avg_exp", signature = "Pathway", definition =  function(pathway, new_avg_exp){
+setMethod("set_avg_exp", signature = "Pathway", definition = function(pathway, new_avg_exp) {
   pathway@avg_exp <- new_avg_exp
   return(pathway)
-  })
+})
 
 #' Set number of edges given pathway object
 #' @param pathway
 #' @param num_edges
-setGeneric("set_edges", def = function(pathway, num_edges)standardGeneric("set_edges"))
+setGeneric("set_edges", def = function(pathway, num_edges) standardGeneric("set_edges"))
 
 #' @describeIn set_edges Sets num_edges for a specific pathway.
-setMethod("set_edges", signature = "Pathway", definition =  function(pathway, num_edges){
+setMethod("set_edges", signature = "Pathway", definition = function(pathway, num_edges) {
   pathway@num_edges <- num_edges
   return(pathway)
 })
@@ -205,10 +210,10 @@ setMethod("set_edges", signature = "Pathway", definition =  function(pathway, nu
 #' Set number of nodes given pathway object
 #' @param pathway
 #' @param num_edges
-setGeneric("set_nodes", def = function(pathway, num_nodes)standardGeneric("set_nodes"))
+setGeneric("set_nodes", def = function(pathway, num_nodes) standardGeneric("set_nodes"))
 
 #' @describeIn set_nodes Sets num_nodes for a specific pathway.
-setMethod("set_nodes", signature = "Pathway", definition =  function(pathway, num_nodes){
+setMethod("set_nodes", signature = "Pathway", definition = function(pathway, num_nodes) {
   pathway@num_nodes <- num_nodes
   return(pathway)
 })
@@ -216,28 +221,10 @@ setMethod("set_nodes", signature = "Pathway", definition =  function(pathway, nu
 #' Removes configuration from result object
 #' @param result_object
 #' @param configuration_name
-setGeneric("remove_configuration", def = function(result_object, configuration_name)standardGeneric("remove_configuration"))
+setGeneric("remove_configuration", def = function(result_object, configuration_name) standardGeneric("remove_configuration"))
 
 #' @describeIn Remove given configuration.
-setMethod("remove_configuration", signature = "Result", definition =  function(result_object, configuration_name){
+setMethod("remove_configuration", signature = "Result", definition = function(result_object, configuration_name) {
   result_object@configurations[[configuration_name]] <- NULL
   return(result_object)
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

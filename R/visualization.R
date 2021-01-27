@@ -11,15 +11,6 @@
 #' @import shiny
 #' @import visNetwork
 visualize_result <- function(result) {
-  # Filter out configurations with 0 pathways
-  configurations <- get_configurations(result)
-  for (configuration in configurations) {
-    if (length(get_pathways(result_object = result, configuration = configuration)@pathways) == 0) {
-      # If no pathways exist remove configuration from solution set
-      result <- remove_configuration(result_object = result, configuration_name = configuration)
-    }
-  }
-
   if (length(result@configurations) != 0) {
     server <- function(input, output) {
       # Determine configuration and pathway

@@ -10,7 +10,7 @@ get_configurations(result_object)
 \S4method{get_configurations}{Result}(result_object)
 }
 \arguments{
-\item{result_object}{Result of the current run.}
+\item{result_object}{Result object obtained from a KeyPathwayMineR execution.}
 }
 \value{
 All configurations of a result.
@@ -20,6 +20,6 @@ Get all configuration names of a result
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{Result}: Retrun all configuration names of a results object.
+\item \code{Result}: return all configuration names of a results object.
 }}
 

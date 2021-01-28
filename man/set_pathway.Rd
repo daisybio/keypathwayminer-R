@@ -22,6 +22,12 @@ set_pathway(
 )
 }
 \arguments{
+\item{result_object}{Result object obtained from a KeyPathwayMineR execution.}
+
+\item{configuration_name}{Name of configuration for which to set the pathway.}
+
+\item{pathway_name}{Name of the pathway.}
+
 \item{union}{Boolean. Whether the pathway is a union network.}
 }
 \description{

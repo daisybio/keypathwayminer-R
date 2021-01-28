@@ -7,7 +7,9 @@
 pathway_statistics(indicator_matrix, result)
 }
 \arguments{
-\item{result}{}
+\item{indicator_matrix}{Indicator matrix for the computation of the pathway statistics.}
+
+\item{result}{Result object obtained from a KeyPathwayMiner execution.}
 }
 \description{
 Computes pathway statistics for all pathways in a result object.

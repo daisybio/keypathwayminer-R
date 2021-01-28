@@ -70,8 +70,8 @@ igraph_to_sif <- function(biological_netwrok, path) {
 
 #' Computes pathway statistics for all pathways in a result object.
 #'
-#' @param indicator_matrix
-#' @param result
+#' @param indicator_matrix Indicator matrix for the computation of the pathway statistics.
+#' @param result Result object obtained from a KeyPathwayMiner execution.
 #'
 #' @export
 pathway_statistics <- function(indicator_matrix, result) {
@@ -81,7 +81,7 @@ pathway_statistics <- function(indicator_matrix, result) {
   message("\tFiltering out configurations with no pathways.")
   removed <- 0
   for (configuration in configurations) {
-    if (length(get_pathways(result_object = result, configuration = configuration)@pathways) == 0) {
+    if (length(get_pathways(result_object = result, configuration_name = configuration)) == 0) {
       # If no pathways exist remove configuration from solution set
       result <- remove_configuration(result_object = result, configuration_name = configuration)
       removed = removed + 1
@@ -95,10 +95,10 @@ pathway_statistics <- function(indicator_matrix, result) {
 
   # For all configurations in the result object
   for (configuration in configurations) {
-    pathways <- get_pathways(result_object = result, configuration = configuration)
+    configuration_object <- get_configuration(result_object = result, configuration_name = configuration)
     # Pathways
-    for (pathway_name in names(pathways@pathways)) {
-      pathway <- get_pathway(configuration = pathways, pathway_name = pathway_name)
+    for (pathway_name in names(configuration_object@pathways)) {
+      pathway <- get_pathway(configuration = configuration_object, pathway_name = pathway_name)
       nodes <- pathway@nodes$node
       pathway_matrix <- indicator_matrix[indicator_matrix[,1] %in% nodes, ]
       pathway <- set_avg_exp(pathway = pathway, new_avg_exp = round(sum(rowSums(pathway_matrix[-1])) / length(nodes), 2))
@@ -107,30 +107,13 @@ pathway_statistics <- function(indicator_matrix, result) {
       result <- set_pathway(result_object = result, configuration_name = configuration, pathway_name = pathway_name, pathway = pathway)
     }
     # Union network
-    union_network <- pathways@union_network
+    union_network <- configuration_object@union_network
     nodes <- union_network@nodes$node
     pathway_matrix <- indicator_matrix[indicator_matrix[,1] %in% nodes, ]
-    union_network <- set_avg_exp(pathway = pathways@union_network, new_avg_exp = round(sum(rowSums(pathway_matrix[-1])) / length(nodes), 2))
+    union_network <- set_avg_exp(pathway = configuration_object@union_network, new_avg_exp = round(sum(rowSums(pathway_matrix[-1])) / length(nodes), 2))
     union_network <- set_edges(pathway = union_network, num_edges = nrow(union_network@edges))
     union_network <- set_nodes(pathway = union_network, num_nodes = length(nodes))
     result <- set_pathway(result_object = result, configuration_name = configuration, pathway = union_network, union = TRUE)
   }
   return(result)
 }
-# TODO
-plot_union_network_comparison <- function(result) {
-  configurations <- get_configurations(result)
-  config <- c()
-  numNodes <- c()
-  avgDiffExp <- c()
-  for (configuration in configurations) {
-    pathways <- get_pathways(result_object = result, configuration = configuration)
-    union_network <- pathways@union_network
-    config <- c(config, configuration)
-    numNodes <- c(numNodes, union_network@num_nodes)
-    avgDiffExp <- c(avgDiffExp, union_network@avg_exp)
-  }
-  return(tibble(config=config,numNodes=numNodes,avgDiffExp=avgDiffExp))
-}
-
-

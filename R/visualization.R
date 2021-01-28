@@ -24,9 +24,9 @@ visualize_result <- function(result) {
       output$network <- renderVisNetwork({
         pathway <- result@configurations[[input$configuration]]@pathways[[input$pathway]]
         edges <- data.frame(from = pathway@edges$source, to = pathway@edges$target)
-  nodes <- data.frame(id = unlist(pathway@nodes), label = unlist(pathway@nodes), title = paste('<a target="_blank" href = "https://www.ncbi.nlm.nih.gov/gene/?term=', unlist(pathway@nodes), '">Gene id: ', unlist(pathway@nodes), " (Visit NCBI)</a>", sep = ""))
+        nodes <- data.frame(id = unlist(pathway@nodes), label = unlist(pathway@nodes), title = paste('<a target="_blank" href = "https://www.ncbi.nlm.nih.gov/gene/?term=', unlist(pathway@nodes), '">Gene id: ', unlist(pathway@nodes), " (Visit NCBI)</a>", sep = ""))
 
-   if (nrow(edges) == 0 & nrow(nodes) > 0) {
+        if (nrow(edges) == 0 & nrow(nodes) > 0) {
           # In cases no edges exist but notes were extracted
           visNetwork(submain = paste("Configuration: ", input$configuration), main = input$pathway, nodes, edges, footer = "Tipp: Zoom in to see the individual gene id's") %>%
             visExport(type = "jpeg") %>%
@@ -223,4 +223,71 @@ visualize_result <- function(result) {
   } else {
     stop("Result object contains 0 extracted pathways. Visualization not possible.")
   }
+}
+
+#' Two pathway comparison plots.
+#'
+#' The first compares the union network
+#' of each configuration.
+#' The second compares the pathway with the
+#' highest number of nodes of each configuration.
+#'
+#' @param result Result object from KeyPathwayMineR execution.
+#'
+#' @return Return two ggplots objects with the comparison plots and
+#'         the data for creating the plots.
+#' @export
+#'
+#' @importFrom tibble tibble
+#' @import ggplot2
+pathway_comparison_plots <- function(result) {
+  # Union network comparison plot ####
+  configurations <- get_configurations(result)
+  config <- c()
+  numNodes <- c()
+  avgDiffExp <- c()
+  for (configuration in configurations) {
+    union_network <- get_pathway(configuration = get_configuration(result, configuration),union = TRUE)
+    config <- c(config, configuration)
+    numNodes <- c(numNodes, union_network@num_nodes)
+    avgDiffExp <- c(avgDiffExp, union_network@avg_exp)
+  }
+
+  union_network_comparison_data <- tibble::tibble(config = config, numNodes = numNodes, avgDiffExp = avgDiffExp)
+
+  union_network_comparison_plot <- ggplot(union_network_comparison_data, aes(x = numNodes, y = avgDiffExp)) +
+    geom_point(aes(col = config), size = 3) +
+    labs(
+      title = "Union network comparison",
+      subtitle = "Avg. de. cases per gene vs. number of genes",
+      y = "Average de cases cases per gene",
+      x = "Genes in the pathway",
+      col = "Configurations"
+    ) +
+    theme(legend.position = "right", plot.title = element_text(size = 20), text = element_text(size = 15))
+  # Best pathway comparison plot ####
+  config <- c()
+  numNodes <- c()
+  avgDiffExp <- c()
+  for (configuration in configurations) {
+    pathways <- get_pathways(result_object = result, configuration_name = configuration)
+    pathway <- pathways$`Pathway-1`
+    config <- c(config, configuration)
+    numNodes <- c(numNodes, pathway@num_nodes)
+    avgDiffExp <- c(avgDiffExp, pathway@avg_exp)
+  }
+  top_pathway_comparison_data <- tibble::tibble(config = config, numNodes = numNodes, avgDiffExp = avgDiffExp)
+  top_pathway_comparison_plot <- ggplot(top_pathway_comparison_data, aes(x = numNodes, y = avgDiffExp)) +
+    geom_point(aes(col = config), size = 3) +
+    labs(
+      title = "Best pathway of each configuration comparison",
+      subtitle = "Avg. de. cases per gene vs. number of genes",
+      y = "Average de cases cases per gene",
+      x = "Genes in the pathway",
+      col = "Configurations"
+    ) +
+    theme(legend.position = "right", plot.title = element_text(size = 20), text = element_text(size = 15))
+
+  return(list(union_network_comparison = list(plot = union_network_comparison_plot, data = union_network_comparison_data),
+              top_pathway_comparison = list(plot = top_pathway_comparison_plot, data = top_pathway_comparison_data)))
 }

@@ -22,8 +22,6 @@ setClass("ResultRemote",
   prototype = list(json_result = list())
 )
 
-
-
 #' A pathway of a specific configuration.
 #'
 #' @slot edges Edges of the pathway.
@@ -120,36 +118,51 @@ setMethod(f = "export_nodes", signature = "Pathway", definition = function(pathw
 ##### Result - Functions #####
 #' Get all configuration names of a result
 #'
-#' @param result_object Result of the current run.
+#' @param result_object Result object obtained from a KeyPathwayMineR execution.
 #'
 #' @return All configurations of a result.
 setGeneric(name = "get_configurations", def = function(result_object) standardGeneric("get_configurations"))
 
-#' @describeIn get_configurations Retrun all configuration names of a results object.
+#' @describeIn get_configurations return all configuration names of a results object.
 #' @export
 setMethod(f = "get_configurations", signature = "Result", definition = function(result_object) {
   return(names(result_object@configurations))
 })
 
+#' Get configuration object
+#'
+#' @param result_object Result object obtained from a KeyPathwayMineR execution.
+#' @param configuration_name Name of the configuration object.
+#'
+#' @return Configuration object.
+#'
+#' @examples
+setGeneric(name = "get_configuration", def = function(result_object, configuration_name) standardGeneric("get_configuration"))
+
+#' @describeIn get_configuration Given a result object and configuration name a configuration object is returned.
+#' @export
+setMethod(f = "get_configuration", signature = "Result", definition = function(result_object, configuration_name) {
+  return(result_object@configurations[[configuration_name]])
+})
 
 #' Get all pathways for a specific configuration
 #'
-#' @param result_object Result of the current run.
-#' @param configuration Specific configuration for which to get the pathways.
+#' @param result_object Result object obtained from a KeyPathwayMineR execution.
+#' @param configuration_name Specific configuration for which to get the pathways.
 #'
 #' @return All pathways of a specific configuration.
-setGeneric(name = "get_pathways", def = function(result_object, configuration) standardGeneric("get_pathways"))
+setGeneric(name = "get_pathways", def = function(result_object, configuration_name) standardGeneric("get_pathways"))
 
-#' @describeIn get_pathways Returns a list of pathways for a specific coniguration
+#' @describeIn get_pathways Returns a list of pathways for a specific configuration
 #' @export
-setMethod(f = "get_pathways", signature = "Result", definition = function(result_object, configuration) {
-  return(result_object@configurations[[configuration]])
+setMethod(f = "get_pathways", signature = "Result", definition = function(result_object, configuration_name) {
+  return(result_object@configurations[[configuration_name]]@pathways)
 })
 
 
 #' Get specific pathway of a configuration
 #'
-#' @param configuration
+#' @param configuration Specific configuration for which to get the pathways.
 #' @param pathway_name Name of the pathway to be extracted.
 #' @param union Boolean. Whether the pathway is a union network.
 #'
@@ -168,9 +181,9 @@ setMethod(f = "get_pathway", signature = "Configuration", definition = function(
 
 #' Set pathway
 #'
-#' @param result_object
-#' @param configuration_name
-#' @param pathway_name
+#' @param result_object Result object obtained from a KeyPathwayMineR execution.
+#' @param configuration_name Name of configuration for which to set the pathway.
+#' @param pathway_name Name of the pathway.
 #' @param union Boolean. Whether the pathway is a union network.
 setGeneric(name = "set_pathway", def = function(result_object, configuration_name, pathway_name = "", pathway, union = FALSE) standardGeneric("set_pathway"))
 
@@ -197,8 +210,8 @@ setMethod("set_avg_exp", signature = "Pathway", definition = function(pathway, n
 })
 
 #' Set number of edges given pathway object
-#' @param pathway
-#' @param num_edges
+#' @param pathway Pathway for which to set the number of edges.
+#' @param num_edges Number of edges.
 setGeneric("set_edges", def = function(pathway, num_edges) standardGeneric("set_edges"))
 
 #' @describeIn set_edges Sets num_edges for a specific pathway.
@@ -208,8 +221,8 @@ setMethod("set_edges", signature = "Pathway", definition = function(pathway, num
 })
 
 #' Set number of nodes given pathway object
-#' @param pathway
-#' @param num_edges
+#' @param pathway Pathway for which to set the number of nodes
+#' @param num_nodes Number of nodes
 setGeneric("set_nodes", def = function(pathway, num_nodes) standardGeneric("set_nodes"))
 
 #' @describeIn set_nodes Sets num_nodes for a specific pathway.
@@ -219,8 +232,8 @@ setMethod("set_nodes", signature = "Pathway", definition = function(pathway, num
 })
 
 #' Removes configuration from result object
-#' @param result_object
-#' @param configuration_name
+#' @param result_object Result object obtained from a KeyPathwayMineR execution.
+#' @param configuration_name Configuration name that should be removed.
 setGeneric("remove_configuration", def = function(result_object, configuration_name) standardGeneric("remove_configuration"))
 
 #' @describeIn Remove given configuration.

@@ -5,14 +5,14 @@
 \alias{get_pathways,Result-method}
 \title{Get all pathways for a specific configuration}
 \usage{
-get_pathways(result_object, configuration)
+get_pathways(result_object, configuration_name)
 
-\S4method{get_pathways}{Result}(result_object, configuration)
+\S4method{get_pathways}{Result}(result_object, configuration_name)
 }
 \arguments{
-\item{result_object}{Result of the current run.}
+\item{result_object}{Result object obtained from a KeyPathwayMineR execution.}
 
-\item{configuration}{Specific configuration for which to get the pathways.}
+\item{configuration_name}{Specific configuration for which to get the pathways.}
 }
 \value{
 All pathways of a specific configuration.
@@ -22,6 +22,6 @@ Get all pathways for a specific configuration
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{Result}: Returns a list of pathways for a specific coniguration
+\item \code{Result}: Returns a list of pathways for a specific configuration
 }}
 

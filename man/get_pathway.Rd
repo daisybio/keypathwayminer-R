@@ -5,12 +5,16 @@
 \alias{get_pathway,Configuration-method}
 \title{Get specific pathway of a configuration}
 \usage{
-get_pathway(configuration, pathway_name)
+get_pathway(configuration, pathway_name = "", union = FALSE)
 
-\S4method{get_pathway}{Configuration}(configuration, pathway_name)
+\S4method{get_pathway}{Configuration}(configuration, pathway_name = "", union = FALSE)
 }
 \arguments{
+\item{configuration}{Specific configuration for which to get the pathways.}
+
 \item{pathway_name}{Name of the pathway to be extracted.}
+
+\item{union}{Boolean. Whether the pathway is a union network.}
 }
 \value{
 Pathway from given configuration with specific pathway name.

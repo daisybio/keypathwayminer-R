@@ -14,12 +14,14 @@ A pathway of a specific configuration.
 
 \item{\code{nodes}}{Nodes of the pathway.}
 
+\item{\code{exception_nodes}}{Exception nodes in the pathway. Indicator list with 1 indicating a significant node and 0 an exception node. Should be in the same order as the entities in the nodes slot.}
+
 \item{\code{num_edges}}{Number of edges.}
 
 \item{\code{num_nodes}}{Number of nodes.}
 
-\item{\code{avg_exp}}{Average expression.}
+\item{\code{exception}}{Indicator list of  Number of exception nodes in the pathway.}
 
-\item{\code{info_content}}{Information content.}
+\item{\code{avg_exp}}{Average differentially expressed cases per gene.}
 }}
 

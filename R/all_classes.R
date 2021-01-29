@@ -28,24 +28,21 @@ setClass("ResultRemote",
 #' @slot nodes Nodes of the pathway.
 #' @slot num_edges Number of edges.
 #' @slot num_nodes Number of nodes.
-#' @slot avg_exp Average expression.
-#' @slot info_content Information content.
+#' @slot avg_exp Average differentially expressed cases per gene.
 setClass("Pathway",
   slots = c(
     edges = "data.frame",
     nodes = "data.frame",
     num_edges = "integer",
     num_nodes = "integer",
-    avg_exp = "numeric",
-    info_content = "numeric"
+    avg_exp = "numeric"
   ),
   prototype = list(
     edges = data.frame(),
     nodes = data.frame(),
     num_edges = NA_integer_,
     num_nodes = NA_integer_,
-    avg_exp = NA_real_,
-    info_content = NA_real_
+    avg_exp = NA_real_
   )
 )
 
@@ -99,10 +96,7 @@ setMethod(f = "export_edges", signature = "Pathway", definition = function(pathw
   }
 })
 
-
-
 #' Export node ids
-#'
 #'
 #' @param  file path where the file is saved
 #' @param  pathway_object pathway object of a configuration.
@@ -114,8 +108,6 @@ setMethod(f = "export_nodes", signature = "Pathway", definition = function(pathw
   write.table(pathway_object@nodes, file = file, quote = FALSE, row.names = FALSE, col.names = FALSE)
 })
 
-
-##### Result - Functions #####
 #' Get all configuration names of a result
 #'
 #' @param result_object Result object obtained from a KeyPathwayMineR execution.
@@ -212,10 +204,10 @@ setMethod("set_avg_exp", signature = "Pathway", definition = function(pathway, n
 #' Set number of edges given pathway object
 #' @param pathway Pathway for which to set the number of edges.
 #' @param num_edges Number of edges.
-setGeneric("set_edges", def = function(pathway, num_edges) standardGeneric("set_edges"))
+setGeneric("set_num_edges", def = function(pathway, num_edges) standardGeneric("set_num_edges"))
 
-#' @describeIn set_edges Sets num_edges for a specific pathway.
-setMethod("set_edges", signature = "Pathway", definition = function(pathway, num_edges) {
+#' @describeIn set_num_edges Sets num_edges for a specific pathway.
+setMethod("set_num_edges", signature = "Pathway", definition = function(pathway, num_edges) {
   pathway@num_edges <- num_edges
   return(pathway)
 })
@@ -223,13 +215,14 @@ setMethod("set_edges", signature = "Pathway", definition = function(pathway, num
 #' Set number of nodes given pathway object
 #' @param pathway Pathway for which to set the number of nodes
 #' @param num_nodes Number of nodes
-setGeneric("set_nodes", def = function(pathway, num_nodes) standardGeneric("set_nodes"))
+setGeneric("set_num_nodes", def = function(pathway, num_nodes) standardGeneric("set_num_nodes"))
 
-#' @describeIn set_nodes Sets num_nodes for a specific pathway.
-setMethod("set_nodes", signature = "Pathway", definition = function(pathway, num_nodes) {
+#' @describeIn set_num_nodes Sets num_nodes for a specific pathway.
+setMethod("set_num_nodes", signature = "Pathway", definition = function(pathway, num_nodes) {
   pathway@num_nodes <- num_nodes
   return(pathway)
 })
+
 
 #' Removes configuration from result object
 #' @param result_object Result object obtained from a KeyPathwayMineR execution.

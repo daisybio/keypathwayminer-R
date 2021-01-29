@@ -24,18 +24,30 @@ visualize_result <- function(result) {
       output$network <- renderVisNetwork({
         pathway <- result@configurations[[input$configuration]]@pathways[[input$pathway]]
         edges <- data.frame(from = pathway@edges$source, to = pathway@edges$target)
-        nodes <- data.frame(id = unlist(pathway@nodes), label = unlist(pathway@nodes), title = paste('<a target="_blank" href = "https://www.ncbi.nlm.nih.gov/gene/?term=', unlist(pathway@nodes), '">Gene id: ', unlist(pathway@nodes), " (Visit NCBI)</a>", sep = ""))
+
+        nodes <- data.frame(id = pathway@nodes$node, label = pathway@nodes$node,
+                            title = paste('<a target="_blank" href = "https://www.ncbi.nlm.nih.gov/gene/?term=',  pathway@nodes$node, '">Gene id: ',  pathway@nodes$node, " (Visit NCBI)</a>", sep = ""))
+
+         if(result@parameters$strategy=="INES"){
+          nodes <- cbind(nodes, group = as.character(pathway@nodes$exception))
+         }
 
         if (nrow(edges) == 0 & nrow(nodes) > 0) {
           # In cases no edges exist but notes were extracted
-          visNetwork(submain = paste("Configuration: ", input$configuration), main = input$pathway, nodes, edges, footer = "Tipp: Zoom in to see the individual gene id's") %>%
+          visNetwork(submain = paste("Configuration: ", input$configuration), main = input$pathway, nodes = nodes, edges = edges, footer = "Tipp: Zoom in to see the individual gene id's") %>%
             visExport(type = "jpeg") %>%
             visOptions(nodesIdSelection = TRUE)
         } else if (length(edges) > 0) {
-          visNetwork(submain = paste("Configuration: ", input$configuration), main = input$pathway, nodes, edges, footer = "Tipp: Zoom in to see the individual gene id's") %>%
+          network <- visNetwork(submain = paste("Configuration: ", input$configuration), main = input$pathway, nodes = nodes, edges = edges, footer = "Tipp: Zoom in to see the individual gene id's") %>%
             visIgraphLayout() %>%
             visExport(type = "jpeg") %>%
             visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE)
+          if(result@parameters$strategy=="INES"){
+            network <- network  %>%
+              visGroups(groupname = "TRUE", color = "red", shape = "square", shadow = list(enabled = TRUE)) %>%
+              visGroups(groupname = "FALSE", color = "green")
+          }
+          network
         }
       })
 
@@ -285,8 +297,7 @@ pathway_comparison_plots <- function(result) {
       y = "Average de cases cases per gene",
       x = "Genes in the pathway",
       col = "Configurations"
-    ) +
-    theme(legend.position = "right", plot.title = element_text(size = 20), text = element_text(size = 15))
+    ) + theme(legend.position = "right", plot.title = element_text(size = 20), text = element_text(size = 15))
 
   return(list(union_network_comparison = list(plot = union_network_comparison_plot, data = union_network_comparison_data),
               top_pathway_comparison = list(plot = top_pathway_comparison_plot, data = top_pathway_comparison_data)))

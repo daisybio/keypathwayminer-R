@@ -102,8 +102,19 @@ pathway_statistics <- function(indicator_matrix, result) {
       nodes <- pathway@nodes$node
       pathway_matrix <- indicator_matrix[indicator_matrix[,1] %in% nodes, ]
       pathway <- set_avg_exp(pathway = pathway, new_avg_exp = round(sum(rowSums(pathway_matrix[-1])) / length(nodes), 2))
-      pathway <- set_edges(pathway = pathway, num_edges = nrow(pathway@edges))
-      pathway <- set_nodes(pathway = pathway, num_nodes = length(nodes))
+      pathway <- set_num_edges(pathway = pathway, num_edges = nrow(pathway@edges))
+      pathway <- set_num_nodes(pathway = pathway, num_nodes = length(nodes))
+      if(result@parameters$strategy == "INES"){
+      # If it was an INES run we also determine the exception nodes of the pathway
+      # At most l exceptions are allowed
+       exceptions <- tibble(exception = !(ncol(pathway_matrix[-1]) - rowSums(pathway_matrix[-1]) <= configuration_object@l_values[1]), pathway_matrix[1])
+       # Get nodes that were not in the provide indicator matrix and set them as exception node since no information is provided
+       temp <- tibble(exception = c(TRUE), nodes[!as.character(nodes)%in%unlist(exceptions[,2])])
+       names(temp)[2] = names(exceptions)[2]
+       exceptions <-  rbind(exceptions, temp)
+       names(exceptions$exception) <- NULL
+       pathway@nodes <- merge(x = pathway@nodes, y = exceptions, by.x = "node", by.y = names(exceptions)[2])
+      }
       result <- set_pathway(result_object = result, configuration_name = configuration, pathway_name = pathway_name, pathway = pathway)
     }
     # Union network
@@ -111,8 +122,8 @@ pathway_statistics <- function(indicator_matrix, result) {
     nodes <- union_network@nodes$node
     pathway_matrix <- indicator_matrix[indicator_matrix[,1] %in% nodes, ]
     union_network <- set_avg_exp(pathway = configuration_object@union_network, new_avg_exp = round(sum(rowSums(pathway_matrix[-1])) / length(nodes), 2))
-    union_network <- set_edges(pathway = union_network, num_edges = nrow(union_network@edges))
-    union_network <- set_nodes(pathway = union_network, num_nodes = length(nodes))
+    union_network <- set_num_edges(pathway = union_network, num_edges = nrow(union_network@edges))
+    union_network <- set_num_nodes(pathway = union_network, num_nodes = length(nodes))
     result <- set_pathway(result_object = result, configuration_name = configuration, pathway = union_network, union = TRUE)
   }
   return(result)

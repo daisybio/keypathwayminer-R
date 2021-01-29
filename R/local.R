@@ -195,8 +195,7 @@ save_local_results <- function(path_to_results) {
             nodes = dplyr::filter(nodes, pathway == pathway_num) %>% dplyr::select(2),
             num_edges = as.integer(pathway_stats[pathway, "# EDGES"]),
             num_nodes = as.integer(pathway_stats[pathway, "# NODES"]),
-            avg_exp = as.numeric(pathway_stats[pathway, "AVG. DIFF. EXP. CASES"]),
-            info_content = as.numeric(gsub(",", ".", pathway_stats[pathway, "AVG. INFO. CONTENT"]))
+            avg_exp = as.numeric(pathway_stats[pathway, "AVG. DIFF. EXP. CASES"])
           )), pathway)
         )
       }

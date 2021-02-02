@@ -268,7 +268,7 @@ check_parameters <- function(indicator_matrices) {
   message("\tPerturbation parameters: checked")
   # Check positive and negative nodes ####
   if (!is.null(kpm_options()$positive_nodes)) {
-    if (!is.character(kpm_options()) | !is.atomic(kpm_options()$positive_nodes)) {
+    if (!is.character(kpm_options()$positive_nodes) | !is.atomic(kpm_options()$positive_nodes)) {
       stop("Element of option positive_nodes must be of type character and an atomic vector.")
     }
   }

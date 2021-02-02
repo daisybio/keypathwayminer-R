@@ -363,8 +363,8 @@ base64EncFile <- function(file_name) {
 #'
 #' @return TRUE if results are ready. FALSE if still processing.
 #' @export
-is_finished <- function(result_object){
-  if(class(result_object)!="ResultRemote"){
+is_finished <- function(result_object) {
+  if (class(result_object) != "ResultRemote") {
     stop("Result object must be of type ResultRemote.")
   }
   completed <- get_status(quest_id = result_object@json_result[["questID"]])$completed
@@ -379,12 +379,11 @@ is_finished <- function(result_object){
 #'
 #'  @return Url to the results on the KPM web server.
 #'  @export
-get_result_url <- function(result_object){
-  if(class(result_object)!="ResultRemote"){
+get_result_url <- function(result_object) {
+  if (class(result_object) != "ResultRemote") {
     stop("Result object must be of type ResultRemote.")
   }
   return(result_object@json_result[["resultUrl"]])
-
 }
 
 #' Fetches result for remote run.
@@ -397,8 +396,8 @@ get_result_url <- function(result_object){
 #'
 #' @return Remote result object.
 #' @export
-get_results <- function(result_object){
-  if(class(result_object)!="ResultRemote"){
+get_results <- function(result_object) {
+  if (class(result_object) != "ResultRemote") {
     stop("Result object must be of type ResultRemote.")
   }
   remote_results <- fetch_results(quest_id = result_object@json_result[["questID"]])

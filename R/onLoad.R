@@ -22,15 +22,15 @@
     # If jar is on the classpath and jvm is greater than 1.8
     message("KeyPathwayMineR remote and local ready for execution.")
     message("Use following command to get started: get_started()")
-  } else if(!standalone){
+  } else if (!standalone) {
     warning(paste("Local execution not possible at the moment. Jar not in classpath.",
       "\nVisit https://github.com/baumbachlab/keypathwayminer-R for more information.",
       sep = ""
     ))
-  }else if(!remote){
+  } else if (!remote) {
     warning(paste("Server is not responding.",
-                  "\nRemote execution not possible at the moment.",
-                  sep = ""
+      "\nRemote execution not possible at the moment.",
+      sep = ""
     ))
   }
 }

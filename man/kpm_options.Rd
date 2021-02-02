@@ -7,7 +7,31 @@
 kpm_options(...)
 }
 \arguments{
-\item{...}{Option names to retrieve option values or \code{[key]=[value]} pairs to set options.}
+\item{...}{Option names to retrieve option values or \code{[key]=[value]} pairs to set options.\cr\cr
+\strong{Default parameters:}\cr
+kpm_options(execution = "Remote",\cr
+async = TRUE,\cr
+quest_id = NULL,\cr
+url = "https://exbio.wzw.tum.de/keypathwayminer/",\cr
+algorithm = "Greedy",\cr
+graph_id = 1,\cr
+strategy = "GLONE",\cr
+remove_bens = FALSE,\cr
+use_range_k = FALSE, k_min = 1, k_max = 3, k_step = 1,\cr
+use_range_l = FALSE, l_min =0, l_max = 0, l_step = 1,\cr
+l_same_percentage = FALSE, same_percentage = 0,\cr
+computed_pathways = 20,\cr
+perturbation_start = 10,\cr
+perturbation_step = 10,\cr
+perturbation_max = 20,\cr
+graphs_per_step = 1,\cr
+with_perturbation = FALSE,\cr
+perturbation_technique = "nodeswap",\cr
+unmapped_nodes = "Add to negative list",\cr
+link_type = "OR",\cr
+properties_file = "kpm.properties",\cr
+matrix_header = FALSE,\cr
+negative_nodes, positive_nodes)}
 }
 \description{
 Set or get options for KeyPathwayMineR
@@ -30,6 +54,7 @@ Note: The \strong{web service} does not allow individual fixed parameters to be 
  \item{\code{remove_bens}}{ (\code{Boolean}) If TRUE border exception nodes will be removed}
  \item{\code{computed_pathways}}{ (\code{Integer}) The number of solutions that should be computed}
  \item{\code{link_type}}{ (\code{"OR", "AND","CUSTOM"}) Define how multiple datasets should be combined in the analysis}
+ \item{\code{matrix_header}}{ (\code{Boolean}) TRUE if input matrices have a header (Case/Sample description). FALSE if not.}
  }
 \strong{Gene exceptions K (only used for INES):}
 \itemize{
@@ -41,9 +66,9 @@ Note: The \strong{web service} does not allow individual fixed parameters to be 
 \strong{The case (L) exceptions for the n-th matrix:}
 \itemize{
  \item{\code{use_range_l}}{ (\code{Boolean}) If TRUE l_values will be ranged (batch run). If false the user only needs to set l_min}
- \item{\code{l_min}}{ (\code{Integer or Vector})  Starting value of l range or l value if l is not ranged}
- \item{\code{l_step}}{ (\code{Integer or Vector}) How l should be increased within the range}
- \item{\code{l_max}}{ (\code{Integer or Vector}) The maximum l value, i.e. the upper limit of the range}
+ \item{\code{l_min}}{ (\code{Integer or Integer vector})  Starting value of l range or l value if l is not ranged}
+ \item{\code{l_step}}{ (\code{Integer or Integer vector}) How l should be increased within the range}
+ \item{\code{l_max}}{ (\code{Integer or Integer vector}) The maximum l value, i.e. the upper limit of the range}
 }
 }
 
@@ -74,32 +99,9 @@ Note: The \strong{web service} does not allow individual fixed parameters to be 
   \item{\code{perturbation_start}}{ (\code{Integer})  Perturbation percentage range lower value}
   \item{\code{perturbation_step}}{ (\code{Integer}) Perturbation percentage step size}
   \item{\code{perturbation_max}}{ (\code{Integer}) Perturbation percentage range upper value}
-  \item{\code{graphs_per_step}}{ (\code{Integer}) Number of random graphs to be created (permutations)}
+  \item{\code{graphs_per_step}}{(\code{Integer}) Number of random graphs to be created (permutations)}
+  \item{\code{positive_nodes}}{(\code{Character vector}) Vector of node ids that should be considered active)}
+  \item{\code{negative_nodes}}{(\code{Character vector}) Vector of node ids that should be considered inactive)}
 }
-}
-
-\section{Default parameters}{
-
- execution = "Remote",
- async = TRUE,
- quest_id = NULL,
- url = "https://exbio.wzw.tum.de/keypathwayminer/",
- algorithm = "Greedy",
- graph_id = 1,
- strategy = "GLONE",
- remove_bens = FALSE,
- use_range_k = FALSE, k_min = 1, k_max = 3, k_step = 1,
- use_range_l = FALSE, l_min =0, l_max = 0, l_step = 1,
- l_same_percentage = FALSE, same_percentage = 0,
- computed_pathways = 20,
- perturbation_start = 10,
- perturbation_step = 10,
- perturbation_max = 20,
- graphs_per_step = 1,
- with_perturbation = FALSE,
- perturbation_technique = "nodeswap",
- unmapped_nodes = "Add to negative list",
- link_type = "OR",
- properties_file = "kpm.properties"
 }
 

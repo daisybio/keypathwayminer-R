@@ -7,7 +7,7 @@
 visualize_result(result)
 }
 \arguments{
-\item{result}{Result object obtained from a KeyPathwayMiner execution.}
+\item{result}{Result object obtained from a KeyPathwayMineR execution.}
 }
 \description{
 App for visualization and extraction of

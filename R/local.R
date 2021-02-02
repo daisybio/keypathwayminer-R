@@ -33,13 +33,13 @@ call_kpm_local <- function(indicator_matrices, graph_file) {
 to_java_arguments <- function(indicator_matrices, graph_file) {
   # List with arguments for local execution
   arguments <- c()
-  # Get algorithm
+  # Get algorithm ####
   arguments <- c(arguments, paste("-algo=", toupper(kpm_options()$algorithm), sep = ""))
-  # Get remove border exceptions node flag
+  # Get remove border exceptions node flag  ####
   if (kpm_options()$remove_bens) arguments <- c(arguments, "-removeBens", sep = "")
-  # Get case exceptions L
+  # Get case exceptions L ####
   arguments <- get_case_exceptions(indicator_matrices = indicator_matrices, arguments = arguments)
-  # Get perturbation parameters
+  # Get perturbation parameters ####
   if (kpm_options()$with_perturbation) {
     arguments <- c(arguments, paste("-perturbation=",
       kpm_options()$perturbation_start, ",",
@@ -51,19 +51,19 @@ to_java_arguments <- function(indicator_matrices, graph_file) {
 
     arguments <- c(arguments, paste("-perturbationTechnique=", kpm_options()$perturbation_technique, sep = ""))
   }
-  # Get graph file path
+  # Get graph file path ####
   arguments <- c(arguments, paste("-graphFile=", graph_file, sep = ""))
-  # Get indicator matrices
+  # Get indicator matrices  ####
   for (i in 1:length(indicator_matrices)) {
     arguments <- c(arguments, paste("-matrix", i, "=", indicator_matrices[i], sep = ""))
   }
-  # Computed pathways
+  # Computed pathways ####
   arguments <- c(arguments, paste("-maxSolutions=", kpm_options()$computed_pathways, sep = ""))
   # Combine operator if we have more than two matrices
   if (length(indicator_matrices) > 1) arguments <- c(arguments, paste("-combineOp=", kpm_options()$link_type, sep = ""))
-  # Add strategy glone to arguments
+  # Add strategy glone to arguments ####
   if (kpm_options()$strategy == "GLONE") arguments <- c(arguments, "-strategy=GLONE")
-  # Add strategy INES to arguments
+  # Add strategy INES to arguments ####
   if (kpm_options()$strategy == "INES") {
     arguments <- c(arguments, "-strategy=INES")
     if (kpm_options()$use_range_k) {
@@ -79,8 +79,21 @@ to_java_arguments <- function(indicator_matrices, graph_file) {
     }
   }
 
-  # Add results folder to arguments
+  # Add results folder to arguments ####
   arguments <- c(arguments, paste("-resultsDir=", getwd(), "/results", sep = ""))
+
+  # Get positive and negative nodes ####
+  if (!is.null(kpm_options()$positive_nodes)) {
+    positve_nodes_file <- tempfile(fileext = ".txt")
+    write.table(x = kpm_options()$positive_nodes, file = positve_nodes_file, quote = F, col.names = F, row.names = F)
+    arguments <- c(arguments, paste("-positiveFile=", positve_nodes_file, sep = ""))
+  }
+  if (!is.null(kpm_options()$negative_nodes)) {
+    negative_nodes_file <- tempfile(fileext = ".txt")
+    write.table(x = kpm_options()$negative_nodes, file = negative_nodes_file, quote = F, col.names = F, row.names = F)
+    arguments <- c(arguments, paste("-negativeFile=", negative_nodes_file, sep = ""))
+  }
+  # Return arguments ####
   return(.jarray(arguments))
 }
 
@@ -177,7 +190,7 @@ save_local_results <- function(path_to_results) {
           # Read interactions file for specific configuration
           interactions <- vroom::vroom(file = paste(path_to_results, "/pathway-", configuration, "-interactions-KPM.txt", sep = ""), delim = "\t", col_select = c(1, 2, 4), col_names = c("pathway", "source", "interaction", "target"))
         } else {
-          interactions = tibble::tibble(pathway = character(), source = character(), interaction = character(), target = character())
+          interactions <- tibble::tibble(pathway = character(), source = character(), interaction = character(), target = character())
         }
         no_results <- FALSE
         old_configuration <- configuration

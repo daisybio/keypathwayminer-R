@@ -11,7 +11,7 @@ kpm(indicator_matrices, graph = NULL)
 
 \item{graph}{Path of the graph file or an igraph object.
 NULL if you want to use a graph from the web service (only for remote runs).
-Use getNetworks('https://exbio.wzw.tum.de/keypathwayminer/')
+Use get_networks()
 to see all networks.}
 }
 \description{

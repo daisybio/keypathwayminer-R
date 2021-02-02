@@ -9,21 +9,21 @@
 #' @param indicator_matrices List of paths to the indicator matrices or data.frames.
 #' @param graph Path of the graph file or an igraph object.
 #' NULL if you want to use a graph from the web service (only for remote runs).
-#' Use getNetworks('https://exbio.wzw.tum.de/keypathwayminer/')
+#' Use get_networks()
 #' to see all networks.
 #' @export
 kpm <- function(indicator_matrices, graph = NULL) {
   message(paste(">Run type: ", kpm_options()$execution))
 
-  #### Prepare files ####
+  # Prepare files ####
   files <- check_files(indicator_matrices, graph)
   indicator_matrices <- files[[1]]
   graph_file <- files[[2]]
 
-  #### Check parameters ####
+  # Check parameters ####
   check_parameters(indicator_matrices)
 
-  #### Run KPM & Get results ####
+  # Run KPM & Get results ####
   if (kpm_options()$execution == "Remote") {
     results <- call_kpm_remote(indicator_matrices, graph_file)
   } else if (kpm_options()$execution == "Local") {
@@ -47,7 +47,7 @@ kpm <- function(indicator_matrices, graph = NULL) {
 #' Indicator matrices: List of paths for local run and list of data.frames for remote run.
 #' Graph file: Null if no graph_file provided else path to graph_file.
 check_files <- function(indicator_matrices, graph) {
-  #### Check indicator_matrices ####
+  # Check indicator_matrices ####
   message(">Checking input files and data strucures")
   if (!is.null(indicator_matrices)) {
     matrices <- list()
@@ -70,7 +70,7 @@ check_files <- function(indicator_matrices, graph) {
               # Create dataframe of filepath
               matrices <- append(
                 matrices,
-                list(as.data.frame.matrix(read.delim(matrix, header = FALSE)))
+                list(as.data.frame.matrix(read.delim(matrix, header = kpm_options()$matrix_header)))
               )
             }
           }
@@ -111,7 +111,7 @@ check_files <- function(indicator_matrices, graph) {
     ))
   }
   message("\tIndicator matrices: checked")
-  #### Check graph_file ####
+  # Check graph_file ####
   if (!is.null(graph)) {
     if (class(graph) == "igraph") {
       message("Writing igraph object to temporary file.")
@@ -152,7 +152,7 @@ check_files <- function(indicator_matrices, graph) {
 #'
 check_parameters <- function(indicator_matrices) {
   message(">Checking parameters")
-  #### Check case exceptions parameter ####
+  # Check case exceptions parameter ####
   if (kpm_options()$use_range_l) {
     if (kpm_options()$execution == "Local") {
       # Batch run for l parameter
@@ -214,7 +214,7 @@ check_parameters <- function(indicator_matrices) {
     }
   }
   message("\tCase exception parameters: checked")
-  #### Check gene exceptions parameter ####
+  # Check gene exceptions parameter ####
   if (kpm_options()$algorithm == "INES") {
     if (kpm_options()$use_range_k) {
       # For batch runs
@@ -253,24 +253,30 @@ check_parameters <- function(indicator_matrices) {
     }
   }
   message("\tGene exception parameters: checked")
-  #### Check perturbation parameters ####
+  # Check perturbation parameters ####
   if (kpm_options()$with_perturbation) {
     case_1 <- kpm_options()$perturbation_start <= 0
     case_2 <- kpm_options()$perturbation_start > kpm_options()$perturbation_max
     case_3 <- kpm_options()$perturbation_step == 0
     case_4 <- kpm_options()$perturbation_max - kpm_options()$perturbation_step < kpm_options()$perturbation_start
 
-    if (case_1) stop("Configuration is incorrect: Invalid l_max")
+    if (case_1) stop("Configuration is incorrect: Invalid l_max.")
     if (case_2) stop("Configuration is incorrect: Invalid l_min. It is larger than l_max.")
     if (case_3) stop("Configuration is incorrect: Invalid l_step. Must be larger than 0.")
-    if (case_4) stop("Configuration is incorrect: Incrementation must be in range")
+    if (case_4) stop("Configuration is incorrect: Incrementation must be in range.")
   }
   message("\tPerturbation parameters: checked")
-
+  # Check positive and negative nodes ####
+  if (!is.null(kpm_options()$positive_nodes)) {
+    if (!is.character(kpm_options()) | !is.atomic(kpm_options()$positive_nodes)) {
+      stop("Element of option positive_nodes must be of type character and an atomic vector.")
+    }
+  }
+  if (!is.null(kpm_options()$negative_nodes)) {
+    if (!is.character(kpm_options()$negative_nodes) | !is.atomic(kpm_options()$negative_nodes)) {
+      stop("Element of option negative_nodes must be of type character and atomic vector.")
+    }
+  }
+  message("\tPositive and negative nodes parameters: checked")
   message(">Parameters checks complete")
 }
-
-
-
-
-

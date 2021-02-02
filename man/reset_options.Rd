@@ -10,26 +10,5 @@ reset_options()
 Reseted option_manager
 }
 \description{
-Default options:
- execution = "Remote",
- async = TRUE,
- quest_id = NULL,
- url = "https://exbio.wzw.tum.de/keypathwayminer/",
- algorithm = "Greedy",
- graph_id = 1,
- strategy = "GLONE",
- remove_bens = FALSE,
- use_range_k = FALSE, k_min = 1, k_max = 3, k_step = 1,
- use_range_l = FALSE, l_min =0, l_max = 0, l_step = 1,
- l_same_percentage = FALSE, same_percentage = 0,
- computed_pathways = 20,
- perturbation_start = 10,
- perturbation_step = 10,
- perturbation_max = 20,
- graphs_per_step = 1,
- with_perturbation = FALSE,
- perturbation_technique = "nodeswap",
- unmapped_nodes = "Add to negative list",
- link_type = "OR",
- properties_file = "kpm.properties"
+Resets kpm_options to default values
 }

@@ -3,7 +3,7 @@
 #' App for visualization and extraction of
 #' KPM results.
 #'
-#' @param result Result object obtained from a KeyPathwayMiner execution.
+#' @param result Result object obtained from a KeyPathwayMineR execution.
 #'
 #' @export
 #'
@@ -25,12 +25,14 @@ visualize_result <- function(result) {
         pathway <- result@configurations[[input$configuration]]@pathways[[input$pathway]]
         edges <- data.frame(from = pathway@edges$source, to = pathway@edges$target)
 
-        nodes <- data.frame(id = pathway@nodes$node, label = pathway@nodes$node,
-                            title = paste('<a target="_blank" href = "https://www.ncbi.nlm.nih.gov/gene/?term=',  pathway@nodes$node, '">Gene id: ',  pathway@nodes$node, " (Visit NCBI)</a>", sep = ""))
+        nodes <- data.frame(
+          id = pathway@nodes$node, label = pathway@nodes$node,
+          title = paste('<a target="_blank" href = "https://www.ncbi.nlm.nih.gov/gene/?term=', pathway@nodes$node, '">Gene id: ', pathway@nodes$node, " (Visit NCBI)</a>", sep = "")
+        )
 
-         if(result@parameters$strategy=="INES"){
+        if (result@parameters$strategy == "INES") {
           nodes <- cbind(nodes, group = as.character(pathway@nodes$exception))
-         }
+        }
 
         if (nrow(edges) == 0 & nrow(nodes) > 0) {
           # In cases no edges exist but notes were extracted
@@ -42,8 +44,8 @@ visualize_result <- function(result) {
             visIgraphLayout() %>%
             visExport(type = "jpeg") %>%
             visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE)
-          if(result@parameters$strategy=="INES"){
-            network <- network  %>%
+          if (result@parameters$strategy == "INES") {
+            network <- network %>%
               visGroups(groupname = "TRUE", color = "red", shape = "square", shadow = list(enabled = TRUE)) %>%
               visGroups(groupname = "FALSE", color = "green")
           }
@@ -259,7 +261,7 @@ pathway_comparison_plots <- function(result) {
   numNodes <- c()
   avgDiffExp <- c()
   for (configuration in configurations) {
-    union_network <- get_pathway(configuration = get_configuration(result, configuration),union = TRUE)
+    union_network <- get_pathway(configuration = get_configuration(result, configuration), union = TRUE)
     config <- c(config, configuration)
     numNodes <- c(numNodes, union_network@num_nodes)
     avgDiffExp <- c(avgDiffExp, union_network@avg_exp)
@@ -297,8 +299,11 @@ pathway_comparison_plots <- function(result) {
       y = "Average de cases cases per gene",
       x = "Genes in the pathway",
       col = "Configurations"
-    ) + theme(legend.position = "right", plot.title = element_text(size = 20), text = element_text(size = 15))
+    ) +
+    theme(legend.position = "right", plot.title = element_text(size = 20), text = element_text(size = 15))
 
-  return(list(union_network_comparison = list(plot = union_network_comparison_plot, data = union_network_comparison_data),
-              top_pathway_comparison = list(plot = top_pathway_comparison_plot, data = top_pathway_comparison_data)))
+  return(list(
+    union_network_comparison = list(plot = union_network_comparison_plot, data = union_network_comparison_data),
+    top_pathway_comparison = list(plot = top_pathway_comparison_plot, data = top_pathway_comparison_data)
+  ))
 }

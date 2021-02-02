@@ -23,6 +23,9 @@ MYPKGoptions <- settings::options_manager(
   unmapped_nodes = "Add to negative list",
   link_type = "OR",
   properties_file = "kpm.properties",
+  matrix_header = FALSE,
+  positive_nodes = c(),
+  negative_nodes = c(),
   .allowed = list(
     execution = settings::inlist("Remote", "Local"),
     async = settings::inlist(TRUE, FALSE),
@@ -39,14 +42,38 @@ MYPKGoptions <- settings::options_manager(
     perturbation_max = settings::inrange(0, 100),
     with_perturbation = settings::inlist(TRUE, FALSE),
     perturbation_technique = settings::inlist("edgeremove", "edgerewire", "nodeswap"),
-    link_type = settings::inlist("OR", "AND", "CUSTOM")
+    link_type = settings::inlist("OR", "AND", "CUSTOM"),
+    matrix_header = settings::inlist(TRUE, FALSE)
   )
 )
 
 #' Set or get options for KeyPathwayMineR
 #'
-#' @param ... Option names to retrieve option values or \code{[key]=[value]} pairs to set options.
-#'
+#' @param ... Option names to retrieve option values or \code{[key]=[value]} pairs to set options.\cr\cr
+#'  \strong{Default parameters:}\cr
+#'  kpm_options(execution = "Remote",\cr
+#'  async = TRUE,\cr
+#'  quest_id = NULL,\cr
+#'  url = "https://exbio.wzw.tum.de/keypathwayminer/",\cr
+#'  algorithm = "Greedy",\cr
+#'  graph_id = 1,\cr
+#'  strategy = "GLONE",\cr
+#'  remove_bens = FALSE,\cr
+#'  use_range_k = FALSE, k_min = 1, k_max = 3, k_step = 1,\cr
+#'  use_range_l = FALSE, l_min =0, l_max = 0, l_step = 1,\cr
+#'  l_same_percentage = FALSE, same_percentage = 0,\cr
+#'  computed_pathways = 20,\cr
+#'  perturbation_start = 10,\cr
+#'  perturbation_step = 10,\cr
+#'  perturbation_max = 20,\cr
+#'  graphs_per_step = 1,\cr
+#'  with_perturbation = FALSE,\cr
+#'  perturbation_technique = "nodeswap",\cr
+#'  unmapped_nodes = "Add to negative list",\cr
+#'  link_type = "OR",\cr
+#'  properties_file = "kpm.properties",\cr
+#'  matrix_header = FALSE,\cr
+#'  negative_nodes, positive_nodes)
 #' @section I. Options for remote and local use:
 #' \itemize{
 #'  \item{\code{execution}}{ (\code{"Local" or "Remote"}) Execution type of KeyPathwayMineR. Either via RestfulAPI or standalobe jar}
@@ -55,6 +82,7 @@ MYPKGoptions <- settings::options_manager(
 #'  \item{\code{remove_bens}}{ (\code{Boolean}) If TRUE border exception nodes will be removed}
 #'  \item{\code{computed_pathways}}{ (\code{Integer}) The number of solutions that should be computed}
 #'  \item{\code{link_type}}{ (\code{"OR", "AND","CUSTOM"}) Define how multiple datasets should be combined in the analysis}
+#'  \item{\code{matrix_header}}{ (\code{Boolean}) TRUE if input matrices have a header (Case/Sample description). FALSE if not.}
 #'  }
 #' \strong{Gene exceptions K (only used for INES):}
 #' \itemize{
@@ -66,9 +94,9 @@ MYPKGoptions <- settings::options_manager(
 #' \strong{The case (L) exceptions for the n-th matrix:}
 #' \itemize{
 #'  \item{\code{use_range_l}}{ (\code{Boolean}) If TRUE l_values will be ranged (batch run). If false the user only needs to set l_min}
-#'  \item{\code{l_min}}{ (\code{Integer or Vector})  Starting value of l range or l value if l is not ranged}
-#'  \item{\code{l_step}}{ (\code{Integer or Vector}) How l should be increased within the range}
-#'  \item{\code{l_max}}{ (\code{Integer or Vector}) The maximum l value, i.e. the upper limit of the range}
+#'  \item{\code{l_min}}{ (\code{Integer or Integer vector})  Starting value of l range or l value if l is not ranged}
+#'  \item{\code{l_step}}{ (\code{Integer or Integer vector}) How l should be increased within the range}
+#'  \item{\code{l_max}}{ (\code{Integer or Integer vector}) The maximum l value, i.e. the upper limit of the range}
 #' }
 #'
 #' @section II. Parameters only for remote execution:
@@ -95,7 +123,9 @@ MYPKGoptions <- settings::options_manager(
 #'   \item{\code{perturbation_start}}{ (\code{Integer})  Perturbation percentage range lower value}
 #'   \item{\code{perturbation_step}}{ (\code{Integer}) Perturbation percentage step size}
 #'   \item{\code{perturbation_max}}{ (\code{Integer}) Perturbation percentage range upper value}
-#'   \item{\code{graphs_per_step}}{ (\code{Integer}) Number of random graphs to be created (permutations)}
+#'   \item{\code{graphs_per_step}}{(\code{Integer}) Number of random graphs to be created (permutations)}
+#'   \item{\code{positive_nodes}}{(\code{Character vector}) Vector of node ids that should be considered active)}
+#'   \item{\code{negative_nodes}}{(\code{Character vector}) Vector of node ids that should be considered inactive)}
 #' }
 #'
 #' @details \strong{Important note:} in the \strong{local} execution the user can specify for every
@@ -105,29 +135,6 @@ MYPKGoptions <- settings::options_manager(
 #'  \strong{Example 3: } Three matrices and ranged:\cr\code{kpm_options(l_min=c(1,2,4), l_step=c(1,1,2), l_max=c(2,3,8))}\cr\cr
 #' The \emph{n-th} position in each vector corresponds to the \emph{n-th} matrix/dataset.\cr\cr
 #' Note: The \strong{web service} does not allow individual fixed parameters to be set for each dataset at the moment.
-#'
-#' @section Default parameters:
-#'  execution = "Remote",
-#'  async = TRUE,
-#'  quest_id = NULL,
-#'  url = "https://exbio.wzw.tum.de/keypathwayminer/",
-#'  algorithm = "Greedy",
-#'  graph_id = 1,
-#'  strategy = "GLONE",
-#'  remove_bens = FALSE,
-#'  use_range_k = FALSE, k_min = 1, k_max = 3, k_step = 1,
-#'  use_range_l = FALSE, l_min =0, l_max = 0, l_step = 1,
-#'  l_same_percentage = FALSE, same_percentage = 0,
-#'  computed_pathways = 20,
-#'  perturbation_start = 10,
-#'  perturbation_step = 10,
-#'  perturbation_max = 20,
-#'  graphs_per_step = 1,
-#'  with_perturbation = FALSE,
-#'  perturbation_technique = "nodeswap",
-#'  unmapped_nodes = "Add to negative list",
-#'  link_type = "OR",
-#'  properties_file = "kpm.properties"
 #' @export
 kpm_options <- function(...) {
   # protect against the use of reserved words.
@@ -136,30 +143,6 @@ kpm_options <- function(...) {
 }
 
 #' Resets kpm_options to default values
-#'
-#' Default options:
-#'  execution = "Remote",
-#'  async = TRUE,
-#'  quest_id = NULL,
-#'  url = "https://exbio.wzw.tum.de/keypathwayminer/",
-#'  algorithm = "Greedy",
-#'  graph_id = 1,
-#'  strategy = "GLONE",
-#'  remove_bens = FALSE,
-#'  use_range_k = FALSE, k_min = 1, k_max = 3, k_step = 1,
-#'  use_range_l = FALSE, l_min =0, l_max = 0, l_step = 1,
-#'  l_same_percentage = FALSE, same_percentage = 0,
-#'  computed_pathways = 20,
-#'  perturbation_start = 10,
-#'  perturbation_step = 10,
-#'  perturbation_max = 20,
-#'  graphs_per_step = 1,
-#'  with_perturbation = FALSE,
-#'  perturbation_technique = "nodeswap",
-#'  unmapped_nodes = "Add to negative list",
-#'  link_type = "OR",
-#'  properties_file = "kpm.properties"
-#'
 #' @export
 #'
 #' @return Reseted option_manager

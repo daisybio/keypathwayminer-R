@@ -34,7 +34,7 @@ test_jvm <- function() {
 #' Functions which prints information on how to get started.
 #'
 #' @export
-get_started <- function(){
+get_started <- function() {
   message("Use following commands to get started:")
   message("\t1. vignette(\"KeyPathwayMineR\")")
   message("\t2. vignette(\"input_files_format\")")

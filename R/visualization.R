@@ -46,8 +46,8 @@ visualize_result <- function(result) {
             visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE)
           if (result@parameters$strategy == "INES") {
             network <- network %>%
-              visGroups(groupname = "TRUE", color = "red", shape = "square", shadow = list(enabled = TRUE)) %>%
-              visGroups(groupname = "FALSE", color = "green")
+              visGroups(groupname = "TRUE", color = "#fb8500", shape = "square", shadow = list(enabled = TRUE)) %>%
+              visGroups(groupname = "FALSE", color = "#023e8a")
           }
           network
         }
@@ -274,7 +274,7 @@ pathway_comparison_plots <- function(result) {
     labs(
       title = "Union network comparison",
       subtitle = "Avg. de. cases per gene vs. number of genes",
-      y = "Average de cases cases per gene",
+      y = "Average de. cases per gene",
       x = "Genes in the pathway",
       col = "Configurations"
     ) +

@@ -25,7 +25,8 @@ Imports:
     tibble,
     shiny,
     visNetwork,
-    gtools
+    gtools,
+    ggplot2
 RoxygenNote: 7.1.1
 Suggests: 
     knitr,

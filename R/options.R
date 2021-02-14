@@ -2,7 +2,7 @@
 # This function is not exported to user space and
 # does not need to be documented.
 MYPKGoptions <- settings::options_manager(
-  execution = "Remote",
+  execution = "Local",
   async = FALSE,
   session_id = NULL,
   url = "https://exbio.wzw.tum.de/keypathwayminer/",
@@ -51,7 +51,7 @@ MYPKGoptions <- settings::options_manager(
 #'
 #' @param ... Option names to retrieve option values or \code{[key]=[value]} pairs to set options.\cr\cr
 #'  \strong{Default parameters:}\cr
-#'  kpm_options(execution = "Remote",\cr
+#'  kpm_options(execution = "Local",\cr
 #'  async = TRUE,\cr
 #'  quest_id = NULL,\cr
 #'  url = "https://exbio.wzw.tum.de/keypathwayminer/",\cr
@@ -76,7 +76,7 @@ MYPKGoptions <- settings::options_manager(
 #'  negative_nodes, positive_nodes)
 #' @section I. Options for remote and local use:
 #' \itemize{
-#'  \item{\code{execution}}{ (\code{"Local" or "Remote"}) Execution type of KeyPathwayMineR. Either via RestfulAPI or standalobe jar}
+#'  \item{\code{execution}}{ (\code{"Local" or "Remote"}) Execution type of KeyPathwayMineR. Either via RestfulAPI or standalone jar}
 #'  \item{\code{algorithm}}{ (\code{"Greedy", "ACO", "Optimal"}) The algorithm that will be used to extract the pathways}
 #'  \item{\code{strategy}}{ (\code{"GLONE", "INES"}) The strategy that will be used to extract pathways}
 #'  \item{\code{remove_bens}}{ (\code{Boolean}) If TRUE border exception nodes will be removed}

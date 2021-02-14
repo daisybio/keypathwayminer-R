@@ -298,7 +298,7 @@ pathway_comparison_plots <- function(result) {
     geom_point(aes(col = config), size = 3) +
     labs(
       title = "Top pathway comparison",
-      y = "Average de cases per gene",
+      y = "Average de. cases per gene",
       x = "Genes in the pathway",
       col = "Configurations"
     ) + theme(legend.position = "right",

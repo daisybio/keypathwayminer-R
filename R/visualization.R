@@ -273,12 +273,15 @@ pathway_comparison_plots <- function(result) {
     geom_point(aes(col = config), size = 3) +
     labs(
       title = "Union network comparison",
-      subtitle = "Avg. de. cases per gene vs. number of genes",
       y = "Average de. cases per gene",
       x = "Genes in the pathway",
       col = "Configurations"
     ) +
-    theme(legend.position = "right", plot.title = element_text(size = 20), text = element_text(size = 15))
+    theme(legend.position = "right",
+          axis.title = element_text(size = 15, face = "bold"),
+          plot.title = element_text(size = 25, face = "bold"),
+          legend.title = element_text(size = 15, face = "bold"),
+          plot.caption = element_text(size = 12), text = element_text(size = 15))
   # Best pathway comparison plot ####
   config <- c()
   numNodes <- c()
@@ -294,13 +297,19 @@ pathway_comparison_plots <- function(result) {
   top_pathway_comparison_plot <- ggplot(top_pathway_comparison_data, aes(x = numNodes, y = avgDiffExp)) +
     geom_point(aes(col = config), size = 3) +
     labs(
-      title = "Best pathway of each configuration comparison",
-      subtitle = "Avg. de. cases per gene vs. number of genes",
-      y = "Average de cases cases per gene",
+      title = "Top pathway comparison",
+      y = "Average de cases per gene",
       x = "Genes in the pathway",
       col = "Configurations"
-    ) +
-    theme(legend.position = "right", plot.title = element_text(size = 20), text = element_text(size = 15))
+    ) + theme(legend.position = "right",
+          axis.title = element_text(size = 15, face = "bold"),
+          plot.title = element_text(size = 25, face = "bold"),
+          legend.title = element_text(size = 15, face = "bold"),
+          plot.caption = element_text(size = 12), text = element_text(size = 15))
+
+
+
+
 
   return(list(
     union_network_comparison = list(plot = union_network_comparison_plot, data = union_network_comparison_data),

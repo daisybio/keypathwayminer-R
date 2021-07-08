@@ -23,6 +23,8 @@ Overview
    * [Get started](#get-started)
       * [Users](#users)
       * [Developers](#developers)
+* [Typical workflow](#typical-workflow)
+
 * [Common problems](#common-problems)
 <!--te-->
 
@@ -71,7 +73,11 @@ If you want to play around or work on the code you can clone the repo:
 Opent the *KeyPathwayMineR.Rproj* file to open the package. To get started install the following libraries:
 
       install.packages(c("devtools", "roxygen2", "testthat", "knitr"))
-     
+
+Typical workflow
+============ 
+<img src="inst/image/typical_workflow.png"/> 
+
  Common problems
 =================
 * If you have problems with R using the correct Java version, this guide may be helpful [here](https://github.com/Utah-Data-Science/Home_repo/wiki/Getting-R-to-use-the-correct-Java-version).

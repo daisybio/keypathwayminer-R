@@ -76,8 +76,8 @@ setup_kpm <- function(indicator_matrices, graph_file) {
       )),
       linkType = kpm_options()$link_type,
       attachedToID = kpm_options()$session_id,
-      positiveNodes = "",
-      negativeNodes = ""
+      positiveNodes = kpm_options()$positive_nodes,
+      negativeNodes = kpm_options()$negative_nodes
     )
   )
 

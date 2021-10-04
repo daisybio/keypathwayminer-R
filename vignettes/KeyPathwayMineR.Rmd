@@ -17,10 +17,6 @@ knitr::opts_chunk$set(
 ```
 
 ```{r quick_load_data, include = FALSE}
-#library(KeyPathwayMineR)
-devtools::load_all(path = "~/Workspace/keypathwayminer/keypathwayminer-R/")
-.jaddClassPath("../inst/java/keypathwayminer-standalone-5.0.jar")
-.jclassPath()
 # Read huntington_disease_up as data.frame
 huntington_disease_up <- as.data.frame.matrix(read.delim(
   system.file(
@@ -210,7 +206,7 @@ kpm_options(
 )
 # Run kpm
 local_example_2 <- kpm(graph = sample_network, indicator_matrices = indicator_matrices)
-# Visualize the results with shin
+# Visualize the results with shiny
 visualize_result(result = local_example_2)
 ```
 In the last example, we will perform a ranged (batch) run using INES. By setting `use_range_l = TRUE` you 

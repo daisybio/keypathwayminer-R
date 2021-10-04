@@ -17,6 +17,8 @@ knitr::opts_chunk$set(
 ```
 
 ```{r quick_load_data, include = FALSE}
+library(KeyPathwayMineR)
+
 # Read huntington_disease_up as data.frame
 huntington_disease_up <- as.data.frame.matrix(read.delim(
   system.file(
@@ -28,7 +30,7 @@ huntington_disease_up <- as.data.frame.matrix(read.delim(
 ))
 
 # The entries of the huntington_disease_up dataset are p-values. To create an indicator matrix the to_indicator_matrix()
-# function can be used
+# functio can be used
 huntington_disease_up <- to_indicator_matrix(
   numerical_matrix = huntington_disease_up,
   operator = "<", threshold = 0.005
@@ -185,11 +187,8 @@ kpm_options(
 # Execute remote run by using a custom graph_file
 local_example_1 <- kpm(graph = sample_network, indicator_matrices = huntington_disease_up)
 
-# Compute pathway statistics
-local_example_1 <- pathway_statistics(result = local_example_1, indicator_matrix = huntington_disease_up)
-
 # Visualize the results with shiny
-visualize_result(result = local_example_1)
+visualize_result(local_example_1)
 ```
 In the next example, an unranged GLONE run will be demonstrated for multiple datasets. Since we are using two datasets we will have to define two l parameters. This is possible by providing a vector as input for l_min:
 ```{r local_example_2, eval = FALSE}
@@ -204,10 +203,12 @@ kpm_options(
   algorithm = "Greedy",
   l_min = c(15, 20)
 )
+
 # Run kpm
 local_example_2 <- kpm(graph = sample_network, indicator_matrices = indicator_matrices)
-# Visualize the results with shiny
-visualize_result(result = local_example_2)
+
+# Visualize the results with shin
+visualize_result(local_example_2)
 ```
 In the last example, we will perform a ranged (batch) run using INES. By setting `use_range_l = TRUE` you 
 specify that the parameter L.
@@ -229,15 +230,73 @@ kpm_options(
   k_min = 5,
   link_type = "AND"
 )
+
 # Run kpm
 local_example_3 <- kpm(graph = sample_network, indicator_matrices = indicator_matrices)
 
-visualize_result(result = local_example_3)
+# Visualize the results with shiny
+visualize_result(local_example_3)
 ```
-When `use_range` is set to **FALSE** (by default) only `l_min` is relevant. The same applies to K (`k_min`). 
-## Local
-Under construction
-**Important note:** The **web** service does not allow individual fixed (L case-exceptions) parameters to be set for each matrix at the moment. Robustness analysis is also not supported via Remote execution. If you want to use ranged runs and robustness analysis, please use the **Local** execution.
+When `use_range` is set to **FALSE** (by default) only `l_min` is relevant. The same applies to K. 
+
+## Remote
+The remote execution is convenient when the user does not have sufficient resources to perform an analysis and wants to perform a simple analysis.
+
+A single dataset with fixed parameters for K and L, and the INES Algorithm was selected in the first example. `async = FALSE`  means that we have a blocking request. Blocking, suggesting that the user will have to wait until the execution is complete. For this run, we will use the graph_id 10, which is the "I2D Homo_sapiens entrez" graph.
+```{r remote_example_1, eval = FALSE}
+settings::reset(kpm_options)
+# Configure options for the run
+kpm_options(
+  execution = "Remote",
+  async = FALSE,
+  strategy = "INES",
+  remove_bens = TRUE,
+  algorithm = "Greedy",
+  l_min = 20,
+  k_min = 5,
+  graph_id = 10
+)
+
+# Start run with huntington_disease_up dataset
+remote_example_1 <- kpm(indicator_matrices = huntington_disease_up)
+
+# Visualize the results with shiny
+visualize_result(remote_example_1)
+
+# Open the result page where you can  monitor the progress of both tasks
+browseURL(get_result_url(remote_example_1))
+```
+In the next example for the remote execution, we will take a look at how to combine and use multiple datasets. 
+We will start a run with INES, K = 1 and L = 10% for the two datasets huntington_disease_up and huntington_disease_down.
+You may have noticed that the link_type was set to OR. This means the two datasets will be logically connected with the "OR" operator.
+```{r remote_example_2, eval = FALSE}
+# Reset settings
+settings::reset(kpm_options)
+
+kpm_options(
+  execution = "Remote",
+  async = FALSE,
+  strategy = "INES",
+  algorithm = "Greedy",
+  remove_bens = TRUE,
+  l_same_percentage = TRUE, same_percentage = 10,
+  k_min = 1,
+  graph_id = 10,
+  link_type = "OR"
+)
+
+# Add the two datasets to a list
+indicator_matrices <- list(huntington_disease_down, huntington_disease_up)
+# Run kpm
+remote_example_2 <- kpm(indicator_matrices = indicator_matrices)
+
+# Visualize the results with result_remote_example_3
+visualize_result(remote_example_2)
+
+# Open the result page where you can  monitor the progress of both tasks
+browseURL(remote_example_2)
+```  
+**Important note:** The **web** service does not allow individual fixed (L case-exceptions) parameters to be set for each matrix at the moment. Robustness analysis is also not supported via Remote execution. If you want to use batch runs and robustness analysis, please use the **Local** execution.
 
 # Conclusion
 Our goal is to simplify the user's work process when using KeyPathwayMiner. Users can perform their analysis directly in R without having to worry about how to access Jar files or set up HTTP requests. 

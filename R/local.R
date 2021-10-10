@@ -67,6 +67,7 @@ to_java_arguments <- function(indicator_matrices, graph_file) {
   if (kpm_options()$strategy == "INES") {
     arguments <- c(arguments, "-strategy=INES")
     if (kpm_options()$use_range_k) {
+      # TODO Obosolete if clause delete after discussion with Markus
       arguments <- c(arguments, "-batch")
       arguments <- c(arguments, paste("-K_batch=",
         kpm_options()$k_min, ",",
@@ -97,10 +98,11 @@ to_java_arguments <- function(indicator_matrices, graph_file) {
   return(.jarray(arguments))
 }
 
-#' Crates java arguments for case exceptions
+#' Creates java arguments for case exceptions
 get_case_exceptions <- function(indicator_matrices, arguments) {
   # Check whether it is a batch run or not
   if (kpm_options()$use_range_l) {
+    # TODO Obosolete if clause delete after discussion with Markus
     arguments <- c(arguments, "-batch")
     # Batch run for l parameter
     for (i in 1:length(indicator_matrices)) {

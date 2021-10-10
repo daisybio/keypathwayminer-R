@@ -27,7 +27,43 @@ kpm <- function(indicator_matrices, graph = NULL) {
   if (kpm_options()$execution == "Remote") {
     results <- call_kpm_remote(indicator_matrices, graph_file)
   } else if (kpm_options()$execution == "Local") {
-    results <- call_kpm_local(indicator_matrices, graph_file)
+    if (!kpm_options()$use_range_k & !kpm_options()$use_range_l) {
+      # Not a ranged run
+      results <- call_kpm_local(indicator_matrices, graph_file)
+    } else {
+      # Ranged run
+      result_list <- list()
+
+      if (!kpm_options()$use_range_l) {
+        kpm_options("l_step" = 0)
+        kpm_options("l_max" = kpm_options()$l_min)
+      }
+
+      if (!kpm_options()$use_range_k) {
+        kpm_options("k_step" = 0)
+        kpm_options("k_max" = kpm_options()$k_min)
+      }
+
+      kpm_options("use_range_k" = FALSE)
+      kpm_options("use_range_l" = FALSE)
+
+      for (l in seq(from = kpm_options()$l_min, by = kpm_options()$l_step, to = kpm_options()$l_max)) {
+        for (k in seq(from = kpm_options()$k_min, by = kpm_options()$k_step, to = kpm_options()$k_max)) {
+          kpm_options("l_min" = as.numeric(l))
+          kpm_options("k_min" = as.numeric(k))
+          result_list <- c(result_list, call_kpm_local(indicator_matrices, graph_file)@configurations)
+        }
+      }
+
+      # Save pathways from several runs in a Result object
+      results <- new("Result",
+        configurations = result_list,
+        parameters = list(
+          computed_pathways = kpm_options()$computed_pathways,
+          strategy = kpm_options()$strategy
+        )
+      )
+    }
   }
   return(results)
 }

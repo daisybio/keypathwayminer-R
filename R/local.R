@@ -36,7 +36,7 @@ to_java_arguments <- function(indicator_matrices, graph_file) {
   # Get algorithm ####
   arguments <- c(arguments, paste("-algo=", toupper(kpm_options()$algorithm), sep = ""))
   # Get remove border exceptions node flag  ####
-  if (kpm_options()$remove_bens) arguments <- c(arguments, "-removeBens", sep = "")
+  if (kpm_options()$remove_bens) arguments <- c(arguments, paste("-removeBens=", kpm_options()$remove_bens, sep = ""))
   # Get case exceptions L ####
   arguments <- get_case_exceptions(indicator_matrices = indicator_matrices, arguments = arguments)
   # Get perturbation parameters ####

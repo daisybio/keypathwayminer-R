@@ -17,7 +17,12 @@ knitr::opts_chunk$set(
 ```
 
 ```{r quick_load_data, include = FALSE}
-library(KeyPathwayMineR)
+#library(KeyPathwayMineR)
+
+# Initialize for testing
+# Path must be to the working direcotry where the package is located
+devtools::load_all(path = "~/Workspace/keypathwayminer/keypathwayminer-R/")
+.jinit("../inst/java/keypathwayminer-standalone-5.0.jar")
 
 # Read huntington_disease_up as data.frame
 huntington_disease_up <- as.data.frame.matrix(read.delim(
@@ -28,7 +33,7 @@ huntington_disease_up <- as.data.frame.matrix(read.delim(
   ),
   header = TRUE
 ))
-
+  
 # The entries of the huntington_disease_up dataset are p-values. To create an indicator matrix the to_indicator_matrix()
 # functio can be used
 huntington_disease_up <- to_indicator_matrix(
@@ -178,6 +183,7 @@ kpm_options(
   k_min = 5,
   perturbation_technique = "nodeswap",
   with_perturbation = TRUE,
+  remove_bens = TRUE,
   perturbation_start = 10,
   perturbation_step = 10,
   perturbation_max = 20,
@@ -195,19 +201,24 @@ In the next example, an unranged GLONE run will be demonstrated for multiple dat
 # Reset settings
 settings::reset(kpm_options)
 
-indicator_matrices <- list(huntington_disease_up, huntington_disease_down)
+indicator_matrices <- huntington_disease_up 
 # Combine multiple datasets:
 kpm_options(
   execution = "Local",
   strategy = "GLONE",
   algorithm = "Greedy",
-  l_min = c(15, 20)
+  l_min = 15,
+  l_step = 5,
+  l_max = 50,
+  k_min = 2,
+  use_range_l = TRUE,
+  user_range_k = TRUE
 )
 
 # Run kpm
 local_example_2 <- kpm(graph = sample_network, indicator_matrices = indicator_matrices)
 
-# Visualize the results with shin
+# Visualize the results with shiny
 visualize_result(local_example_2)
 ```
 In the last example, we will perform a ranged (batch) run using INES. By setting `use_range_l = TRUE` you 
@@ -253,12 +264,12 @@ kpm_options(
   remove_bens = TRUE,
   algorithm = "Greedy",
   l_min = 20,
-  k_min = 5,
-  graph_id = 10
+  k_min = 5
 )
 
 # Start run with huntington_disease_up dataset
-remote_example_1 <- kpm(indicator_matrices = huntington_disease_up)
+remote_example_1 <- kpm(indicator_matrices = huntington_disease_up, 
+                        graph = sample_network)
 
 # Visualize the results with shiny
 visualize_result(remote_example_1)

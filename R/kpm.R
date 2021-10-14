@@ -43,9 +43,9 @@ kpm <- function(indicator_matrices, graph = NULL) {
         kpm_options("k_step" = 0)
         kpm_options("k_max" = kpm_options()$k_min)
       }
-
-      kpm_options("use_range_k" = FALSE)
-      kpm_options("use_range_l" = FALSE)
+      # Temporary variables to save the starting k_min
+      temp_l_min <- kpm_options()$l_min
+      temp_k_min <- kpm_options()$k_min
 
       for (l in seq(from = kpm_options()$l_min, by = kpm_options()$l_step, to = kpm_options()$l_max)) {
         for (k in seq(from = kpm_options()$k_min, by = kpm_options()$k_step, to = kpm_options()$k_max)) {
@@ -54,14 +54,14 @@ kpm <- function(indicator_matrices, graph = NULL) {
           result_list <- c(result_list, call_kpm_local(indicator_matrices, graph_file)@configurations)
         }
       }
+      # Reset values
+      kpm_options("l_min" = temp_l_min)
+      kpm_options("k_min" = temp_k_min)
 
       # Save pathways from several runs in a Result object
       results <- new("Result",
-        configurations = result_list,
-        parameters = list(
-          computed_pathways = kpm_options()$computed_pathways,
-          strategy = kpm_options()$strategy
-        )
+                     configurations = result_list,
+                     parameters = kpm_options()
       )
     }
   }
@@ -125,25 +125,25 @@ check_files <- function(indicator_matrices, graph) {
         } else {
           # If function is neither a data.frame nor a file path
           stop(paste("Please enter a valid input for the parameter indicator_matrices",
-            "Valid input: a filepath, a data.frame or a list which can contain both.",
-            "For more information visit: https://exbio.wzw.tum.de/keypathwayminer/",
-            sep = "\n"
+                     "Valid input: a filepath, a data.frame or a list which can contain both.",
+                     "For more information visit: https://exbio.wzw.tum.de/keypathwayminer/",
+                     sep = "\n"
           ))
         }
       }
     } else {
       stop(paste("Please enter a valid input for the parameter indicator_matrices",
-        "Valid input: a filepath, a data.frame or a list which can contain both.",
-        "For more information visit: https://exbio.wzw.tum.de/keypathwayminer/",
-        sep = "\n"
+                 "Valid input: a filepath, a data.frame or a list which can contain both.",
+                 "For more information visit: https://exbio.wzw.tum.de/keypathwayminer/",
+                 sep = "\n"
       ))
     }
   } else {
     # No indicator matrices provided
     stop(paste("No indicator_matrices provided.",
-      "Valid input: a filepath, a data.frame or a list which can contain both.",
-      "For more information visit: https://exbio.wzw.tum.de/keypathwayminer/",
-      sep = "\n"
+               "Valid input: a filepath, a data.frame or a list which can contain both.",
+               "For more information visit: https://exbio.wzw.tum.de/keypathwayminer/",
+               sep = "\n"
     ))
   }
   message("\tIndicator matrices: checked")
@@ -166,9 +166,9 @@ check_files <- function(indicator_matrices, graph) {
   } else if (is.null(graph) & kpm_options()$execution == "Local") {
     # In case a graph_file was not provide on a local run
     stop(paste("For local runs you must provide a graph_file.",
-      "Make sure the graph_file is in sif format and has a .sif extension.",
-      "For more information visit: https://exbio.wzw.tum.de/keypathwayminer/",
-      sep = "\n"
+               "Make sure the graph_file is in sif format and has a .sif extension.",
+               "For more information visit: https://exbio.wzw.tum.de/keypathwayminer/",
+               sep = "\n"
     ))
   } else if (is.null(graph) & kpm_options()$execution == "Remote") {
     message("No graph file provided. Network will be selected from the web service using the graph_id parameter.")
@@ -193,12 +193,12 @@ check_parameters <- function(indicator_matrices) {
     if (kpm_options()$execution == "Local") {
       # Batch run for l parameter
       if (!(length(indicator_matrices) == length(kpm_options()$l_min) &
-        length(indicator_matrices) == length(kpm_options()$l_step) &
-        length(indicator_matrices) == length(kpm_options()$l_max))) {
+            length(indicator_matrices) == length(kpm_options()$l_step) &
+            length(indicator_matrices) == length(kpm_options()$l_max))) {
         stop("Number of matrices is not equal to the number of given l parameters.")
       } else if (!(class(kpm_options()$l_min) == "numeric" &
-        class(kpm_options()$l_step) == "numeric" &
-        class(kpm_options()$l_max) == "numeric")) {
+                   class(kpm_options()$l_step) == "numeric" &
+                   class(kpm_options()$l_max) == "numeric")) {
         stop("The parameters l_min, l_step and l_max must be numeric values or numeric vectors.")
       }
       # Sanity check l parameters
@@ -220,10 +220,10 @@ check_parameters <- function(indicator_matrices) {
         stop("Batch run only supported with one matrix in remote mode. If you want to perform a
                       batch run with multiple matrices consider changing to local execution.")
       } else if (!kpm_options()$l_same_percentage &
-        length(indicator_matrices) == 1 &
-        (!class(kpm_options()$l_min) == "numeric" | length(kpm_options()$l_min) != 1) &
-        (!class(kpm_options()$l_step) == "numeric" | length(kpm_options()$l_step) != 1) &
-        (!class(kpm_options()$l_max) == "numeric" | length(kpm_options()$l_max) != 1)) {
+                 length(indicator_matrices) == 1 &
+                 (!class(kpm_options()$l_min) == "numeric" | length(kpm_options()$l_min) != 1) &
+                 (!class(kpm_options()$l_step) == "numeric" | length(kpm_options()$l_step) != 1) &
+                 (!class(kpm_options()$l_max) == "numeric" | length(kpm_options()$l_max) != 1)) {
         stop("l_min, l_step and l_max must be numeric and of not a vector.")
       } else if (kpm_options()$l_same_percentage) {
         stop("The l_same_percentage variable is set to TRUE on a batch run. If you want to perform a
@@ -243,8 +243,8 @@ check_parameters <- function(indicator_matrices) {
         stop("In remote execution you need to set l_same_percentage = TRUE and set a same_percentage value.
                       If you want to define different L parameters for every matrix consider changing to local execution.")
       } else if (!kpm_options()$l_same_percentage &
-        length(indicator_matrices) == 1 &
-        (!class(kpm_options()$l_min) == "numeric" | length(kpm_options()$l_min) != 1)) {
+                 length(indicator_matrices) == 1 &
+                 (!class(kpm_options()$l_min) == "numeric" | length(kpm_options()$l_min) != 1)) {
         stop("l_min must be numeric and not a vector in the remote execution.")
       }
     }
@@ -255,13 +255,13 @@ check_parameters <- function(indicator_matrices) {
     if (kpm_options()$use_range_k) {
       # For batch runs
       if (!(class(kpm_options()$k_min) == "numeric" &
-        class(kpm_options()$k_step) == "numeric" &
-        class(kpm_options()$k_max) == "numeric")) {
+            class(kpm_options()$k_step) == "numeric" &
+            class(kpm_options()$k_max) == "numeric")) {
         # In case one of the k_range parameters is not nummeric
         stop("Please provide numeric (integer) values for k_min, k_step and k_max.")
       } else if (!(length(kpm_options()$k_min) == 1 &
-        length(kpm_options()$k_step) == 1 &
-        length(kpm_options()$k_max) == 1)) {
+                   length(kpm_options()$k_step) == 1 &
+                   length(kpm_options()$k_max) == 1)) {
         # In case one of the k_range parameters has not length 1
         stop("The parameters k_min, k_step and k_max must be all of length 1.")
       }

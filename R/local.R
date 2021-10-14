@@ -42,11 +42,11 @@ to_java_arguments <- function(indicator_matrices, graph_file) {
   # Get perturbation parameters ####
   if (kpm_options()$with_perturbation) {
     arguments <- c(arguments, paste("-perturbation=",
-      kpm_options()$perturbation_start, ",",
-      kpm_options()$perturbation_step, ",",
-      kpm_options()$perturbation_max, ",",
-      kpm_options()$graphs_per_step,
-      sep = ""
+                                    kpm_options()$perturbation_start, ",",
+                                    kpm_options()$perturbation_step, ",",
+                                    kpm_options()$perturbation_max, ",",
+                                    kpm_options()$graphs_per_step,
+                                    sep = ""
     ))
 
     arguments <- c(arguments, paste("-perturbationTechnique=", kpm_options()$perturbation_technique, sep = ""))
@@ -66,18 +66,19 @@ to_java_arguments <- function(indicator_matrices, graph_file) {
   # Add strategy INES to arguments ####
   if (kpm_options()$strategy == "INES") {
     arguments <- c(arguments, "-strategy=INES")
-    if (kpm_options()$use_range_k) {
-      # TODO Obosolete if clause delete after discussion with Markus
-      arguments <- c(arguments, "-batch")
-      arguments <- c(arguments, paste("-K_batch=",
-        kpm_options()$k_min, ",",
-        kpm_options()$k_step, ",",
-        kpm_options()$k_max,
-        sep = ""
-      ))
-    } else if (!kpm_options()$use_range_k) {
-      arguments <- c(arguments, paste("-K=", kpm_options()$k_min, sep = ""))
-    }
+    arguments <- c(arguments, paste("-K=", kpm_options()$k_min, sep = ""))
+    # TODO Obosolete if clause delete after discussion with Markus
+    # if (kpm_options()$use_range_k) {
+    #   arguments <- c(arguments, "-batch")
+    #   arguments <- c(arguments, paste("-K_batch=",
+    #     kpm_options()$k_min, ",",
+    #     kpm_options()$k_step, ",",
+    #     kpm_options()$k_max,
+    #     sep = ""
+    #   ))
+    # } else if (!kpm_options()$use_range_k) {
+    #   arguments <- c(arguments, paste("-K=", kpm_options()$k_min, sep = ""))
+    # }
   }
 
   # Add results folder to arguments ####
@@ -100,24 +101,27 @@ to_java_arguments <- function(indicator_matrices, graph_file) {
 
 #' Creates java arguments for case exceptions
 get_case_exceptions <- function(indicator_matrices, arguments) {
-  # Check whether it is a batch run or not
-  if (kpm_options()$use_range_l) {
-    # TODO Obosolete if clause delete after discussion with Markus
-    arguments <- c(arguments, "-batch")
-    # Batch run for l parameter
-    for (i in 1:length(indicator_matrices)) {
-      arguments <- c(arguments, paste("-L", i, "_batch=", kpm_options()$l_min[i], ",",
-        kpm_options()$l_step[i], ",",
-        kpm_options()$l_max[i],
-        sep = ""
-      ))
-    }
-  } else if (!kpm_options()$use_range_l) {
-    # Normal run for l parameter
-    for (i in 1:length(indicator_matrices)) {
-      arguments <- c(arguments, paste("-L", i, "=", kpm_options()$l_min[i], sep = ""))
-    }
+  # TODO Obosolete if clause delete after discussion with Markus
+  for (i in 1:length(indicator_matrices)) {
+    arguments <- c(arguments, paste("-L", i, "=", kpm_options()$l_min[i], sep = ""))
   }
+  # Check whether it is a batch run or not
+  # if (kpm_options()$use_range_l) {
+  #   arguments <- c(arguments, "-batch")
+  #   # Batch run for l parameter
+  #   for (i in 1:length(indicator_matrices)) {
+  #     arguments <- c(arguments, paste("-L", i, "_batch=", kpm_options()$l_min[i], ",",
+  #       kpm_options()$l_step[i], ",",
+  #       kpm_options()$l_max[i],
+  #       sep = ""
+  #     ))
+  #   }
+  # } else if (!kpm_options()$use_range_l) {
+  #   # Normal run for l parameter
+  #   for (i in 1:length(indicator_matrices)) {
+  #     arguments <- c(arguments, paste("-L", i, "=", kpm_options()$l_min[i], sep = ""))
+  #   }
+  # }
 
   return(arguments)
 }
@@ -206,11 +210,11 @@ save_local_results <- function(path_to_results) {
         configurations[[configuration]]@pathways <- append(
           configurations[[configuration]]@pathways,
           setNames(list(new("Pathway",
-            edges = dplyr::filter(interactions, pathway == pathway_num) %>% dplyr::select(c(2, 3)),
-            nodes = dplyr::filter(nodes, pathway == pathway_num) %>% dplyr::select(2),
-            num_edges = as.integer(pathway_stats[pathway, "# EDGES"]),
-            num_nodes = as.integer(pathway_stats[pathway, "# NODES"]),
-            avg_exp = as.numeric(pathway_stats[pathway, "AVG. DIFF. EXP. CASES"])
+                            edges = dplyr::filter(interactions, pathway == pathway_num) %>% dplyr::select(c(2, 3)),
+                            nodes = dplyr::filter(nodes, pathway == pathway_num) %>% dplyr::select(2),
+                            num_edges = as.integer(pathway_stats[pathway, "# EDGES"]),
+                            num_nodes = as.integer(pathway_stats[pathway, "# NODES"]),
+                            avg_exp = as.numeric(pathway_stats[pathway, "AVG. DIFF. EXP. CASES"])
           )), pathway)
         )
       }

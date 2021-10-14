@@ -20,7 +20,9 @@ compute_z_scores <- function(norm_counts, controls, cases) {
   z_score_matrix <- apply(X = norm_counts[, cases], MARGIN = 2, FUN = function(x) {
     (x - gene_means) / gene_standard_deviations
   })
-  return(z_score_matrix)
+  # Remove NaN values
+  z_score_matrix <- na.omit(z_score_matrix)
+  return(as.data.frame(z_score_matrix))
 }
 
 #' Saves indicator matrix as a file.
@@ -31,11 +33,11 @@ compute_z_scores <- function(norm_counts, controls, cases) {
 #' @export
 export_matrix <- function(matrix, path) {
   write.table(matrix,
-    file = path,
-    quote = FALSE,
-    sep = "\t",
-    row.names = FALSE,
-    col.names = FALSE
+              file = path,
+              quote = FALSE,
+              sep = "\t",
+              row.names = FALSE,
+              col.names = FALSE
   )
 }
 

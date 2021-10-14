@@ -43,6 +43,9 @@ kpm <- function(indicator_matrices, graph = NULL) {
         kpm_options("k_step" = 0)
         kpm_options("k_max" = kpm_options()$k_min)
       }
+      # Temporary variables to save the starting k_min
+      temp_l_min <- kpm_options()$l_min
+      temp_k_min <- kpm_options()$k_min
 
       for (l in seq(from = kpm_options()$l_min, by = kpm_options()$l_step, to = kpm_options()$l_max)) {
         for (k in seq(from = kpm_options()$k_min, by = kpm_options()$k_step, to = kpm_options()$k_max)) {
@@ -51,14 +54,14 @@ kpm <- function(indicator_matrices, graph = NULL) {
           result_list <- c(result_list, call_kpm_local(indicator_matrices, graph_file)@configurations)
         }
       }
+      # Reset values
+      kpm_options("l_min" = temp_l_min)
+      kpm_options("k_min" = temp_k_min)
 
       # Save pathways from several runs in a Result object
       results <- new("Result",
         configurations = result_list,
-        parameters = list(
-          computed_pathways = kpm_options()$computed_pathways,
-          strategy = kpm_options()$strategy
-        )
+        parameters = kpm_options()
       )
     }
   }

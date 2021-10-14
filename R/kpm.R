@@ -44,9 +44,6 @@ kpm <- function(indicator_matrices, graph = NULL) {
         kpm_options("k_max" = kpm_options()$k_min)
       }
 
-      kpm_options("use_range_k" = FALSE)
-      kpm_options("use_range_l" = FALSE)
-
       for (l in seq(from = kpm_options()$l_min, by = kpm_options()$l_step, to = kpm_options()$l_max)) {
         for (k in seq(from = kpm_options()$k_min, by = kpm_options()$k_step, to = kpm_options()$k_max)) {
           kpm_options("l_min" = as.numeric(l))

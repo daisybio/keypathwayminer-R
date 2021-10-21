@@ -15,6 +15,11 @@
 kpm <- function(indicator_matrices, graph = NULL) {
   message(paste(">Run type: ", kpm_options()$execution))
 
+  # Combine multiple matrices
+  if(length(indicator_matrices) > 1){
+    indicator_matrices <- combine_mutliple_matrices(indicator_matrices)
+  }
+
   # Prepare files ####
   files <- check_files(indicator_matrices, graph)
   indicator_matrices <- files[[1]]
@@ -65,6 +70,9 @@ kpm <- function(indicator_matrices, graph = NULL) {
       )
     }
   }
+
+  results <- pathway_statistics(indicator_matrix = indicator_matrices, result = results)
+
   return(results)
 }
 
@@ -316,3 +324,28 @@ check_parameters <- function(indicator_matrices) {
   message("\tPositive and negative nodes parameters: checked")
   message(">Parameters checks complete")
 }
+
+
+
+
+
+
+
+combine_mutliple_matrices <- function(indicator_matrices){
+  initial_matrix <- indicator_matrices[[1]]
+  for (i in 2:length(indicator_matrices)) {
+    if(kpm_options()$link_type == "OR"){
+      initial_matrix <- initial_matrix[,-1] | indicator_matrices[[i]][,-1]
+    }else if (kpm_options()$link_type == "AND"){
+      initial_matrix <- initial_matrix[,-1] & indicator_matrices[[i]][,-1]
+    }
+  }
+  #Converts TRUE to 1 and FALSE to 0
+  initial_matrix <- 1 * initial_matrix
+  # Prepends entite names
+  initial_matrix <- cbind(indicator_matrices[[i]][,1], initial_matrix)
+
+  return(initial_matrix)
+}
+
+

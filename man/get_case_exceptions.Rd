@@ -2,10 +2,10 @@
 % Please edit documentation in R/local.R
 \name{get_case_exceptions}
 \alias{get_case_exceptions}
-\title{Crates java arguments for case exceptions}
+\title{Creates java arguments for case exceptions}
 \usage{
 get_case_exceptions(indicator_matrices, arguments)
 }
 \description{
-Crates java arguments for case exceptions
+Creates java arguments for case exceptions
 }

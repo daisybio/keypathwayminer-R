@@ -10,8 +10,6 @@
 #' @import shiny
 #' @import visNetwork
 visualize_result <- function(result) {
-  #TODO remove when pathway_statistics supports processing multiple indicator matrices
-  result@parameters$strategy <- "GLONE"
   if (length(result@configurations) != 0) {
     server <- function(input, output) {
       # Determine configuration and pathway

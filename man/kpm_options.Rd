@@ -9,7 +9,7 @@ kpm_options(...)
 \arguments{
 \item{...}{Option names to retrieve option values or \code{[key]=[value]} pairs to set options.\cr\cr
 \strong{Default parameters:}\cr
-kpm_options(execution = "Remote",\cr
+kpm_options(execution = "Local",\cr
 async = TRUE,\cr
 quest_id = NULL,\cr
 url = "https://exbio.wzw.tum.de/keypathwayminer/",\cr
@@ -36,24 +36,15 @@ negative_nodes, positive_nodes)}
 \description{
 Set or get options for KeyPathwayMineR
 }
-\details{
-\strong{Important note:} in the \strong{local} execution the user can specify for every
-matrix a specific or ranged l-value.\cr\cr
- \strong{Example 1: } One matrix and not ranged:\cr\code{kpm_options(l_min=4)}\cr\cr
- \strong{Example 2: } Two matrices and not ranged:\cr\code{kpm_options(l_min=c(1,2))}\cr\cr
- \strong{Example 3: } Three matrices and ranged:\cr\code{kpm_options(l_min=c(1,2,4), l_step=c(1,1,2), l_max=c(2,3,8))}\cr\cr
-The \emph{n-th} position in each vector corresponds to the \emph{n-th} matrix/dataset.\cr\cr
-Note: The \strong{web service} does not allow individual fixed parameters to be set for each dataset at the moment.
-}
 \section{I. Options for remote and local use}{
 
 \itemize{
- \item{\code{execution}}{ (\code{"Local" or "Remote"}) Execution type of KeyPathwayMineR. Either via RestfulAPI or standalobe jar}
+ \item{\code{execution}}{ (\code{"Local" or "Remote"}) Execution type of KeyPathwayMineR. Either via RestfulAPI or standalone jar}
  \item{\code{algorithm}}{ (\code{"Greedy", "ACO", "Optimal"}) The algorithm that will be used to extract the pathways}
  \item{\code{strategy}}{ (\code{"GLONE", "INES"}) The strategy that will be used to extract pathways}
  \item{\code{remove_bens}}{ (\code{Boolean}) If TRUE border exception nodes will be removed}
  \item{\code{computed_pathways}}{ (\code{Integer}) The number of solutions that should be computed}
- \item{\code{link_type}}{ (\code{"OR", "AND","CUSTOM"}) Define how multiple datasets should be combined in the analysis}
+ \item{\code{link_type}}{ (\code{"OR", "AND"}) Define how multiple datasets should be combined in the analysis}
  \item{\code{matrix_header}}{ (\code{Boolean}) TRUE if input matrices have a header (Case/Sample description). FALSE if not.}
  }
 \strong{Gene exceptions K (only used for INES):}
@@ -66,9 +57,9 @@ Note: The \strong{web service} does not allow individual fixed parameters to be 
 \strong{The case (L) exceptions for the n-th matrix:}
 \itemize{
  \item{\code{use_range_l}}{ (\code{Boolean}) If TRUE l_values will be ranged (batch run). If false the user only needs to set l_min}
- \item{\code{l_min}}{ (\code{Integer or Integer vector})  Starting value of l range or l value if l is not ranged}
- \item{\code{l_step}}{ (\code{Integer or Integer vector}) How l should be increased within the range}
- \item{\code{l_max}}{ (\code{Integer or Integer vector}) The maximum l value, i.e. the upper limit of the range}
+ \item{\code{l_min}}{ (\code{Integer})  Starting value of l range or l value if l is not ranged}
+ \item{\code{l_step}}{ (\code{Integer}) How l should be increased within the range}
+ \item{\code{l_max}}{ (\code{Integer}) The maximum l value, i.e. the upper limit of the range}
 }
 }
 

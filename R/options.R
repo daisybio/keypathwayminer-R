@@ -42,7 +42,7 @@ MYPKGoptions <- settings::options_manager(
     perturbation_max = settings::inrange(0, 100),
     with_perturbation = settings::inlist(TRUE, FALSE),
     perturbation_technique = settings::inlist("edgeremove", "edgerewire", "nodeswap"),
-    link_type = settings::inlist("OR", "AND", "CUSTOM"),
+    link_type = settings::inlist("OR", "AND"),
     matrix_header = settings::inlist(TRUE, FALSE)
   )
 )
@@ -81,7 +81,7 @@ MYPKGoptions <- settings::options_manager(
 #'  \item{\code{strategy}}{ (\code{"GLONE", "INES"}) The strategy that will be used to extract pathways}
 #'  \item{\code{remove_bens}}{ (\code{Boolean}) If TRUE border exception nodes will be removed}
 #'  \item{\code{computed_pathways}}{ (\code{Integer}) The number of solutions that should be computed}
-#'  \item{\code{link_type}}{ (\code{"OR", "AND","CUSTOM"}) Define how multiple datasets should be combined in the analysis}
+#'  \item{\code{link_type}}{ (\code{"OR", "AND"}) Define how multiple datasets should be combined in the analysis}
 #'  \item{\code{matrix_header}}{ (\code{Boolean}) TRUE if input matrices have a header (Case/Sample description). FALSE if not.}
 #'  }
 #' \strong{Gene exceptions K (only used for INES):}

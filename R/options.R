@@ -94,9 +94,9 @@ MYPKGoptions <- settings::options_manager(
 #' \strong{The case (L) exceptions for the n-th matrix:}
 #' \itemize{
 #'  \item{\code{use_range_l}}{ (\code{Boolean}) If TRUE l_values will be ranged (batch run). If false the user only needs to set l_min}
-#'  \item{\code{l_min}}{ (\code{Integer or Integer vector})  Starting value of l range or l value if l is not ranged}
-#'  \item{\code{l_step}}{ (\code{Integer or Integer vector}) How l should be increased within the range}
-#'  \item{\code{l_max}}{ (\code{Integer or Integer vector}) The maximum l value, i.e. the upper limit of the range}
+#'  \item{\code{l_min}}{ (\code{Integer})  Starting value of l range or l value if l is not ranged}
+#'  \item{\code{l_step}}{ (\code{Integer}) How l should be increased within the range}
+#'  \item{\code{l_max}}{ (\code{Integer}) The maximum l value, i.e. the upper limit of the range}
 #' }
 #'
 #' @section II. Parameters only for remote execution:
@@ -128,13 +128,6 @@ MYPKGoptions <- settings::options_manager(
 #'   \item{\code{negative_nodes}}{(\code{Character vector}) Vector of node ids that should be considered inactive)}
 #' }
 #'
-#' @details \strong{Important note:} in the \strong{local} execution the user can specify for every
-#' matrix a specific or ranged l-value.\cr\cr
-#'  \strong{Example 1: } One matrix and not ranged:\cr\code{kpm_options(l_min=4)}\cr\cr
-#'  \strong{Example 2: } Two matrices and not ranged:\cr\code{kpm_options(l_min=c(1,2))}\cr\cr
-#'  \strong{Example 3: } Three matrices and ranged:\cr\code{kpm_options(l_min=c(1,2,4), l_step=c(1,1,2), l_max=c(2,3,8))}\cr\cr
-#' The \emph{n-th} position in each vector corresponds to the \emph{n-th} matrix/dataset.\cr\cr
-#' Note: The \strong{web service} does not allow individual fixed parameters to be set for each dataset at the moment.
 #' @export
 kpm_options <- function(...) {
   # protect against the use of reserved words.

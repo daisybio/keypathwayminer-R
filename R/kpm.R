@@ -16,11 +16,12 @@ kpm <- function(indicator_matrices, graph = NULL) {
   message(paste(">Run type: ", kpm_options()$execution))
 
   # Combine multiple matrices
-  if(length(indicator_matrices) > 1){
+  if(length(indicator_matrices) > 1 & class(indicator_matrices)!="data.frame" ){
     indicator_matrices <- combine_mutliple_matrices(indicator_matrices)
   }
 
   # Prepare files ####
+  matrix <- indicator_matrices
   files <- check_files(indicator_matrices, graph)
   indicator_matrices <- files[[1]]
   graph_file <- files[[2]]
@@ -71,7 +72,7 @@ kpm <- function(indicator_matrices, graph = NULL) {
     }
   }
 
-  results <- pathway_statistics(indicator_matrix = indicator_matrices, result = results)
+  results <- pathway_statistics(indicator_matrix = matrix, result = results)
 
   return(results)
 }
@@ -325,12 +326,11 @@ check_parameters <- function(indicator_matrices) {
   message(">Parameters checks complete")
 }
 
-
-
-
-
-
-
+#' Logically combines multiple datasets
+#'
+#' @param indicator_matrices Indicator matrices to combine
+#'
+#' @return Indicator matrix
 combine_mutliple_matrices <- function(indicator_matrices){
   initial_matrix <- indicator_matrices[[1]]
   for (i in 2:length(indicator_matrices)) {
@@ -340,12 +340,11 @@ combine_mutliple_matrices <- function(indicator_matrices){
       initial_matrix <- initial_matrix[,-1] & indicator_matrices[[i]][,-1]
     }
   }
-  #Converts TRUE to 1 and FALSE to 0
+
+  # #Converts TRUE to 1 and FALSE to 0
   initial_matrix <- 1 * initial_matrix
-  # Prepends entite names
-  initial_matrix <- cbind(indicator_matrices[[i]][,1], initial_matrix)
+  # # Prepends entite names
+  initial_matrix <- cbind(as.character(indicator_matrices[[i]][,1]), as.data.frame(initial_matrix))
 
   return(initial_matrix)
 }
-
-

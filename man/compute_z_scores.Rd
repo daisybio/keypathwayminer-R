@@ -20,6 +20,3 @@ Data.frame with the z.score values of the case samples.
 Computes z-scores of the genes in the case samples
 in contrast to the control samples.
 }
-\examples{
-compute_z_scores(norm_counts, c(1, 2), c(3, 4))
-}

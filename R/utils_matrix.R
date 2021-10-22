@@ -9,9 +9,6 @@
 #'
 #' @return Data.frame with the z.score values of the case samples.
 #' @export
-#'
-#' @examples
-#' compute_z_scores(norm_counts, c(1, 2), c(3, 4))
 compute_z_scores <- function(norm_counts, controls, cases) {
   # Compute means and standard_deviations from the control groups for every gene
   gene_means <- rowMeans(norm_counts[, controls], na.rm = TRUE)

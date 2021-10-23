@@ -135,5 +135,21 @@ pathway_statistics <- function(indicator_matrix, result) {
     }
     result <- set_pathway(result_object = result, configuration_name = configuration, pathway = union_network, union = TRUE)
   }
+
+   # Remove configurations which have more exceptions than K
+  message("Removing configurations which have more exceptions than K.")
+  removed <- 0
+  for (configuration in configurations) {
+    pathways <- get_pathways(result_object = result, configuration_name = configuration)
+    k <- as.numeric(strsplit(configuration,"-")[[1]][2])
+    for(pathway in pathways){
+      if(as.numeric(table(pathway@nodes$exception)["TRUE"])>k){
+        result <- remove_configuration(result_object = result, configuration_name = configuration)
+        removed <- removed + 1
+        break
+      }
+    }
+  }
+  message(paste0("\tRemoved: ", removed, " configurations."))
   return(result)
 }

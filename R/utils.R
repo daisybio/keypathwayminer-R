@@ -40,3 +40,33 @@ get_started <- function() {
   message("\t2. vignette(\"input_files_format\")")
   message("\t3. ?kpm_options()")
 }
+
+
+
+#' Loads results from folder with text files
+#'
+#' User can load result from "Result" folder which is automatically generated during each KPM run
+#'
+#' @param path path to the folder with subfolders for each configuration
+#'
+#' @return KPM-R Result object
+#' @export
+#'
+#' @examples
+get_results_from_folder <- function(path){
+  file_names <- list.files(path)
+
+  result_list <- list()
+  for(i in seq_along(file_names)){
+    path_tables <- file.path(path, file_names[i] , "tables")
+    result <- save_local_results(path_tables)
+    result_list <- c(result_list, result@configurations)
+  }
+
+  new("Result", configurations = result_list,
+      parameters = list(
+        computed_pathways = kpm_options()$computed_pathways,
+        strategy = kpm_options()$strategy
+      )
+  )
+}

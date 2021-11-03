@@ -30,7 +30,9 @@ Imports:
     MAST,
     SummarizedExperiment,
     stats,
-    Seurat
+    Seurat,
+    data.table,
+    easycsv
 RoxygenNote: 7.1.1
 Suggests: 
     knitr,

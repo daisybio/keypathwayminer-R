@@ -4,7 +4,7 @@
 \alias{get_networks}
 \title{Get a data frame of available networks}
 \usage{
-get_networks(url = "https://exbio.wzw.tum.de/keypathwayminer/")
+get_networks(url = "https://keypathwayminer.compbio.sdu.dk/keypathwayminer/")
 }
 \arguments{
 \item{url}{Url to keypathwayminer.}
@@ -16,5 +16,5 @@ Data frame with different graphs and their Id's.
 Get a data frame of available networks
 }
 \examples{
-get_networks("https://exbio.wzw.tum.de/keypathwayminer/")
+get_networks("https://keypathwayminer.compbio.sdu.dk/keypathwayminer/")
 }

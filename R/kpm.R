@@ -135,7 +135,7 @@ check_files <- function(indicator_matrices, graph) {
           # If function is neither a data.frame nor a file path
           stop(paste("Please enter a valid input for the parameter indicator_matrices",
                      "Valid input: a filepath, a data.frame or a list which can contain both.",
-                     "For more information visit: https://exbio.wzw.tum.de/keypathwayminer/",
+                     "For more information visit: https://keypathwayminer.compbio.sdu.dk/keypathwayminer/",
                      sep = "\n"
           ))
         }
@@ -143,7 +143,7 @@ check_files <- function(indicator_matrices, graph) {
     } else {
       stop(paste("Please enter a valid input for the parameter indicator_matrices",
                  "Valid input: a filepath, a data.frame or a list which can contain both.",
-                 "For more information visit: https://exbio.wzw.tum.de/keypathwayminer/",
+                 "For more information visit: https://keypathwayminer.compbio.sdu.dk/keypathwayminer/",
                  sep = "\n"
       ))
     }
@@ -151,7 +151,7 @@ check_files <- function(indicator_matrices, graph) {
     # No indicator matrices provided
     stop(paste("No indicator_matrices provided.",
                "Valid input: a filepath, a data.frame or a list which can contain both.",
-               "For more information visit: https://exbio.wzw.tum.de/keypathwayminer/",
+               "For more information visit: https://keypathwayminer.compbio.sdu.dk/keypathwayminer/",
                sep = "\n"
     ))
   }
@@ -176,7 +176,7 @@ check_files <- function(indicator_matrices, graph) {
     # In case a graph_file was not provide on a local run
     stop(paste("For local runs you must provide a graph_file.",
                "Make sure the graph_file is in sif format and has a .sif extension.",
-               "For more information visit: https://exbio.wzw.tum.de/keypathwayminer/",
+               "For more information visit: https://keypathwayminer.compbio.sdu.dk/keypathwayminer/",
                sep = "\n"
     ))
   } else if (is.null(graph) & kpm_options()$execution == "Remote") {

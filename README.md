@@ -13,7 +13,7 @@ Two different approaches for extracting subnetworks that are enriched for active
       
   * **GLONE:** Extracts maximal sub-networks where the total sum of **not**-active/diff. exp. cases is at most L. 
       
-For more information please visit our website [(Key Pathway Miner website)](https://exbio.wzw.tum.de/keypathwayminer/).
+For more information please visit our website [(Key Pathway Miner website)](https://keypathwayminer.compbio.sdu.dk/keypathwayminer/).
 
 Overview
 =================

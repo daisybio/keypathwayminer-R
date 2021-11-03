@@ -12,7 +12,7 @@ kpm_options(...)
 kpm_options(execution = "Local",\cr
 async = TRUE,\cr
 quest_id = NULL,\cr
-url = "https://exbio.wzw.tum.de/keypathwayminer/",\cr
+url = "https://keypathwayminer.compbio.sdu.dk/keypathwayminer/",\cr
 algorithm = "Greedy",\cr
 graph_id = 1,\cr
 strategy = "GLONE",\cr

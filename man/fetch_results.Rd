@@ -4,7 +4,10 @@
 \alias{fetch_results}
 \title{Once the run is complete, we can obtain the results}
 \usage{
-fetch_results(quest_id, url = "https://exbio.wzw.tum.de/keypathwayminer/")
+fetch_results(
+  quest_id,
+  url = "https://keypathwayminer.compbio.sdu.dk/keypathwayminer/"
+)
 }
 \arguments{
 \item{quest_id}{Jobs respective quest_id.}

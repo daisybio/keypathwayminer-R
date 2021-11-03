@@ -59,7 +59,7 @@ Two different approaches for extracting subnetworks that are enriched for active
       
   * **GLONE:** Extracts maximal sub-networks where the total sum of **not**-active/diff. exp. cases is at most L. 
       
-For more information please visit the [KPM website](https://exbio.wzw.tum.de/keypathwayminer/).
+For more information please visit the [KPM website](https://keypathwayminer.compbio.sdu.dk/keypathwayminer/).
 
 ## KeyPathwayMineR
 The following package provides an easy way for using KPM and visualize the extracted subnetworks via R.

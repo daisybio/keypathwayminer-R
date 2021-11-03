@@ -16,15 +16,12 @@
 #' @param saveSummary if TRUE saves the result of the differential analysis as a .rds file
 #' @param summaryName name of the rds file if saveSummary=TRUE
 #' @param FCThreshold Threshold of log 2 fold change
-#' @param nameIndicatorMatrix
+#' @param nameIndicatorMatrix indicator matrix which can be used for kpm() execution
 #'
 #' @details To use this method, MAST has to be installed (see https://github.com/RGLab/MAST/ )
 #'
 #' @return dataframe of of putative differentially expressed genes
 #' @export
-#'
-#' @examples
-#'
 sc_to_indicator_matrix <- function(sc_obj,
                                    covarariate,
                                    referenceGroup,
@@ -64,8 +61,6 @@ sc_to_indicator_matrix <- function(sc_obj,
 #'
 #' @return data.frame of differential expression analysis results
 #' @export
-#'
-#' @examples
 do_diff_testing_via_MAST <-
   function(sc_obj,
            covarariate,
@@ -148,8 +143,6 @@ do_diff_testing_via_MAST <-
 #'
 #' @return data.frame of filtered differential expression analysis result
 #' @export
-#'
-#' @examples
 filter_fcHurdleTestResults <- function(fcHurdletest,
                                        FCThreshold = 2,
                                        pvalueThreshold = 0.05
@@ -166,8 +159,6 @@ filter_fcHurdleTestResults <- function(fcHurdletest,
 #'
 #' @return indicator matrix in form of a data.frame
 #' @export
-#'
-#' @examples
 create_indicator_from_fcurdleTest <- function(fcHurdletest_filtered,
                                               sc_obj,
                                               nameIndicatorMatrix = NULL){

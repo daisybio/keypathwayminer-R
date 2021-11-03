@@ -13,14 +13,14 @@ call_kpm_local <- function(indicator_matrices, graph_file) {
   args <- to_java_arguments(indicator_matrices = indicator_matrices, graph_file = graph_file)
 
   #### Initialize java objects ####
-  main <- .jnew(class = "de/mpg/mpiinf/ag1/kpm/main/Main")
-  path_to_local_results <- .jcall(
+  main <- rJava::.jnew(class = "de/mpg/mpiinf/ag1/kpm/main/Main")
+  path_to_local_results <- rJava::.jcall(
     obj = main,
     returnSig = "Ljava/lang/String;",
     method = "runR",
     args,
-    .jnew(class = "java/lang/String", datasets_file),
-    .jnew(class = "java/lang/String", properties_file)
+    rJava::.jnew(class = "java/lang/String", datasets_file),
+    rJava::.jnew(class = "java/lang/String", properties_file)
   )
 
   return(save_local_results(path_to_local_results))

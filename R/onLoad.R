@@ -3,12 +3,12 @@
 # Checks if the remote server is up.
 .onLoad <- function(libname, pkgname) {
   #### Initialize JVM and register Java classes and native code contained in the package. ####
-  .jpackage(pkgname, lib.loc = libname)
+  rJava::.jpackage(pkgname, lib.loc = libname)
 
   # Check if keypathwayminer standalone was added to class path
   standalone <- FALSE
-  for (i in 1:length(.jclassPath())) {
-    if (grepl(pattern = "keypathwayminer-standalone-5.0.jar", x = .jclassPath()[i]) == TRUE) {
+  for (i in 1:length(rJava::.jclassPath())) {
+    if (grepl(pattern = "keypathwayminer-standalone-5.0.jar", x = rJava::.jclassPath()[i]) == TRUE) {
       standalone <- TRUE
     }
   }

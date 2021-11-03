@@ -7,7 +7,7 @@
 #' test_jvm()
 test_jvm <- function() {
   # deterrmine java version
-  java_version <- .jcall("java/lang/System", "S", "getProperty", "java.runtime.version")
+  java_version <- rJava::.jcall("java/lang/System", "S", "getProperty", "java.runtime.version")
 
   message(paste("Java version detected:", java_version))
   if (startsWith(java_version, "1.8")) {

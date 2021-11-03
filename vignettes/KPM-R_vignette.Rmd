@@ -1,0 +1,660 @@
+---
+title: "KeyPathwayMineR - R Package for the web and standalone version of KeyPathwayMiner"
+author: 
+- Konstantions Mechteridis, Michael Lauber
+
+output:
+    rmarkdown::html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 2
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+
+## Introduction {-}
+
+
+KeyPathwayMiner (KPM) is a de novo enrichment tool for identfiying noval networks and pathways in various OMICs datasets. 
+The activity of a candidate pathway or network is typically measured by the enrichment of active features, e.g. differentially expressed or methylated genes.
+
+This package provides an easy way for using KPM and to visualize and explore extracted subnetworks in R.
+The user can decide whether he wants to perform the calculations locally on his computer or remotely via the web API.
+
+
+### Background
+Given a **biological network** and a **set of case-control studies**, KPM efficiently extracts all **maximal connected sub-networks**. These sub-networks contain the genes that are **mainly** dysregulated, e.g.   differentially expressed, in **most** cases studied:
+
+   * The exact quantities for “mainly” and “most” are modeled with two easy-to-interpret parameters **(K, L)** that allows the user to control the number of outliers (not dysregulated genes/cases) in the solutions.
+
+
+     
+Two different approaches for extracting subnetworks that are enriched for active/deregulated genes have been implemented:
+
+  * **INES:**  Extract all maximal sub-networks containing nodes with no more than L inactive cases (0's) besides of K exceptions.
+      
+  * **GLONE:** Extracts maximal sub-networks where the total sum of not-active/diff. exp. cases is at most L. 
+  
+  
+For more information please visit the [KPM website](https://keypathwayminer.compbio.sdu.dk/keypathwayminer/) or see [Alcaraz et al. De Novo Pathway Enrichment
+with KeyPathwayMiner, Springer US, 2020](https://link.springer.com/protocol/10.1007%2F978-1-4939-9873-9_14).
+
+
+## Quick Start {-}
+
+Here we show a short overview of the the most important steps for a analysis with KPM-R when performed locally. Remote execution is explained in detail in the Example section). The following code chunk assumes that you have a indicator matrix called `ind_mat` and a biological network called `sample_network`. How to generate these files is described in detail in the succeeding sections.
+
+```{r quickstart_example, eval = FALSE}
+library(KeyPathwayMineR)
+
+#sets the options for the run 
+#Most important parameters are:
+#the execution type (Local or Remote), 
+#strategy (INES or GLONE), 
+#algorithm (Greedy, ACO or Optimal), 
+#the K and L values
+kpm_options(
+  execution = "Local", 
+  strategy = "INES", 
+  algorithm = "Greedy",
+  use_range_l = TRUE,
+  l_min = 10,
+  l_step = 2,
+  l_max = 30,
+  k_min = 5)
+
+#performs the computation
+result <- kpm(indicator_matrices = ind_mat, graph = sample_network)
+
+#results are visualized with R shiny and can now be inspected
+visualize_result(results)
+```
+
+
+
+
+## Input data {-}
+Two types of  input files are necessary to run KeyPathwayMineR:
+
+ * **Indicator matrix** from the control/case studies
+ * **Biological network** biological interaction network e.g. a protein-protein-interaction network 
+ 
+ 
+### Indicator matrix
+
+KPM expects as input binary indicator matrices which contain 1 and 0 entries indicating active or incative cases for each feature. Each matrix can be provided as a data.frame or as a path to a tab-delimited text file where rows correspond to features (genes, transcripts, proteins, etc.) and columns to cases/samples. It is important that the first column contains the feature IDs and that those are the same as in the biological network. For text files the header has to be removed.
+
+
+**Example Matrix**: If provided as a file the header (first row) has to be removed !
+
+| Feature_ID | CASE1 | CASE2  | ...  | CASEX  |
+|-----------:|:-----:|:------:|:----:|:------:|
+| 10203      |  1    |  0     | ...  | 1      |
+| 3232       |  0    |  0     | ...  | 1      |      
+| ...        | ...   |  ...   | ...  |  ...   |
+                                  
+
+#### Further options and functions
+<details>
+  <summary>**Combining matrices**</summary>
+
+If there is more than one matrix, the user must provide a logical formula connecting the datasets.
+Selecting ‘AND’ results in a matrix where only feature-case combinations are active when they are active in all of the selected datasets. If a combinations should be considered as active when it's active in at least one dataset ‘OR’ should be used. For that the user has to set the `link_type`in the `kpm_options()` and pass the matrices as a list to the function `kpm()`. See section "Select parameters and run KPM" for more info. 
+A practical use case for combining matrices could be the combination of methylation and RNAseq datasets, where only differentially expressed genes whose promoter has a differential methylation are considered as active. See an example in [Alcaraz et al., BMC, Systems Biology, 2014](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4236746/)
+</details>
+
+<details>
+  <summary>**Positive and negative nodes**</summary>
+If the user has previous knowledge that he may want to include in the analysis, he can define positive and negative lists. Feature of the positive list will always considered active while features of the negative are always considered as inactive list. The lists should be simple text files without a header where in each line is no more than one feature and has the same type as the efature IDs in the indicator matrix.
+</details>
+
+<details>
+  <summary>**Additional options for for local execution**</summary>
+You can change the separator to comma or space or use a header by defining this in the kpm_properties file. You can do that by using `edit(file = system.file(package = "KeyPathwayMineR", "kpm.properties"))` and changing matrix_files_have_header, matrix_files_separator.
+</details>
+
+<details>
+  <summary>**Convenient functions**</summary>
+If provided as p value matrix the data can conveniently be transformed to a indicator matrix using the `to_indicator_matrix()` function. 
+For example `ind_matrix <- to_indicator_matrix(pvalue,matrix, <, 0.05)` generates an indicator matrix where all p values below 0.05 are considered as active cases.
+</details>
+
+#### Input of single cell RNA-seq data
+The `sc_to_indicator_matrix()` functions allows to take input of single cell RNA-seq data in form of a Seurat, SinglecellExperiment or SinglCellAssay object. The differential expression detection is performed by a two-part generalized linear model implemented in the [MAST](https://www.bioconductor.org/packages/release/bioc/html/MAST.html) package which allows to address the additional complexity of scRNA-seq data and also adjustment for covariates. By specifying a p-value- and a foldchange-threshold, the desired condition for comparison, e.g the celltype and it's reference group, the functions generates an indicator matrix based on differential gene expression. Optionally the user can also pass an object of class "formula" to the function for more complex study designs instead of chosing a single condition. Furthermore, the procesdure can also be performed in a three step way which allows the user to inspect intermediate results. 
+
+<details>
+  <summary>**Functions for input of single cell objects**</summary>
+```{r example_sc_input, eval = FALSE}
+#In case of a Seurat Object the data should be in the Assay named "RNA" 
+#For SingleCellExperiment objects the first assay is considered
+indicator_matrix <- sc_to_indicator_matrix(sc_obj = singleCell_object,  
+                                           covarariates = "age" ,  
+                                           referenceGroup = "young", 
+                                           FCThreshold = 2, 
+                                           pvalueThreshold = 0.05)
+
+#The above function is a wrapper around three functions which can also be executed sequentially
+
+fcHurdletest <- do_diff_testing_via_MAST(sc_obj = singleCell_object,
+                                           covarariates = "age",
+                                           referenceGroup = "young",
+                                           summaryName = summaryName,
+                                           saveSummary = saveSummary,
+                                           designFormula = designFormula)
+
+#At this point the user can inspect the results and 
+#can test several thresholds for the p value and fold change cut off
+filtered_results <- filter_fcHurdleTestResults(fcHurdletest = fcHurdletest,
+                                                 FCThreshold = 2,
+                                                 pvalueThreshold = 0.05)
+
+# creates the indicator matrix. The feature ID will be the gene IDs of the single cell object
+indicator_matrix <- create_indicator_from_fcurdleTest(
+                                   fcHurdletest_filtered = filtered_results,
+                                   sc_obj = singleCell_object)
+```
+</details>
+
+#### Example Workflows: Bulk RNAseq data to indicator matrix
+
+<details>
+  <summary>**Create indicator matrix from GEO data set**</summary>
+Here we use data from the GEO together with edgeR and a z_score cutoff for the generation of an indicator matrix
+```{r edgeR_zscore, eval = FALSE}
+library("KeyPathwayMineR")
+library("GEOquery")
+library("edgeR")
+library("tibble")
+
+# Step 1: Download data
+# Download and read data
+# Here we use data of nasopharyngeal swabs from 430 individuals with SARS-COV-2 and 54 negative controls
+getGEOSuppFiles("GSE152075")
+nasopharyngeal_swabs_raw_counts <- as.data.frame.matrix(
+  read.delim("GSE152075/GSE152075_raw_counts_GEO.txt.gz", sep = " ")
+)
+
+# Step 2: Perform normalization using edgeR
+# Find all coloumns which are cases. In this data set they all start with "POS". Rest of coloumns are the controls.
+coloumns_cases <- startsWith(colnames(nasopharyngeal_swabs_raw_counts), prefix = "POS_")
+
+
+# # TMM normalization of raw counts using edgeR and creation of z-score matrix
+# Save count matrix as dge_list
+dge_list <- DGEList(counts = nasopharyngeal_swabs_raw_counts, group = coloumns_cases)
+
+# Compute normalization factors with TMM
+tmm_normalization_factors <- calcNormFactors(dge_list, method = "TMM")
+
+# Normalize counts
+norm_counts <- cpm(tmm_normalization_factors)
+# Filter out genes that have very low counts across the samples
+keep <- filterByExpr(y = norm_counts, min.count = 2, group = contrast)
+norm_counts <- norm_counts[keep, ]
+
+# Step 3: DE Analysis with Z-score computation and indicator matrix generation
+z_score_matrix <- compute_z_scores(norm_counts, cases = coloumns_cases, controls = !coloumns_cases)
+
+#Prepare indicator matrices with different cut offs
+z_score_1.5 <- 
+  ifelse(abs(z_score_matrix) >= 1.5, 1, 0) %>% 
+  as.data.frame() %>% 
+  rownames_to_column(var = "hgnc_symbol")
+
+z_score_2 <- 
+  ifelse(abs(z_score_matrix) >= 2, 1, 0) %>% 
+  as.data.frame() %>% 
+  rownames_to_column(var = "hgnc_symbol")
+
+z_score_3 <- 
+  ifelse(abs(z_score_matrix) >= 3, 1, 0) %>% 
+  as.data.frame() %>% 
+  rownames_to_column(var = "hgnc_symbol")
+
+#Now you can run kpm with these indicator matrices
+```
+</details>
+
+<details>
+  <summary>**Create indicator matrix from TCGA data**</summary>
+In this example we retrieve data from TCGA and use DESeq2 to generate an indicator matrix 
+```{r TCGA_DESeq, eval = FALSE}
+library("TCGAbiolinks")
+library("TCGAutils")
+library("tidyverse")
+library("SummarizedExperiment")
+library("DESeq2")
+
+# For this example we will use the TCGA-PRAD query which contains data from Prostate Adenocarcinoma patients
+
+
+# Step 1: Create query for gene expression data quantified with HTSeq from Prostate Adenocarcinoma patients 
+query_TCGA_counts <- GDCquery(
+  project = "TCGA-PRAD",
+  data.category = "Transcriptome Profiling",
+  experimental.strategy = "RNA-Seq",
+  workflow.type = "HTSeq - Counts"
+)
+# Get results of the query
+prad_results_counts <- getResults(query_TCGA_counts)
+
+
+# Step 2: Select data for analysis
+# For our analysis we will use 498 Primary solid Tumor vs. 52 Solid Tissue Normal
+# Primary tumor counts
+primary_tumor_counts <- filter(prad_results_counts, sample_type == "Primary Tumor")
+# Solid tissue normal counts
+solid_tissue_normal_counts <- filter(prad_results_counts, sample_type == "Solid Tissue Normal")
+
+# Step 3: Download data
+query_primary_tumor_counts <- GDCquery(
+  project = "TCGA-PRAD",
+  data.category = "Transcriptome Profiling",
+  experimental.strategy = "RNA-Seq",
+  workflow.type = "HTSeq - Counts",
+  barcode = UUIDtoBarcode(id_vector = primary_tumor_counts$id, from_type = "file_id")$associated_entities.entity_submitter_id
+)
+GDCdownload(query = query_primary_tumor_counts)
+
+query_solid_tissue_normal_counts <- GDCquery(
+  project = "TCGA-PRAD",
+  data.category = "Transcriptome Profiling",
+  experimental.strategy = "RNA-Seq",
+  workflow.type = "HTSeq - Counts",
+  barcode = UUIDtoBarcode(id_vector = solid_tissue_normal_counts$id, from_type = "file_id")$associated_entities.entity_submitter_id
+)
+GDCdownload(query = query_solid_tissue_normal_counts)
+
+
+# Step 4: Load data into R and prepare count matrices 
+# Cases
+data_primary_tumor_counts <- GDCprepare(query_primary_tumor_counts)
+data_primary_tumor_counts <- assay(data_primary_tumor_counts)
+# Controls
+data_solid_tissue_normal_counts <- GDCprepare(query_solid_tissue_normal_counts)
+data_solid_tissue_normal_counts <- assay(data_solid_tissue_normal_counts)
+
+case_samples <- colnames(data_primary_tumor_counts)
+control_samples <- colnames(data_solid_tissue_normal_counts)   
+
+# Merge in one matrix controls vs. disease and transform into matrix
+counts <- merge(x = data_solid_tissue_normal_counts, y = data_primary_tumor_counts, by = "row.names") 
+count_mat <- as.matrix(counts[,-1])
+rownames(count_mat) <- counts[,1]
+
+
+# Step 5: DE-Analysis with DESeq2
+dds_list <- list()
+for(sample in case_samples){
+
+#create a matrix with only one case and all controls
+case_mat <- count_mat[, sample, drop = FALSE]
+control_mat <- count_mat[, control_samples, drop = FALSE]  
+filtered_count_mat <- cbind(case_mat, control_mat)
+
+coldata <- data.frame(condition = factor(ifelse(colnames(filtered_count_mat) %in% case_samples, "Case", "Control"), levels = c("Control", "Case")),
+                       row.names = colnames(filtered_count_mat) )
+
+dds <- DESeqDataSetFromMatrix(countData = filtered_count_mat, colData = coldata, design = ~condition)
+dds <- DESeq(dds)
+dds_list[[sample]] <- dds
+}
+
+# Step 6: Select cut offs and create indicator matrix
+# Change for different cutoff variations
+fc_cutoff <- 2
+pCutoff <- 0.01
+
+indicator_coloumns_list <- list()
+for(sample in case_samples){
+results <- results(dds_list[[sample]], contrast = c("condition", "Case", "Control"))
+p_adjusted_vals <- results$padj <= pCutoff
+p_adjusted_vals[is.na(p_adjusted_vals)] <- FALSE
+
+indicator_coloumn <- as.numeric((results$log2FoldChange <= -fc_cutoff | results$log2FoldChange >= fc_cutoff) & p_adjusted_vals)
+indicator_coloumns_list[[sample]] <- indicator_coloumn
+}
+
+indicator_matrix <- as.data.frame(t(do.call(rbind, indicator_coloumns_list)))
+indicator_matrix <- cbind(ids, indicator_matrix)
+```
+</details>
+
+
+
+
+
+### Biological network 
+
+The user has to pick a biological network like a protein-protein-interaction network from a source of choice. The network has to be provided either as an **igraph object** or as a path to a file  in the **simple interaction file (SIF) format**. This a tab-delimited format, where each row corresponds to an interaction with at least two columns that represent the interaction partners. Another column needs to represent the interaction type. However, this column does not contribute to the calculation performed in KPM-R and can just be filled in with a dummy variable. The feature IDs have to match the IDs used for the indicator matrix. Self-loops and duplicated edges will be removed before any computations are made, since these are not required for the algorithms.
+
+#### Example
+
+The .sif file needs the following structure:
+
+| NODE1 | INTERACTION_TYPE | NODE2  |
+|------:|:----------------:|:------:|
+| 112   |  pp              |  342   |
+| 12    |  pp              |  42    |
+| ...   |  ...             | ...    |
+
+Values are separated with **TAB** and lines with **NEWLINE** and is **without the header** (first row). 
+
+#### Further options
+<details>
+  <summary>**Remote execution**</summary>
+
+For the remote execution the user can decide if he wants to upload a network or select from a list of provided networks, including HPRD, BioGrid or I2D, for instance. Running `get_networks()` lists all available networks and their corresponding Graph IDs. Now the user just needs to save the graph_id from the network of choice by executing `kpm_options(graph_id = 10)`.  Note that all default data and networks in KeyPathwayMinerWeb use Entrez gene IDs.
+
+```{rnetworks_remote , echo = FALSE, cache=TRUE}
+suppressMessages(library(KeyPathwayMineR))
+get_networks()
+```
+</details>
+
+<details>
+  <summary>**Local execution**</summary>
+If you want change the seperator to a comma or space or use a header you will have to define this in the kpm_properties file. You can do that by using `edit(file = system.file(package = "KeyPathwayMineR", "kpm.properties"))` and changing **graph_file_has_header**, **graph_file_separator**.
+</details>
+
+
+## Select paramters and run KPM
+
+The options manager provides the user with a variety of arguments that can be customized for the execution. To get the documentation and an overview of all parameters available, you can run the following commands
+
+```{r options_manager, eval = FALSE}
+# For the documentation
+?kpm_options()
+
+# For a  general overview of all parameters use without head
+kpm_options()
+```
+
+
+### Changing and selecting paramters
+
+You can change the options for any parameter by assigning it to a new value as follows:
+```{r change_option, eval = F}
+# Initial value
+kpm_options()$algorithm
+
+# Change algorithm to ACO
+kpm_options(algorithm = "ACO")
+
+# You can also change multiple parameters by seperating them with a comma
+kpm_options(algorithm = "Optimal", execution = "Local")
+```
+
+You can reset your options back to default values:
+```{r reset_option, eval = F}
+# Initial value
+reset_options()
+```
+
+
+### Most important parameters
+
+Setting the execution type of KeyPathwayMineR 
+```{r execution_options, eval = F}
+kpm_options(execution = "Local") 
+kpm_options(execution ="Remote") 
+```
+
+Setting the strategy to extract the pathways 
+```{r strategy_options, eval = F}
+kpm_options(strategy = "GLONE") 
+kpm_options(strategy ="INES") 
+```
+
+Setting the algorithm for pathway extraction
+```{r algorithm_options, eval = F}
+kpm_options(algorithm = "Greedy")  # Using a greedy approach for finding the best solution is the fastest option
+kpm_options(algorithm ="ACO")      # Heuristic method based on ant colony optimization, slower but more accurate than greedy  
+kpm_options(algorithm = "Optimal") # Can only provide solutions for small problem instances as it's a NP-hard optimization problem
+```
+
+Setting case (L) exceptions 
+```{r l_options, eval=FALSE}
+kpm_options(use_range_l = TRUE/FALSE)  #If TRUE l_values will be ranged (batch run). If false the user only needs to set l_min.
+kpm_options(l_min = integer_value)     #Starting value of l range or l value if l is not ranged
+kpm_options(l_step = integer_value)    #How l should be increased within the range
+kpm_options(l_max = integer_value)     #The maximum l value, i.e. the upper limit of the range
+```
+
+Setting exceptions K (only used for INES)
+```{r k_options, eval=FALSE}
+kpm_options(use_range_k = TRUE/FALSE) #If TRUE k_values will be ranged (batch run). If false the user only needs to set k_min.
+kpm_options(k_min = integer_value)    #Starting value of k range or k value if k is not ranged
+kpm_options(k_step = integer_value)   #How k should be increased within the range
+kpm_options(k_max = integer_value)    #The maximum k value, i.e. the upper limit of the range
+```
+
+Removing exception nodes which are boarder nodes
+```{r removeBoarderNodes, eval=FALSE}
+kpm_options(remove_bens = TRUE)
+```
+
+
+For the users who want to go even more into detail, we provide a properties file where the user can specify the default parameters for the local run. To access and edit the properties file use `edit(file = system.file(package = "KeyPathwayMineR", "inst/extdata/kpm.properties"))`. Keep in mind that options set with kpm_options() have higher priority than the options in the kpm.properites file.
+
+
+### Running KPM
+
+After all parameters are set, the user can now run KeyPathwayMiner to extract meaningful networks.
+For local execution it's mandatory to pass an igraph object or the path of a biological network file. It's not necessary if remote execution with a provided network is performed. The extracted pathways are returned as an object of the internal class "Result" or "ResultRemote". If run locally also a folder "Result" is created in the current working directory where all calculations are stored.
+```{r run_kpm, eval= FALSE}
+result <- kpm(indicator_matrices = sample_ind_matrix, graph = biological_network)
+```
+
+Local execution can also be performed in parallel using multiple cores. However, this option is not supported on Windows. 
+```{r set_cores, eval=FALSE}
+result <- kpm(indicator_matrices = sample_ind_matrix, graph = biological_network, cores = 4)
+```
+
+
+
+If kpm was run locally and the user forgot to save the results manually, they can easily be retrieved by providing the path to the result folder
+```{r get_results, eval= FALSE}
+result <- get_results_from_folder("path/to/the/result")
+```
+
+## Explore networks
+
+The results can now easily be inspected using R shiny
+```{r vis_results, eval = FALSE}
+visualize_result(results)
+```
+
+If there is a huge number of extracted pathways, KPM-R makes finding the most promising ones easier. The function `pathway_statistics()` calculates for each configuration the number of nodes in the pathway and the average number of active cases per node.  Using the `pathway_comparison()` function the user can plot the number of nodes per pathway against the average number of active cases per node. 
+
+```{r stat_results, eval=FALSE}
+result_w_statistics <- pathway_statistics(indicator_matrix = sample_ind_matrix, result = result)
+pathway_comparison_plots(result_w_statistics)
+```
+
+The pathway comparison plots can now aid the user in finding suitable cut offs and narrow down the number of configurations to further inspect.
+```{r pathway_comparison, eval=FALSE}
+# Select best pathways
+top_pathway_comparison_data <- result_w_statistics$top_pathway_comparison$data
+selected_pathways  <- top_pathway_comparison_data[top_pathway_comparison_data$avgDiffExp > value 
+                                                  & top_pathway_comparison_data$numNodes %in% range, ]
+selected_pathways
+```
+
+
+## Example runs
+
+### Load example data 
+
+The package includes example data from differential expression studies of Huntington disease patients
+```{r load_data, eval=FALSE}
+library(KeyPathwayMineR)
+
+# Read huntington_disease_up as data.frame
+huntington_disease_up <- as.data.frame.matrix(read.delim(
+  system.file(
+    package = "KeyPathwayMineR",
+    "extdata/datasets",
+    "huntington-gene-expression-UP.txt"
+  ),
+  header = TRUE
+))
+
+#The entries of the huntington_disease_up dataset are p-values. 
+#To create an indicator matrix the to_indicator_matrix() function can be used.
+huntington_disease_up <- to_indicator_matrix(
+  numerical_matrix = huntington_disease_up,
+  operator = "<", threshold = 0.005
+)
+```
+
+Now load the protein protein interaction network file
+```{r graph_file_path, eval=FALSE}
+sample_network <- system.file("extdata",
+  "sampleNetwork.sif",
+  package = "KeyPathwayMineR"
+)
+```
+
+
+
+### Examples for a local run 
+
+#### Local batch run 
+In the first example, we will perform a ranged (batch) run using INES. By setting `use_range_l = TRUE` you 
+specify that the parameter L. For example `l_min = 4`, `l_max = 8` and `l_step = 2` would mean that the KPM will run with L = 4, L = 6 and L = 8.
+
+```{r local_example_3, eval = FALSE}
+settings::reset(kpm_options)
+
+
+# Use ranged values with batch
+kpm_options(
+  execution = "Local",
+  strategy = "INES",
+  algorithm = "Greedy",
+  l_min = 2,
+  l_step = 2,
+  l_max = 24,
+  k_min = 5
+)
+setwd("/nfs/home/users/michaell/KPM-R/KPM_forked/test")
+# Run kpm
+local_example_1 <- kpm(graph = sample_network, indicator_matrices = huntington_disease_up)
+
+# Visualize the results with shiny
+visualize_result(local_example_1)
+```
+When `use_range` is set to `FALSE` (by default) only `l_min` is relevant. The same applies to K. 
+
+
+#### Local run with several matrices as input
+In the next example, an unranged GLONE run will be demonstrated for multiple datasets. Since we are using two datasets we will have to define two l parameters. This is possible by providing a vector as input for l_min:
+```{r local_example_2, eval = FALSE}
+# Reset settings
+settings::reset(kpm_options)
+
+# load p value matrix of down regulated genes
+huntington_disease_down <- as.data.frame.matrix(read.delim(
+  system.file(
+    package = "KeyPathwayMineR",
+    "extdata/datasets",
+    "huntington-gene-expression-DOWN.txt"
+  ),
+  header = FALSE
+))
+
+# Combine multiple datasets: indicator matrices must contain the same genes
+genes_in_both_sets <- intersect(huntington_disease_up$ID,huntington_disease_down$V1)
+indicator_matrices <- list(huntington_disease_up[genes_in_both_sets,], huntington_disease_down[genes_in_both_sets,])
+
+#set options and decide which link_type should be used
+kpm_options(
+  execution = "Local", strategy = "INES", algorithm = "Greedy",
+  use_range_l = TRUE,
+  l_min = 20,
+  l_step = 2,
+  l_max = 24,
+  k_min = 5,
+  link_type = "AND"
+)
+
+# Run kpm
+local_example_2 <- kpm(graph = sample_network, indicator_matrices = indicator_matrices)
+
+# Visualize the results with shiny
+visualize_result(local_example_2)
+```
+
+
+#### Local run with perturbation
+In the last example, we will perform an unranged run using INES. In addition to that we will analyse the robustness of the network with the perturbation technique "nodeswap" and the following parameters:
+```{r local_example_1, eval = FALSE}
+# Reset settings
+settings::reset(kpm_options)
+
+# Use perturbation
+kpm_options(
+  execution = "Local", strategy = "INES", algorithm = "Greedy",
+  l_min = 20,
+  k_min = 5,
+  perturbation_technique = "nodeswap",
+  with_perturbation = TRUE,
+  perturbation_start = 10,
+  perturbation_step = 10,
+  perturbation_max = 20,
+  graphs_per_step = 2
+)
+
+# Execute remote run by using a custom graph_file
+local_example_3 <- kpm(graph = sample_network, indicator_matrices = huntington_disease_up)
+
+# Visualize the results with shiny
+visualize_result(local_example_3)
+```
+To learn more about the perturbation methods to study the robustness and validity of the extracted subnetworks please see [Alcaraz et al., F1000, 2016] (https://pubmed.ncbi.nlm.nih.gov/27540470/)
+
+
+
+
+
+### Example for a remote run
+
+The remote execution is convenient when the user does not have sufficient resources to perform an analysis and wants to perform a simple analysis.
+
+A single dataset with fixed parameters for K and L, and the INES Algorithm was selected in the this example. `async = FALSE`  means that we have a blocking request. Blocking, suggesting that the user will have to wait until the execution is complete. For this run, we will use a provided PPI network with the graph_id 10, which is the "I2D Homo_sapiens entrez" graph.
+```{r remote_example, eval = FALSE}
+settings::reset(kpm_options)
+
+# Configure options for the run
+kpm_options(
+  execution = "Remote",
+  async = FALSE,
+  strategy = "INES",
+  remove_bens = TRUE,
+  algorithm = "Greedy",
+  l_min = 20,
+  k_min = 5,
+  graph_id = 10
+)
+
+# Start run with huntington_disease_up dataset
+remote_example_1 <- kpm(indicator_matrices = huntington_disease_up)
+
+# Visualize the results with shiny
+visualize_result(remote_example_1)
+
+# Open the result page where you can  monitor the progress of both tasks
+browseURL(get_result_url(remote_example_1))
+```
+
+**Important note:** Robustness analysis is not supported via Remote execution. 
+
+

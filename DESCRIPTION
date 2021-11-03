@@ -26,7 +26,11 @@ Imports:
     shiny,
     visNetwork,
     gtools,
-    ggplot2
+    ggplot2,
+    MAST,
+    SummarizedExperiment,
+    stats,
+    Seurat
 RoxygenNote: 7.1.1
 Suggests: 
     knitr,

@@ -29,14 +29,17 @@ kpm <- function(indicator_matrices, graph = NULL) {
   # Check parameters ####
   check_parameters(indicator_matrices)
 
-  # Run KPM & Get results ####
-  if (kpm_options()$execution == "Remote") {
-    results <- call_kpm_remote(indicator_matrices, graph_file)
-  } else if (kpm_options()$execution == "Local") {
-    if (!kpm_options()$use_range_k & !kpm_options()$use_range_l) {
-      # Not a ranged run
-      results <- call_kpm_local(indicator_matrices, graph_file)
-    } else {
+
+# Run KPM & Get results ---------------------------------------------------
+if (!kpm_options()$use_range_k & !kpm_options()$use_range_l) {
+      # If not a ranged run
+      if (kpm_options()$execution == "Remote") {
+          results <- call_kpm_remote(indicator_matrices, graph_file)
+        }else if (kpm_options()$execution == "Local") {
+          results <- call_kpm_local(indicator_matrices, graph_file)
+      }
+    }
+else {
       # Ranged run
       result_list <- list()
 
@@ -52,17 +55,29 @@ kpm <- function(indicator_matrices, graph = NULL) {
       # Temporary variables to save the starting k_min
       temp_l_min <- kpm_options()$l_min
       temp_k_min <- kpm_options()$k_min
+      # Temporary variables to save use_range values
+      temp_use_range_l <- kpm_options()$use_range_l
+      temp_use_range_k <- kpm_options()$use_range_k
+      kpm_options("use_range_l" = FALSE)
+      kpm_options("use_range_k" = FALSE)
 
-      for (l in seq(from = kpm_options()$l_min, by = kpm_options()$l_step, to = kpm_options()$l_max)) {
-        for (k in seq(from = kpm_options()$k_min, by = kpm_options()$k_step, to = kpm_options()$k_max)) {
+      for (l in seq(from = temp_l_min, by = kpm_options()$l_step, to = kpm_options()$l_max)) {
+        for (k in seq(from = temp_k_min, by = kpm_options()$k_step, to = kpm_options()$k_max)) {
           kpm_options("l_min" = as.numeric(l))
           kpm_options("k_min" = as.numeric(k))
-          result_list <- c(result_list, call_kpm_local(indicator_matrices, graph_file)@configurations)
+
+          if (kpm_options()$execution == "Remote") {
+            result_list <- c(result_list, call_kpm_remote(indicator_matrices, graph_file)@configurations)
+          }else if (kpm_options()$execution == "Local") {
+            result_list <- c(result_list, call_kpm_local(indicator_matrices, graph_file)@configurations)
+          }
         }
       }
       # Reset values
       kpm_options("l_min" = temp_l_min)
       kpm_options("k_min" = temp_k_min)
+      kpm_options("use_range_l" = temp_use_range_l)
+      kpm_options("use_range_k" = temp_use_range_k)
 
       # Save pathways from several runs in a Result object
       results <- new("Result",
@@ -70,9 +85,16 @@ kpm <- function(indicator_matrices, graph = NULL) {
                      parameters = kpm_options()
       )
     }
-  }
 
+
+# Compute pathway statistics ----------------------------------------------
+
+  if(kpm_options()$execution == "Local"|(kpm_options()$execution == "Remote" & !kpm_options()$async)){
   results <- pathway_statistics(indicator_matrix = matrix, result = results)
+  }else if (kpm_options()$execution == "Remote" & kpm_options()$async){
+    # In case of an async run pathway statistics must be computed later
+    message("Results are being computed asynchronous.Use is_finished(result) to check wheter the ")
+  }
 
   return(results)
 }

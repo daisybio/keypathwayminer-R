@@ -59,10 +59,10 @@ If the initialization was successful you will get following output:
       #> Utils: The Java virtual machine is available and has the correct version.
       #> KeyPathwayMineR ready for local and remote execution.
       
-When everything is set up you can get started with the following vignettes:
+When everything is set up you can get started with the following vignette:
 
       vignette("KeyPathwayMineR")
-      vignette("input_files_format")
+     
 
 Developers
 -----

@@ -91,6 +91,5 @@ retrieve_biogrid<- function(organism, IDType){
   result <-  lapply(network, function(x){data.frame(ID1 = x[[1]],
                                                     ID2 = x[[2]])} )
   res <- do.call(rbind, result)
-  res$InteractionType = "PPI"
-
-  return( res[, c("ID1", "InteractionType", "ID2")] )}
+  graph_from_data_frame(res)
+}

@@ -77,6 +77,7 @@ igraph_to_sif <- function(biological_netwrok, path) {
 pathway_statistics <- function(indicator_matrix, result) {
   configurations <- get_configurations(result)
   message("Computing pathway statistics.")
+
   # Filter out configurations with 0 pathways ####
   message("\tFiltering out configurations with no pathways.")
   removed <- 0
@@ -113,7 +114,7 @@ pathway_statistics <- function(indicator_matrix, result) {
         names(temp)[2] <- names(exceptions)[2]
         exceptions <- rbind(exceptions, temp)
         names(exceptions$exception) <- NULL
-        pathway@nodes <- merge(x = pathway@nodes, y = exceptions, by.x = "node", by.y = names(exceptions)[2])
+        pathway@nodes <- merge(x = pathway@nodes, y = exceptions, by.x = names(pathway@nodes)[1], by.y = names(exceptions)[2])
       }
       result <- set_pathway(result_object = result, configuration_name = configuration, pathway_name = pathway_name, pathway = pathway)
     }
@@ -131,7 +132,7 @@ pathway_statistics <- function(indicator_matrix, result) {
       names(temp)[2] <- names(exceptions)[2]
       exceptions <- rbind(exceptions, temp)
       names(exceptions$exception) <- NULL
-      union_network@nodes <- merge(x = union_network@nodes, y = exceptions, by.x = "node", by.y = names(exceptions)[2])
+      union_network@nodes <- merge(x = union_network@nodes, y = exceptions, by.x = names(union_network@nodes)[1], by.y = names(exceptions)[2])
     }
     result <- set_pathway(result_object = result, configuration_name = configuration, pathway = union_network, union = TRUE)
   }

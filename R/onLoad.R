@@ -16,7 +16,7 @@
   message(paste("Standalone jar added to class path: ", standalone))
 
   # Check if remote server is up
-  remote <- RCurl::url.exists("https://keypathwayminer.compbio.sdu.dk/keypathwayminer/")
+  remote <- RCurl::url.exists("https://exbio.wzw.tum.de/keypathwayminer/")
 
   if (standalone & test_jvm() & remote) {
     # If jar is on the classpath and jvm is greater than 1.8

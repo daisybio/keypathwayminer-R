@@ -5,7 +5,7 @@ MYPKGoptions <- settings::options_manager(
   execution = "Local",
   async = FALSE,
   session_id = NULL,
-  url = "https://keypathwayminer.compbio.sdu.dk/keypathwayminer/",
+  url = "https://exbio.wzw.tum.de/keypathwayminer/",
   algorithm = "Greedy",
   graph_id = 1,
   strategy = "GLONE",
@@ -53,7 +53,7 @@ MYPKGoptions <- settings::options_manager(
 #'  \strong{Default parameters:}\cr
 #'  kpm_options(execution = "Local",\cr
 #'  async = TRUE,\cr
-#'  url = "https://keypathwayminer.compbio.sdu.dk/keypathwayminer/",\cr
+#'  url = "https://exbio.wzw.tum.de/keypathwayminer/",\cr
 #'  algorithm = "Greedy",\cr
 #'  graph_id = 1,\cr
 #'  strategy = "GLONE",\cr

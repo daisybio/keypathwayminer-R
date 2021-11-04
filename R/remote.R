@@ -261,7 +261,7 @@ withTryCatch <- function(surroundedFunc) {
 #' @param quest_id String. The quest id this job has been attached to.
 #'
 #' @return Status of the job for given quest_id
-get_status <- function(quest_id, url = "https://keypathwayminer.compbio.sdu.dk/keypathwayminer/") {
+get_status <- function(quest_id, url = "https://exbio.wzw.tum.de/keypathwayminer/") {
   withTryCatch(function() {
     url <- paste(url, "requests/runStatus", sep = "")
     print(sprintf("url: %s", url))
@@ -286,7 +286,7 @@ get_status <- function(quest_id, url = "https://keypathwayminer.compbio.sdu.dk/k
 #'
 #' @return If run was successful return result in json
 #' format otherwise null.
-fetch_results <- function(quest_id, url = "https://keypathwayminer.compbio.sdu.dk/keypathwayminer/") {
+fetch_results <- function(quest_id, url = "https://exbio.wzw.tum.de/keypathwayminer/") {
   withTryCatch(function() {
     url <- paste(url, "requests/results", sep = "")
     print(sprintf("url: %s", url))
@@ -309,10 +309,10 @@ fetch_results <- function(quest_id, url = "https://keypathwayminer.compbio.sdu.d
 #' @return Data frame with different graphs and their Id's.
 #'
 #' @examples
-#' get_networks("https://keypathwayminer.compbio.sdu.dk/keypathwayminer/")
+#' get_networks("https://exbio.wzw.tum.de/keypathwayminer/")
 #' @export
 #' @importFrom foreach %do%
-get_networks <- function(url = "https://keypathwayminer.compbio.sdu.dk/keypathwayminer/") {
+get_networks <- function(url = "https://exbio.wzw.tum.de/keypathwayminer/") {
   kpm_url <- paste(url, "rest/availableNetworks/", sep = "")
   result <- RCurl::getURL(kpm_url)
   jsonResult <- rjson::fromJSON(result)
@@ -333,7 +333,7 @@ get_networks <- function(url = "https://keypathwayminer.compbio.sdu.dk/keypathwa
 #'
 #' @return Returns progress url for the respective run.
 #' @export
-quest_progress_url <- function(session_id, url = "https://keypathwayminer.compbio.sdu.dk/keypathwayminer/") {
+quest_progress_url <- function(session_id, url = "https://exbio.wzw.tum.de/keypathwayminer/") {
   kpm_progress_url <- paste(url, "requests/quests?attachedToId=",
     session_id, "&hideTitle=false",
     sep = ""

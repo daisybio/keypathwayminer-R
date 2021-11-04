@@ -295,7 +295,7 @@ pathway_comparison_plots <- function(result) {
   }
   top_pathway_comparison_data <- tibble::tibble(config = config, numNodes = numNodes, avgDiffExp = avgDiffExp)
   top_pathway_comparison_plot <- ggplot(top_pathway_comparison_data, aes(x = numNodes, y = avgDiffExp)) +
-    geom_point(aes(col = config), size = 3) +
+    geom_point(aes(col = config), size = 3.5, alpha = 0.55, position = position_jitter(width = 0.75, seed = 123)) +
     labs(
       title = "Top pathway comparison",
       y = "Average de. cases per gene",

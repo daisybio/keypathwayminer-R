@@ -30,9 +30,10 @@ kpm_options(
   l_min = 20,
   k_min = 5)
 
+# Start run with huntington_disease_up dataset
+example_1 <- kpm(indicator_matrices = huntington_disease_up, graph = sample_network)
+
 test_that("Normal run", {
-  # Start run with huntington_disease_up dataset
-  example_1 <- kpm(indicator_matrices = huntington_disease_up, graph = sample_network)
   expect_match(class(example_1), "Result")
 })
 

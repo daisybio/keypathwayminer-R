@@ -70,3 +70,27 @@ get_results_from_folder <- function(path){
       )
   )
 }
+
+
+#' Retrieves bioGRID network in suitable form for KPM
+#'
+#' @param organism available organsims are 'arabidopsis', 'c.elegans', 'fruitFly', 'human', 'mouse', 'yeast', 's.pombe'
+#' @param IDType has to be either 'EntrezId' or 'Official' (=HGNC)
+#'
+#' @return returns a dataframe which can be used as input in kpm()
+#' @export
+retrieve_biogrid<- function(organism, IDType){
+
+  organism <- "human"
+  IDType <- "EntrezId"
+
+  checkmate::assertChoice(organism, c('arabidopsis', 'c.elegans', 'fruitFly', 'human', 'mouse', 'yeast', 's.pombe'))
+  checkmate::assertChoice(IDType, c('EntrezId', 'Official'))
+
+  network <- simpIntLists::findInteractionList(organism, IDType)
+  result <-  lapply(network, function(x){data.frame(ID1 = x[[1]],
+                                                    ID2 = x[[2]])} )
+  res <- do.call(rbind, result)
+  res$InteractionType = "PPI"
+
+  return( res[, c("ID1", "InteractionType", "ID2")] )}

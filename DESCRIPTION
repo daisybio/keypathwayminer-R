@@ -12,7 +12,8 @@ Encoding: UTF-8
 LazyData: true
 Depends: 
     R (>= 2.10),
-    rJava (>= 0.9-12)
+    rJava (>= 0.9-12),
+    simpIntLists
 Imports:
     settings,
     RCurl,

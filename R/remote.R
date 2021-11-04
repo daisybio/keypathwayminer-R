@@ -193,7 +193,6 @@ save_remote_results <- function(remote_results) {
 
   # We compute the union set with igraph since it provides with more information than we can obtain from the server result
   configurations[[last_configuration]]@union_network <- create_union_network(configuration = configurations[[last_configuration]])
-
   return(new("ResultRemote", parameters = kpm_options(), configurations = configurations, json_result = remote_results))
 }
 
@@ -378,7 +377,7 @@ is_finished <- function(result_object) {
 #'  @param result_object Result of the current run.
 #'
 #'  @return Url to the results on the KPM web server.
-#'  @export
+#'@export
 get_result_url <- function(result_object) {
   if (class(result_object) != "ResultRemote") {
     stop("Result object must be of type ResultRemote.")

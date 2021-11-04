@@ -53,7 +53,6 @@ MYPKGoptions <- settings::options_manager(
 #'  \strong{Default parameters:}\cr
 #'  kpm_options(execution = "Local",\cr
 #'  async = TRUE,\cr
-#'  quest_id = NULL,\cr
 #'  url = "https://keypathwayminer.compbio.sdu.dk/keypathwayminer/",\cr
 #'  algorithm = "Greedy",\cr
 #'  graph_id = 1,\cr

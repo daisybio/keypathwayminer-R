@@ -13,5 +13,4 @@ Only for remote execution
 @param result_object Result of the current run.
 
  @return Url to the results on the KPM web server.
- @export
 }

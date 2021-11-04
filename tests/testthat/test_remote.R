@@ -40,11 +40,8 @@ kpm_options(
   strategy = "INES",
   remove_bens = TRUE,
   algorithm = "Greedy",
-  use_range_l = T,
   use_range_k = T,
   l_min = 20,
-  l_step = 1,
-  l_max = 22,
   k_min = 5,
   k_step = 1,
   k_max = 6,
@@ -73,4 +70,3 @@ example_3 <- kpm(indicator_matrices = list(huntington_disease_up, huntington_dis
 test_that("Multiple matrices run", {
   expect_match(class(example_3), "Result")
 })
-

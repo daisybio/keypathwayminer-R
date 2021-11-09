@@ -470,12 +470,6 @@ For local execution it's mandatory to pass an igraph object or the path of a bio
 result <- kpm(indicator_matrices = sample_ind_matrix, graph = biological_network)
 ```
 
-Local execution can also be performed in parallel using multiple cores. However, this option is not supported on Windows. 
-```{r set_cores, eval=FALSE}
-result <- kpm(indicator_matrices = sample_ind_matrix, graph = biological_network, cores = 4)
-```
-
-
 
 If kpm was run locally and the user forgot to save the results manually, they can easily be retrieved by providing the path to the result folder
 ```{r get_results, eval= FALSE}

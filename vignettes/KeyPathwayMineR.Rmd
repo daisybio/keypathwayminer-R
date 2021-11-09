@@ -126,8 +126,10 @@ If provided as p value matrix the data can conveniently be transformed to a indi
 For example `ind_matrix <- to_indicator_matrix(pvalue,matrix, <, 0.05)` generates an indicator matrix where all p values below 0.05 are considered as active cases.
 </details>
 
-#### Input of single cell RNA-seq data
+<details>
+  <summary>**Input of single cell RNA-seq data**</summary>
 The `sc_to_indicator_matrix()` functions allows to take input of single cell RNA-seq data in form of a Seurat, SinglecellExperiment or SinglCellAssay object. The differential expression detection is performed by a two-part generalized linear model implemented in the [MAST](https://www.bioconductor.org/packages/release/bioc/html/MAST.html) package which allows to address the additional complexity of scRNA-seq data and also adjustment for covariates. By specifying a p-value- and a foldchange-threshold, the desired condition for comparison, e.g the celltype and it's reference group, the functions generates an indicator matrix based on differential gene expression. Optionally the user can also pass an object of class "formula" to the function for more complex study designs instead of chosing a single condition. Furthermore, the procesdure can also be performed in a three step way which allows the user to inspect intermediate results. 
+</details>
 
 <details>
   <summary>**Functions for input of single cell objects**</summary>
@@ -347,13 +349,28 @@ The .sif file needs the following structure:
 
 Values are separated with **TAB** and lines with **NEWLINE** and is **without the header** (first row). 
 
+
 #### Further options
+
+<details>
+  <summary>**Load BioGRID networks**</summary>
+  With our build-in function `retrieve_biogrid()` the user can load various networks from BioGRID in the proper format. 
+
+```{r retriueve_biogrid, eval=FALSE}
+# available organsims are 'arabidopsis', 'c.elegans', 'fruitFly', 'human', 'mouse', 'yeast', 's.pombe'
+# IDType has to be either 'EntrezId' or 'Official' (=HGNC)
+network <- retrieve_biogrid(organism = "human", IDType = "EntrezId")
+```
+
+
+</details>
+
 <details>
   <summary>**Remote execution**</summary>
 
 For the remote execution the user can decide if he wants to upload a network or select from a list of provided networks, including HPRD, BioGrid or I2D, for instance. Running `get_networks()` lists all available networks and their corresponding Graph IDs. Now the user just needs to save the graph_id from the network of choice by executing `kpm_options(graph_id = 10)`.  Note that all default data and networks in KeyPathwayMinerWeb use Entrez gene IDs.
 
-```{rnetworks_remote , echo = FALSE, cache=TRUE}
+```{r networks_remote,  echo = FALSE, cache=TRUE}
 suppressMessages(library(KeyPathwayMineR))
 get_networks()
 ```
@@ -534,7 +551,6 @@ specify that the parameter L. For example `l_min = 4`, `l_max = 8` and `l_step =
 ```{r local_example_3, eval = FALSE}
 settings::reset(kpm_options)
 
-
 # Use ranged values with batch
 kpm_options(
   execution = "Local",
@@ -545,7 +561,7 @@ kpm_options(
   l_max = 24,
   k_min = 5
 )
-setwd("/nfs/home/users/michaell/KPM-R/KPM_forked/test")
+
 # Run kpm
 local_example_1 <- kpm(graph = sample_network, indicator_matrices = huntington_disease_up)
 
@@ -594,36 +610,6 @@ visualize_result(local_example_2)
 ```
 
 
-#### Local run with perturbation
-In the last example, we will perform an unranged run using INES. In addition to that we will analyse the robustness of the network with the perturbation technique "nodeswap" and the following parameters:
-```{r local_example_1, eval = FALSE}
-# Reset settings
-settings::reset(kpm_options)
-
-# Use perturbation
-kpm_options(
-  execution = "Local", strategy = "INES", algorithm = "Greedy",
-  l_min = 20,
-  k_min = 5,
-  perturbation_technique = "nodeswap",
-  with_perturbation = TRUE,
-  perturbation_start = 10,
-  perturbation_step = 10,
-  perturbation_max = 20,
-  graphs_per_step = 2
-)
-
-# Execute remote run by using a custom graph_file
-local_example_3 <- kpm(graph = sample_network, indicator_matrices = huntington_disease_up)
-
-# Visualize the results with shiny
-visualize_result(local_example_3)
-```
-To learn more about the perturbation methods to study the robustness and validity of the extracted subnetworks please see [Alcaraz et al., F1000, 2016] (https://pubmed.ncbi.nlm.nih.gov/27540470/)
-
-
-
-
 
 ### Example for a remote run
 
@@ -654,6 +640,4 @@ visualize_result(remote_example_1)
 # Open the result page where you can  monitor the progress of both tasks
 browseURL(get_result_url(remote_example_1))
 ```
-
-**Important note:** Robustness analysis is not supported via Remote execution. 
 

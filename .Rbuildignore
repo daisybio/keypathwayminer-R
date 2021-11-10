@@ -6,3 +6,4 @@
 ^\.travis\.yml$     # Used for continuous integration testing with travis
 ^data-raw$          # Raw data directory with the raw data and code to process and save that data
 ^.Rhistory$
+^use_cases$

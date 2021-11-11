@@ -552,12 +552,12 @@ kpm_options(
   algorithm = "Greedy",
   l_min = 2,
   l_step = 2,
-  l_max = 24,
+  l_max = 4,
   k_min = 5
 )
 
 # Run kpm
-local_example_1 <- kpm(graph = sample_network, indicator_matrices = huntington_disease_up)
+local_example_1 <- kpm(graph = sample_network, indicator_matrix = huntington_disease_up)
 
 # Visualize the results with shiny
 visualize_result(local_example_1)
@@ -635,3 +635,62 @@ visualize_result(remote_example_1)
 browseURL(get_result_url(remote_example_1))
 ```
 
+
+### Downstream Analysis
+
+Here we show how the user can extract genes from a pathway of interest and can perfrom a gene ontology enrichment analysis using the topGO package 
+
+```{r DA, eval = FALSE}
+library(topGO)
+
+# Get the gene universe = all genes studied in the experiment
+gene_universe <- indicator_matrix[,1]
+
+# Choose a configuration of interest from your result object
+pathways_of_configuration <- get_pathways(result, "K-5-L1-2")
+
+# Choose pathway of interest
+pathway_of_interesst <- pathways_of_configuration$`Pathway-1`
+
+# Extract all genes from a pathway of interesst
+genesOfInteresst <- pathway_of_interesst@nodes$node 
+
+# alternatively extract all genes from a configuration
+genesOfInteresst <- unlist(lapply(pathways_of_configuration, function(x){x@nodes$node}))
+
+# create a factor indicating which genes are of interest
+geneList <-  factor(as.integer(gene_universe %in% genesOfInteresst))
+names(geneList) <- gene_universe
+
+
+# create mapping file for BP ontology and entrez IDs as input identifer
+allGO2genes <- annFUN.org(whichOnto="BP", feasibleGenes=NULL,  mapping="org.Hs.eg.db", ID="entrez")
+
+# Create the topGO data object for BP ontology
+go_data_bp <- new("topGOdata",
+  ontology="BP",
+  allGenes=geneList,
+  annot=annFUN.GO2genes,
+  GO2genes=allGO2genes,
+  geneSel=genesOfInteresst,
+  nodeSize=10)
+
+# Run enrichment test
+weight_fs_bp <- runTest(go_data_bp, algorithm = "weight01", statistic = "fisher")
+
+# Save in table
+table_bp <- GenTable(go_data_bp, topNodes = 2000, weightFisher = weight_fs_bp)
+
+# Filter results by p value 
+table_bp_filtered = table_bp[which(table_bp$weightFisherc<= 0.01),]
+
+# plot the result table
+knitr::kable(table_bp_filtered)
+
+# plot the ontology tree
+showSigOfNodes(go_data_bp, score(classic_fs_bp), firstSigNodes = 10, useInfo = "all")
+
+# Find out which genes of interesset are within the selected GO terms
+result_go_ids <- table_bp_filtered$GO.ID
+genes_in_go_terms <-  genesInTerm(GOdata, result_go_ids)
+```

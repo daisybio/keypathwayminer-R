@@ -557,7 +557,7 @@ kpm_options(
 )
 
 # Run kpm
-local_example_1 <- kpm(graph = sample_network, indicator_matrix = huntington_disease_up)
+local_example_1 <- kpm(graph = sample_network, indicator_matrices = huntington_disease_up)
 
 # Visualize the results with shiny
 visualize_result(local_example_1)

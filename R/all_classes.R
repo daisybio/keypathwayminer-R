@@ -75,7 +75,7 @@ setMethod(f = "export_to_iGraph", signature = "Pathway", definition = function(p
 
 #' Export a graph
 #'
-#' Export a graph in sif format, tab seperated or custom format.
+#' Export a graph in sif format, csv format, igraph object, tab seperated or custom format.
 #'
 #' @param  file path where the file is saved
 #' @param  pathway_object pathway object of a configuration.
@@ -85,12 +85,17 @@ setGeneric(name = "export_edges", def = function(pathway_object, file, sep = "\t
 
 #' @export
 #' @importFrom tibble add_column
+#' @import igraph
 #' @describeIn export_edges Use write.table to export a graph.
 setMethod(f = "export_edges", signature = "Pathway", definition = function(pathway_object, file, sep = "\t", format = "") {
   if (format == "") {
     write.table(pathway_object@edges, file = file, quote = FALSE, sep = sep, row.names = FALSE, col.names = FALSE)
   } else if (tolower(format) == "sif") {
     write.table(tibble::add_column(pathway_object@edges, d = rep("pp", nrow(pathway_object@edges)), .after = "source"), file = file, quote = FALSE, sep = sep, row.names = FALSE, col.names = FALSE)
+  } else if (tolower(format) == "csv"){
+    write.csv(x = pathway_object@edges, file = file, row.names = F)
+  } else if (tolower(format) == "igraph") {
+    return(igraph::graph_from_data_frame(pathway_object@edges, directed = FALSE, vertices = NULL))
   } else {
     message("The graph will not be exported because the format is not supported")
   }

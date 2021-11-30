@@ -9,6 +9,7 @@
 #'
 #' @import shiny
 #' @import visNetwork
+#' @import easycsv
 visualize_result <- function(result) {
   if (length(result@configurations) != 0) {
     server <- function(input, output) {

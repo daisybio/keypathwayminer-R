@@ -75,27 +75,39 @@ setMethod(f = "export_to_iGraph", signature = "Pathway", definition = function(p
 
 #' Export a graph
 #'
-#' Export a graph in sif format, csv format, igraph object, tab seperated or custom format.
+#' Export a graph in sif format, csv format, igraph object,
+#' tab seperated, custom format and more.
 #'
 #' @param  file path where the file is saved
 #' @param  pathway_object pathway object of a configuration.
 #' @param  sep seperator used to seperate the graph file.
 #' @param  format format of the file. If specified sep slot is not used.
-setGeneric(name = "export_edges", def = function(pathway_object, file, sep = "\t", format = "") standardGeneric("export_edges"))
+#' Possible formats are c("custom","sif","csv","igraph","gml","graphml", "xlsx")
+setGeneric(name = "export_graph", def = function(pathway_object, file, sep = "\t", format = "") standardGeneric("export_graph"))
 
 #' @export
 #' @importFrom tibble add_column
 #' @import igraph
-#' @describeIn export_edges Use write.table to export a graph.
-setMethod(f = "export_edges", signature = "Pathway", definition = function(pathway_object, file, sep = "\t", format = "") {
-  if (format == "") {
+#' @importFrom openxlsx write.xlsx
+#' @describeIn export_graph Use write.table to export a graph.
+setMethod(f = "export_graph", signature = "Pathway", definition = function(pathway_object, file, sep = "\t", format = "") {
+  if (format == tolower("custom")) {
     write.table(pathway_object@edges, file = file, quote = FALSE, sep = sep, row.names = FALSE, col.names = FALSE)
   } else if (tolower(format) == "sif") {
     write.table(tibble::add_column(pathway_object@edges, d = rep("pp", nrow(pathway_object@edges)), .after = "source"), file = file, quote = FALSE, sep = sep, row.names = FALSE, col.names = FALSE)
-  } else if (tolower(format) == "csv"){
+  } else if (tolower(format) == "csv") {
     write.csv(x = pathway_object@edges, file = file, row.names = F)
   } else if (tolower(format) == "igraph") {
     return(igraph::graph_from_data_frame(pathway_object@edges, directed = FALSE, vertices = NULL))
+  } else if (tolower(format) == "gml") {
+    igraph::write_graph(igraph::graph_from_data_frame(pathway_object@edges, directed = FALSE, vertices = NULL),
+      file = file, format = "gml")
+  } else if (tolower(format) == "graphml") {
+    igraph::write_graph(igraph::graph_from_data_frame(pathway_object@edges, directed = FALSE, vertices = NULL),
+      file = file, format = "graphml"
+    )
+  } else if (tolower(format) == "xlsx") {
+    openxlsx::write.xlsx(x = pathway_object@edges, file = file)
   } else {
     message("The graph will not be exported because the format is not supported")
   }
@@ -133,7 +145,6 @@ setMethod(f = "get_configurations", signature = "Result", definition = function(
 #'
 #' @return Configuration object.
 #'
-#' @examples
 setGeneric(name = "get_configuration", def = function(result_object, configuration_name) standardGeneric("get_configuration"))
 
 #' @describeIn get_configuration Given a result object and configuration name a configuration object is returned.

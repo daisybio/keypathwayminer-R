@@ -33,7 +33,8 @@ Imports:
     SummarizedExperiment,
     Seurat,
     data.table,
-    easycsv
+    easycsv,
+    openxlsx
 RoxygenNote: 7.1.2
 Suggests: 
     testthat (>= 3.0.0),

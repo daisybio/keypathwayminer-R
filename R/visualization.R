@@ -9,6 +9,7 @@
 #'
 #' @import shiny
 #' @import visNetwork
+#' @import easycsv
 visualize_result <- function(result) {
   if (length(result@configurations) != 0) {
     server <- function(input, output) {
@@ -98,7 +99,7 @@ visualize_result <- function(result) {
       observeEvent(input$export_edges, {
         path <- easycsv::choose_dir()
         pathway <- result@configurations[[input$configuration]]@pathways[[input$pathway]]
-        export_edges(file = paste(path, tolower(input$configuration), tolower(input$pathway), "-edges.sif", sep = ""), pathway_object = pathway, format = "sif")
+        export_graph(file = paste(path, tolower(input$configuration), tolower(input$pathway), "-edges.sif", sep = ""), pathway_object = pathway, format = "sif")
         output$file <- renderText({
           paste("Edges saved in:", path)
         })
@@ -121,7 +122,7 @@ visualize_result <- function(result) {
       observeEvent(input$export_edges_union, {
         path <- easycsv::choose_dir()
         union_network <- result@configurations[[input$configuration_union]]@union_network
-        export_edges(file = paste(path, "union-", tolower(input$configuration_union), "-edges.sif", sep = ""), pathway_object = union_network, format = "sif")
+        export_graph(file = paste(path, "union-", tolower(input$configuration_union), "-edges.sif", sep = ""), pathway_object = union_network, format = "sif")
         output$file_union <- renderText({
           paste("Edges saved in:", path)
         })

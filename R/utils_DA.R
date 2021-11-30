@@ -9,7 +9,7 @@
 #' @export
 #'
 #' @examples gost_pathway(result = local_example_1, configuration= "K-5-L1-2", pathway= "Pathway-1", organism = "hsapiens", numeric_ns = "ENTREZGENE_ACC")
-gost_pathway <- function(result, configuration, pathway = NULL, ...){
+profile_pathway <- function(result, configuration, pathway = NULL, ...){
 
   pathways_of_configuration <- get_pathways(result, configuration)
 

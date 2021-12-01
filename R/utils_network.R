@@ -143,7 +143,7 @@ pathway_statistics <- function(indicator_matrix, result) {
 #' Reads graph file and converts it to igraph object
 #'
 #' @param file Path to file
-#' @param format Possible formats are c("sif","gml","graphml", "xlsx","custom")
+#' @param format Possible formats are c(gml","graphml", "xlsx","custom")
 #' @param sep You can also use a custom seperator like  TAB or SPACE
 #'
 #' @return igraph object
@@ -159,12 +159,13 @@ if(tolower(format) == "gml"){
 }else if(tolower(format) == "xlsx"){
   df <- openxlsx::read.xlsx(xlsxFile = file)
   return(igraph::graph_from_data_frame(df, directed = FALSE, vertices = NULL))
-} else if(tolower(format) == "sif"){
-  df <- read.table(file)
-  return(igraph::graph_from_data_frame(data.frame(source=df[,1],target=df[,3]),
-                                       directed = FALSE, vertices = NULL))
-
-} else if (tolower(format) == "csv"){
+}
+  # else if(tolower(format) == "sif"){
+  # df <- read.table(file)
+  # return(igraph::graph_from_data_frame(data.frame(source=df[,1],target=df[,3]),
+  #                                      directed = FALSE, vertices = NULL))
+  # }
+  else if (tolower(format) == "csv"){
   df <- read.csv(file = file)
   return(igraph::graph_from_data_frame(data.frame(source=df[,1],target=df[,2]),
                                        directed = FALSE, vertices = NULL))

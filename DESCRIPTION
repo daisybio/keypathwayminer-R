@@ -12,8 +12,7 @@ Encoding: UTF-8
 LazyData: true
 Depends: 
     R (>= 2.10),
-    rJava (>= 0.9-12),
-    simpIntLists
+    rJava (>= 0.9-12)
 Imports:
     settings,
     RCurl,
@@ -33,12 +32,14 @@ Imports:
     SummarizedExperiment,
     Seurat,
     data.table,
-    easycsv,
-    openxlsx
+    easycsv
 RoxygenNote: 7.1.2
 Suggests: 
     testthat (>= 3.0.0),
     knitr,
-    rmarkdown
+    rmarkdown,
+    simpIntLists,
+    openxlsx,
+    gprofiler2
 VignetteBuilder: knitr
 Config/testthat/edition: 3

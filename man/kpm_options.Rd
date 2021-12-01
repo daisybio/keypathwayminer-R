@@ -11,7 +11,7 @@ kpm_options(...)
 \strong{Default parameters:}\cr
 kpm_options(execution = "Local",\cr
 async = TRUE,\cr
-url = "https://keypathwayminer.compbio.sdu.dk/keypathwayminer/",\cr
+url = "https://exbio.wzw.tum.de/keypathwayminer/",\cr
 algorithm = "Greedy",\cr
 graph_id = 1,\cr
 strategy = "GLONE",\cr

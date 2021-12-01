@@ -9,7 +9,7 @@ read_graph(file, format, sep)
 \arguments{
 \item{file}{Path to file}
 
-\item{format}{Possible formats are c("sif","gml","graphml", "xlsx","custom")}
+\item{format}{Fomrat of the File}
 
 \item{sep}{You can also use a custom seperator like  TAB or SPACE}
 }
@@ -17,5 +17,8 @@ read_graph(file, format, sep)
 igraph object
 }
 \description{
-Reads graph file and converts it to igraph object
+Possible formats are c("sif","gml","graphml", "xlsx","custom").
+}
+\details{
+\strong{Important}: For the sif format please also specify if the sep is a TAB or a SPACE.
 }

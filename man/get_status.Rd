@@ -4,10 +4,7 @@
 \alias{get_status}
 \title{Method to check up on a submitted job.}
 \usage{
-get_status(
-  quest_id,
-  url = "https://keypathwayminer.compbio.sdu.dk/keypathwayminer/"
-)
+get_status(quest_id, url = "https://exbio.wzw.tum.de/keypathwayminer/")
 }
 \arguments{
 \item{quest_id}{String. The quest id this job has been attached to.}

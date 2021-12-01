@@ -7,7 +7,7 @@
 #'
 #' @return data.frame with all results from gost run
 #' @export
-#'
+#' @import gprofiler2
 #' @examples gost_pathway(result = local_example_1, configuration= "K-5-L1-2", pathway= "Pathway-1", organism = "hsapiens", numeric_ns = "ENTREZGENE_ACC")
 profile_pathway <- function(result, configuration, pathway = NULL, ...){
 

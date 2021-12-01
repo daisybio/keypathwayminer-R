@@ -6,7 +6,7 @@
 \usage{
 quest_progress_url(
   session_id,
-  url = "https://keypathwayminer.compbio.sdu.dk/keypathwayminer/"
+  url = "https://exbio.wzw.tum.de/keypathwayminer/"
 )
 }
 \arguments{

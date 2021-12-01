@@ -139,41 +139,80 @@ pathway_statistics <- function(indicator_matrix, result) {
   return(result)
 }
 
-
 #' Reads graph file and converts it to igraph object
 #'
+#' Possible formats are c("sif","gml","graphml", "xlsx","custom").
+#'
+#' \strong{Important}: For the sif format please also specify if the sep is a TAB or a SPACE.
+#'
 #' @param file Path to file
-#' @param format Possible formats are c(gml","graphml", "xlsx","custom")
+#' @param format Fomrat of the File
 #' @param sep You can also use a custom seperator like  TAB or SPACE
 #'
 #' @return igraph object
 #' @export
 #'
-#' @import igraph
+#' @import igraph object from the network
 #' @importFrom openxlsx read.xlsx
-read_graph <- function(file, format, sep){
-if(tolower(format) == "gml"){
-  return(igraph::read_graph(file = file, format = "gml"))
-}else if(tolower(format) == "graphml"){
-  return(igraph::read_graph(file = file, format = "graphml"))
-}else if(tolower(format) == "xlsx"){
-  df <- openxlsx::read.xlsx(xlsxFile = file)
-  return(igraph::graph_from_data_frame(df, directed = FALSE, vertices = NULL))
+read_graph <- function(file, format, sep) {
+  if (tolower(format) == "gml") {
+    message("GML-->iGraph")
+    return(igraph::read_graph(file = file, format = "gml"))
+  } else if (tolower(format) == "graphml") {
+    message("GraphML-->iGraph")
+    return(igraph::read_graph(file = file, format = "graphml"))
+  } else if (tolower(format) == "xlsx") {
+    message("XLSX-->iGraph")
+    df <- openxlsx::read.xlsx(xlsxFile = file)
+    return(igraph::graph_from_data_frame(df, directed = FALSE, vertices = NULL))
+  } else if (tolower(format) == "sif") {
+    message("SIF-->iGraph")
+    return(sif_to_igraph(filepath = file, sep = sep))
+  } else if (tolower(format) == "csv") {
+    message("CSV-->iGraph")
+    df <- read.csv(file = file)
+    return(igraph::graph_from_data_frame(data.frame(source = df[, 1], target = df[, 2]),
+      directed = FALSE, vertices = NULL
+    ))
+  } else if (tolower(format) == "custom") {
+    message("CUSTOM-->iGraph")
+    df <- read.table(file, sep = sep)
+    return(igraph::graph_from_data_frame(data.frame(source = df[, 1], target = df[, 2]),
+      directed = FALSE, vertices = NULL
+    ))
+  } else {
+    message("Not a supported format. Please specifiy supported format.")
+  }
 }
-  # else if(tolower(format) == "sif"){
-  # df <- read.table(file)
-  # return(igraph::graph_from_data_frame(data.frame(source=df[,1],target=df[,3]),
-  #                                      directed = FALSE, vertices = NULL))
-  # }
-  else if (tolower(format) == "csv"){
-  df <- read.csv(file = file)
-  return(igraph::graph_from_data_frame(data.frame(source=df[,1],target=df[,2]),
-                                       directed = FALSE, vertices = NULL))
-} else if (tolower(format) == "custom"){
-  df <- read.table(file, sep = sep)
-  return(igraph::graph_from_data_frame(data.frame(source=df[,1],target=df[,2]),
-                                       directed = FALSE, vertices = NULL))
-}else{
-  message("Not a supported format. Please specifiy supported format.")
-}
+
+#' Convert sif file to iGraph object
+#'
+#' @param filepath Filepath to the sif file
+#' @param sep Either TAB or SPACE
+#'
+#' @return igraph object from the network
+#' @export
+#'
+#' @importFrom igraph graph_from_data_frame
+sif_to_igraph <- function(filepath, sep = sep) {
+  file <- file(filepath, "r")
+  df <- data.frame(source = c(), target = c())
+  while (T) {
+    line <- readLines(file, n = 1, warn = F)
+    # If we reached the end of the file
+    if (length(line) == 0) {
+      break
+    }
+    # Split string
+    str_vector <- unlist(strsplit(x = line, split = sep))
+    # Save source node
+    source <- str_vector[1]
+    if (length(str_vector) >= 3) {
+      for (string in str_vector[3:length(str_vector)]) {
+        df <- rbind(df, c(source, string))
+      }
+    }
+  }
+  close(file)
+  return(igraph::graph_from_data_frame(d = df, directed = FALSE))
 }

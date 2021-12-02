@@ -149,10 +149,10 @@ pathway_statistics <- function(indicator_matrix, result) {
 #' @param format Fomrat of the File
 #' @param sep You can also use a custom seperator like  TAB or SPACE
 #'
-#' @return igraph object
+#' @return igraph object from the network
 #' @export
 #'
-#' @import igraph object from the network
+#' @import igraph 
 #' @importFrom openxlsx read.xlsx
 read_graph <- function(file, format, sep) {
   if (tolower(format) == "gml") {

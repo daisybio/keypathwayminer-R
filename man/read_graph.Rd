@@ -14,7 +14,7 @@ read_graph(file, format, sep)
 \item{sep}{You can also use a custom seperator like  TAB or SPACE}
 }
 \value{
-igraph object
+igraph object from the network
 }
 \description{
 Possible formats are c("sif","gml","graphml", "xlsx","custom").

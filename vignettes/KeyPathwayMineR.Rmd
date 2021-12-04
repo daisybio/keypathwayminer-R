@@ -103,6 +103,14 @@ KPM expects as input binary indicator matrices which contain 1 and 0 entries ind
 
 #### Further options and functions
 <details>
+  <summary>**Import/export functions**</summary>
+
+The `read_graph()` function allows the user to convert their graph file into an iGraph object, which is the input format required by the package. The user can choose from a variety of graph file formats, such as **sif, gml, graphml, xlsx and documents with user-defined delimiters**.
+
+Furthermore, the user can utilize the `export_graph()` function to export pathways computed by the package. Given a pathway, the user can export the network in one of the following formats: **sif, gml, graphml, xlsx, csv, igraph object or using a customer delimiter**. The user can also extract only the nodes of the pathway by using the `export_nodes()` function.
+</details>
+
+<details>
   <summary>**Combining matrices**</summary>
 
 If there is more than one matrix, the user must provide a logical formula connecting the datasets.
@@ -122,9 +130,18 @@ You can change the separator to comma or space or use a header by defining this 
 
 <details>
   <summary>**Convenient functions**</summary>
+  
+Several convenient functions were implemented to make the user's data processing workflow as easy as possible. One of them is the `compute_z_score()` function, which computes the genes' z-scores in all case samples while using as background the control samples. The function receives a count matrix as input and returns a z-score matrix. The z-score of a gene $i$ in a sample $j$ is computed in the following way:
+\begin{equation}\label{eq:1}
+  {Z_{score}(gene\ i, sample\ j) = \frac{counts\ of\ gene\ i\ in\ sample\ j - mean\ of\ gene\ i\ in\ control\ samples}{standard\ deviation\ of\ gene\ i\ in\ control\ samples}}
+\end{equation}
+
 If provided as p value matrix the data can conveniently be transformed to a indicator matrix using the `to_indicator_matrix()` function. 
 For example `ind_matrix <- to_indicator_matrix(pvalue,matrix, <, 0.05)` generates an indicator matrix where all p values below 0.05 are considered as active cases.
 </details>
+
+
+
 
 <details>
   <summary>**Input of single cell RNA-seq data**</summary>

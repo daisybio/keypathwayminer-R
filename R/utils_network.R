@@ -152,9 +152,9 @@ pathway_statistics <- function(indicator_matrix, result) {
 #' @return igraph object from the network
 #' @export
 #'
-#' @import igraph 
+#' @import igraph
 #' @importFrom openxlsx read.xlsx
-read_graph <- function(file, format, sep) {
+import_graph <- function(file, format, sep) {
   if (tolower(format) == "gml") {
     message("GML-->iGraph")
     return(igraph::read_graph(file = file, format = "gml"))

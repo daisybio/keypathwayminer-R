@@ -105,7 +105,7 @@ KPM expects as input binary indicator matrices which contain 1 and 0 entries ind
 <details>
   <summary>**Import/export functions**</summary>
 
-The `read_graph()` function allows the user to convert their graph file into an iGraph object, which is the input format required by the package. The user can choose from a variety of graph file formats, such as **sif, gml, graphml, xlsx and documents with user-defined delimiters**.
+The `import_graph()` function allows the user to convert their graph file into an iGraph object, which is the input format required by the package. The user can choose from a variety of graph file formats, such as **sif, gml, graphml, xlsx and documents with user-defined delimiters**.
 
 Furthermore, the user can utilize the `export_graph()` function to export pathways computed by the package. Given a pathway, the user can export the network in one of the following formats: **sif, gml, graphml, xlsx, csv, igraph object or using a customer delimiter**. The user can also extract only the nodes of the pathway by using the `export_nodes()` function.
 </details>

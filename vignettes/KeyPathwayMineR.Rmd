@@ -181,6 +181,41 @@ indicator_matrix <- create_indicator_from_fcurdleTest(
 ```
 </details>
 
+
+<details>
+  <summary>**Download networks from NDEx with NDExR package**</summary>
+In the following example we will go through how to download  networks from the NDExR data commons and process these network to use them as input for KeyPathwayMineR. In this example, we will see how to download and prepare a SARS-CoV-2 biogrid interactome. Before you start you will have to create an account on the [NDEx website](https://www.ndexbio.org/#/)
+```{r ndexr, eval=FALSE}
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install("ndexr")
+library(ndexr)
+
+# Login (Username and password you used to create the account on NDEx)
+ndexcon = ndex_connect("username", "password")
+
+# Get all networks that contain the term biogrid
+networks_pid <- ndex_find_networks(ndexcon, searchString = "biogrid")
+
+# Show this network
+networks_pid[,"name"]
+
+# Get SARS-CoV-2 Interactome
+mynetwork = ndex_get_network(ndexcon, networks_pid[21,"externalId"])
+
+# Convert into RCXgraph
+mygraph = rcx_toRCXgraph(mynetwork)
+
+# Convert into iGraph
+df = as_data_frame(mygraph)[,c("from","to")]
+kpm_input <- graph_from_data_frame(d = df)
+
+```
+</details>
+
+
+
+
 #### Example Workflows: Bulk RNAseq data to indicator matrix
 
 <details>

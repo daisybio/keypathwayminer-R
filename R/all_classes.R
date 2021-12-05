@@ -94,7 +94,7 @@ setMethod(f = "export_graph", signature = "Pathway", definition = function(pathw
   if (format == tolower("custom")) {
     write.table(pathway_object@edges, file = file, quote = FALSE, sep = sep, row.names = FALSE, col.names = FALSE)
   } else if (tolower(format) == "sif") {
-    write.table(tibble::add_column(pathway_object@edges, d = rep("pp", nrow(pathway_object@edges)), .after = "source"), file = file, quote = FALSE, sep = sep, row.names = FALSE, col.names = FALSE)
+    write.table(tibble::add_column(pathway_object@edges, d = rep("interaction", nrow(pathway_object@edges)), .after = "source"), file = file, quote = FALSE, sep = sep, row.names = FALSE, col.names = FALSE)
   } else if (tolower(format) == "csv") {
     write.csv(x = pathway_object@edges, file = file, row.names = F)
   } else if (tolower(format) == "igraph") {

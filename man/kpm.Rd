@@ -7,7 +7,7 @@
 kpm(indicator_matrices, graph = NULL)
 }
 \arguments{
-\item{indicator_matrices}{List of paths to the indicator matrices or data.frames.}
+\item{indicator_matrices}{List of data frames.}
 
 \item{graph}{Path of the graph file or an igraph object.
 NULL if you want to use a graph from the web service (only for remote runs).

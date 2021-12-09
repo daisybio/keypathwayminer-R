@@ -6,7 +6,7 @@
 #' You can view or change the run parameters through the
 #' kpm_options() function.
 #'
-#' @param indicator_matrices List of paths to the indicator matrices or data.frames.
+#' @param indicator_matrices List of data frames.
 #' @param graph Path of the graph file or an igraph object.
 #' NULL if you want to use a graph from the web service (only for remote runs).
 #' Use get_networks()

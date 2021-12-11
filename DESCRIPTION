@@ -27,9 +27,7 @@ Imports:
     visNetwork,
     gtools,
     ggplot2,
-    MAST,
     Matrix,
-    SummarizedExperiment,
     Seurat,
     data.table,
     easycsv,
@@ -40,6 +38,8 @@ Suggests:
     testthat (>= 3.0.0),
     knitr,
     rmarkdown,
-    simpIntLists
+    simpIntLists,
+    SummarizedExperiment,
+    MAST
 VignetteBuilder: knitr
 Config/testthat/edition: 3

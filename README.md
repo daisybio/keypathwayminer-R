@@ -36,7 +36,13 @@ Prerequisites
 =================
 KeyPathwayMineR uses the [rJava](https://github.com/s-u/rJava) library to run the local (Java - standalone) version of KPM. 
 This package allows us to utilize the different functions from the standalone jar needed to run KeyPathwayMiner. To use this functionality, you should run Java 1.8 or higher on your machine.
- 
+
+To use all the additional functionalities of the package make sure to install the following bioconductor packages:
+          
+      if (!require("BiocManager", quietly = TRUE))
+            install.packages("BiocManager")
+      BiocManager::install(pkgs = c("simpIntLists","SummarizedExperiment", "MAST"))
+    
 Get started
 =================
 Once your R client has been successfully configured you can start using the package.

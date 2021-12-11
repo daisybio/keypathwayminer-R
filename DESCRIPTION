@@ -32,14 +32,14 @@ Imports:
     SummarizedExperiment,
     Seurat,
     data.table,
-    easycsv
+    easycsv,
+    openxlsx,
+    gprofiler2
 RoxygenNote: 7.1.2
 Suggests: 
     testthat (>= 3.0.0),
     knitr,
     rmarkdown,
-    simpIntLists,
-    openxlsx,
-    gprofiler2
+    simpIntLists
 VignetteBuilder: knitr
 Config/testthat/edition: 3

@@ -13,7 +13,9 @@ Two different approaches for extracting subnetworks that are enriched for active
       
   * **GLONE:** Extracts maximal sub-networks where the total sum of **not**-active/diff. exp. cases is at most L. 
       
-For more information about the R package, please check the following reference: [KeyPathwayMineR: De Novo Pathway Enrichment in the R Ecosystem ](https://www.frontiersin.org/article/10.3389/fgene.2021.812853)
+For more information on the R package, please check the following reference:
+
+[KeyPathwayMineR: De Novo Pathway Enrichment in the R Ecosystem ](https://www.frontiersin.org/article/10.3389/fgene.2021.812853)
 
 Overview
 =================

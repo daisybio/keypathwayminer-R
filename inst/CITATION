@@ -1,0 +1,20 @@
+citHeader("To cite KeyPathwayMineR in publications, please use:")
+
+citEntry(entry = "Article",
+  title        = "KeyPathwayMineR: De Novo Pathway Enrichment in the R Ecosystem",
+  author       = personList(as.person("Konstantinos Mechteridis"),
+                   as.person("Michael Lauber"),as.person("Jan Baumbach"),
+                   as.person("Markus List")),
+  journal      = "Frontiers in Genetics",
+  year         = "2022",
+  volume       = "12",
+  url          = "https://www.frontiersin.org/article/10.3389/fgene.2021.812853",
+  issn         = "1664-8021",
+  doi          = "10.3389/fgene.2021.812853",
+  abstract     = "De novo pathway enrichment is a systems biology approach in which OMICS data are projected onto a molecular interaction network to identify subnetworks representing condition-specific functional modules and molecular pathways. Compared to classical pathway enrichment analysis methods, de novo pathway enrichment is not limited to predefined lists of pathways from (curated) databases and thus particularly suited for discovering novel disease mechanisms. While several tools have been proposed for pathway enrichment, the integration of de novo pathway enrichment in end-to-end OMICS analysis workflows in the R programming language is currently limited to a single tool. To close this gap, we have implemented an R package KeyPathwayMineR (KPM-R). The package extends the features and usability of existing versions of KeyPathwayMiner by leveraging the power, flexibility and versatility of R and by providing various novel functionalities for performing data preparation, visualization, and comparison. In addition, thanks to its interoperability with a plethora of existing R packages in e.g., Bioconductor, CRAN, and GitHub, KPM-R allows carrying out the initial preparation of the datasets and to meaningfully interpret the extracted subnetworks. To demonstrate the package’s potential, KPM-R was applied to bulk RNA-Seq data of nasopharyngeal swabs from SARS-CoV-2 infected individuals, and on single cell RNA-Seq data of aging mice tissue from the Tabula Muris Senis atlas.",
+  textVersion  = "Konstantinos Mechteridis, Michael Lauber, Jan Baumbach, and Markus List. KeyPathwayMineR: De Novo Pathway Enrichment in the R Ecosystem. Frontiers in Genetics, 12, 2022."
+)
+
+
+
+

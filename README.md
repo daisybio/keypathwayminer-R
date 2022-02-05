@@ -13,7 +13,7 @@ Two different approaches for extracting subnetworks that are enriched for active
       
   * **GLONE:** Extracts maximal sub-networks where the total sum of **not**-active/diff. exp. cases is at most L. 
       
-For more information please visit our website [(Key Pathway Miner website)](https://keypathwayminer.compbio.sdu.dk/keypathwayminer/).
+For more information about the R package, please check the following reference: [KeyPathwayMineR: De Novo Pathway Enrichment in the R Ecosystem ](https://www.frontiersin.org/article/10.3389/fgene.2021.812853)
 
 Overview
 =================
@@ -23,9 +23,8 @@ Overview
    * [Get started](#get-started)
       * [Users](#users)
       * [Developers](#developers)
-* [Typical workflow](#typical-workflow)
-
-* [Common problems](#common-problems)
+   * [Cite KeyPathwayMineR](#cite-keypathwayminer)
+   * [Common problems](#common-problems)
 <!--te-->
 
 Purpose
@@ -38,11 +37,12 @@ KeyPathwayMineR uses the [rJava](https://github.com/s-u/rJava) library to run th
 This package allows us to utilize the different functions from the standalone jar needed to run KeyPathwayMiner. To use this functionality, you should run Java 1.8 or higher on your machine.
 
 To use all the additional functionalities of the package make sure to install the following bioconductor packages:
-          
-      if (!require("BiocManager", quietly = TRUE))
-            install.packages("BiocManager")
-      BiocManager::install(pkgs = c("simpIntLists","SummarizedExperiment", "MAST"))
-    
+```r   
+if (!require("BiocManager", quietly = TRUE))
+      install.packages("BiocManager")
+BiocManager::install(pkgs = c("simpIntLists","SummarizedExperiment", "MAST"))
+```      
+
 Get started
 =================
 Once your R client has been successfully configured you can start using the package.
@@ -50,39 +50,50 @@ Once your R client has been successfully configured you can start using the pack
 Users
 -----
 KeyPathwayMiner is currently available on github and can be installed through the devtools R package:
+```r
+# Install KeyPathwayMineR from github and build vignettes
+if (!requireNamespace("devtools", quietly = TRUE)) install.packages("devtools")
+devtools::install_github("baumbachlab/keypathwayminer-R", build_vignettes = TRUE)
       
-      # Install KeyPathwayMineR from github and build vignettes
-      if (!requireNamespace("devtools", quietly = TRUE)) install.packages("devtools")
-      devtools::install_github("baumbachlab/keypathwayminer-R", build_vignettes = TRUE)
-          
-      # Load and attach KeyPathwayMineR 
-      library("KeyPathwayMineR")
+# Load and attach KeyPathwayMineR 
+library("KeyPathwayMineR")
+```      
 
 If the initialization was successful you will get following output:
-      
-      #> Loading required package: rJava
-      #> Standalone jar added to class path:  TRUE
-      #> Utils: The Java virtual machine is available and has the correct version.
-      #> KeyPathwayMineR ready for local and remote execution.
-      
+```r
+#> Loading required package: rJava
+#> Standalone jar added to class path:  TRUE
+#> Utils: The Java virtual machine is available and has the correct version.
+#> KeyPathwayMineR ready for local and remote execution.
+```      
 When everything is set up you can get started with the following vignette:
-
-      vignette("KeyPathwayMineR")
-     
+```r
+vignette("KeyPathwayMineR")
+```
 
 Developers
 -----
 If you want to play around or work on the code you can clone the repo:
 
-      git clone https://github.com/baumbachlab/keypathwayminer-R.git
+```
+git clone https://github.com/baumbachlab/keypathwayminer-R.git
+```
 
 Opent the *KeyPathwayMineR.Rproj* file to open the package. To get started install the following libraries:
+```r
+install.packages(c("devtools", "roxygen2", "testthat", "knitr"))
+```
 
-      install.packages(c("devtools", "roxygen2", "testthat", "knitr"))
-
-Typical workflow
+Cite KeyPathwayMineR
 ============ 
-<img src="inst/image/typical_workflow.png"/> 
+To cite KeyPathwayMineR in publications, please use:
+
+Konstantinos Mechteridis, Michael Lauber, Jan Baumbach, and Markus List. KeyPathwayMineR: De Novo Pathway Enrichment in the R Ecosystem. Frontiers in Genetics, 12, 2022.
+
+or use following command to get a BibTeX entry:
+```r
+citation("KeyPathwayMineR")
+```
 
  Common problems
 =================

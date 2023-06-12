@@ -36,9 +36,8 @@ test_jvm <- function() {
 #' @export
 get_started <- function() {
   message("Use following commands to get started:")
-  message("\t1. vignette(\"KeyPathwayMineR\")")
-  message("\t2. vignette(\"input_files_format\")")
-  message("\t3. ?kpm_options()")
+  message("\t1. vignette(\"KeyPathwayMineR\") to access the vignette of the package")
+  message("\t2. ?kpm_options() to get an overview of all the options that can be adjusted for execution")
 }
 
 
